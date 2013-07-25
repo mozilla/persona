@@ -537,7 +537,10 @@
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
       complete: function() {
-        testActionStarted("doAuthenticate");
+        testActionStarted("doAuthenticate", {
+          email: TEST_EMAIL,
+          email_mutable: false
+        });
         start();
       }
     });
@@ -566,7 +569,8 @@
       email: TEST_EMAIL,
       complete: function() {
         testActionStarted("doAuthenticate", {
-          email: TEST_EMAIL
+          email: TEST_EMAIL,
+          email_mutable: false
         });
         start();
       }

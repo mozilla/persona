@@ -42,6 +42,13 @@ var new_secondary_123done_two_browsers = {
   "switch to the persona dialog": function(done) {
     browser.wwin(CSS['persona.org'].windowName, done);
   },
+  "enter incorrect email, cancel set password screen": function(done) {
+    browser.chain({onError: done})
+      .wtype(CSS['dialog'].emailInput, "incorrect_email@restmail.net")
+      .wclick(CSS['dialog'].newEmailNextButton)
+      .wclick(CSS['dialog'].submitCancelButton)
+      .wclear(CSS['dialog'].emailInput, done);
+  },
   "go through signup flow": function(done) {
     dialog.signInAsNewUser({
       browser: browser,

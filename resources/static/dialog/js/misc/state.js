@@ -102,7 +102,8 @@ BrowserID.State = (function() {
         // after a user verifies an address but is not authenticated
         // to the password level.
         redirectToState("authenticate", {
-          email: self.stagedEmail
+          email: self.stagedEmail,
+          email_mutable: false
         });
       }
       else {
@@ -449,6 +450,7 @@ BrowserID.State = (function() {
             redirectToState("stage_transition_to_secondary", info);
           }
           else {
+            addressInfo.email_mutable = false;
             redirectToState("authenticate", addressInfo);
           }
         }
@@ -468,6 +470,7 @@ BrowserID.State = (function() {
             if (authentication !== "password") {
               // user must authenticate with their password, kick them over to
               // the authenticate screen to enter the password.
+              addressInfo.email_mutable = false;
               redirectToState("authenticate", addressInfo);
             }
             else {

@@ -48,6 +48,7 @@ BrowserID.Modules.Authenticate = (function() {
 
   function hasPassword(info) {
     /*jshint validthis:true*/
+    var self = this;
     /*
      * If this is is a required email, we are making the assumption
      * that it is a secondary address and has a password. The only two ways to
@@ -55,11 +56,11 @@ BrowserID.Modules.Authenticate = (function() {
      * verification occurs in a second browser and when signed in to the
      * assertion level and then choose a secondary backed address.
      */
-    return this.emailSpecified ||
+    return (self.emailSpecified && !self.emailMutable) ||
               (info && info.email && info.type === "secondary" &&
                   (info.state === "known" ||
                    info.state === "transition_to_secondary" ||
-                   info.state === "unverified" && this.allowUnverified));
+                   info.state === "unverified" && self.allowUnverified));
   }
 
   function isNewPersonaAccount(info) {
@@ -71,7 +72,7 @@ BrowserID.Modules.Authenticate = (function() {
     return (info.state === "unknown" && !user.isDefaultIssuer());
   }
 
-  function initialState(info) {
+  function chooseInitialState(info) {
     /*jshint validthis: true*/
     var self=this;
     if (hasPassword.call(self, info)) {
@@ -79,7 +80,6 @@ BrowserID.Modules.Authenticate = (function() {
       enterPasswordState.call(self, info.ready);
     }
     else {
-      showHint("start");
       enterEmailState.call(self, info.ready);
     }
   }
@@ -156,7 +156,10 @@ BrowserID.Modules.Authenticate = (function() {
         email = getEmail();
 
     if (email) {
-      self.close(msg, { email: email }, { email: email });
+      self.close(msg, { email: email }, {
+        email: email,
+        email_mutable: true
+      });
     }
 
     complete(callback);
@@ -169,7 +172,8 @@ BrowserID.Modules.Authenticate = (function() {
         self = this;
 
     if (email && pass) {
-      dialogHelpers.authenticateUser.call(self, email, pass, function(authenticated) {
+      dialogHelpers.authenticateUser.call(self, email, pass,
+          function(authenticated) {
         if (authenticated) {
           self.close("authenticated", {
             email: email,
@@ -211,7 +215,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     // If we are already in the enterEmailState, skip out or else we mess with
     // auto-completion.
-    if (self.submit === checkEmail) return;
+    if (self.submit === checkEmail) return complete(done);
     self.submit = checkEmail;
 
     // If we are signing in to the Persona main site, do not show
@@ -254,12 +258,12 @@ BrowserID.Modules.Authenticate = (function() {
   function cancelPassword() {
     /*jshint validthis: true*/
     var self = this;
-    // If there is a emailSpecified, the user is coming to the authentication
-    // screen to authenticate with a specific email address. This is
-    // probably a post-verification auth or an assertion->password level
-    // authentication. If the user hits cancel, they go back one state
+    // If there is an immutable emailSpecified, the user is coming to the
+    // authentication screen to authenticate with a specific email address.
+    // This is probably a post-verification auth or an assertion->password
+    // level authentication. If the user hits cancel, they go back one state
     // in the state machine.
-    if (self.emailSpecified) {
+    if (self.emailSpecified && !self.emailMutable) {
       self.publish("cancel_state");
     }
     else {
@@ -305,29 +309,36 @@ BrowserID.Modules.Authenticate = (function() {
 
       var self=this;
 
+      self.emailSpecified = options.email || "";
+      self.emailMutable = "email_mutable" in options
+                              ? options.email_mutable : true;
+      self.allowUnverified = options.allowUnverified || false;
+
       lastEmail = options.email || "";
 
       dom.removeClass(BODY_SELECTOR, EMAIL_IMMUTABLE_CLASS);
       dom.removeAttr(EMAIL_SELECTOR, "disabled");
 
+      self.submit = null;
+
       /*
-       * If the email is specified, it means the user must enter the fallback
-       * password for the specified email. The user cannot modify the email
-       * address.
+       * If the email is specified and is immutable, it means the user
+       * must enter the fallback password for the specified email.
+       * The user cannot modify the email address.
        * Possible under the following circumstances:
        * 1. post-reset-password where the email verification occurs in a second
        *        browser.
        * 2. user is signed in to Persona using an address backed by a primary
        *        IdP and they have just chosen an email address backed by the
        *        fallback IdP. (assertion->password level upgrade)
+       * 3. email is in transition-to-secondary state and the user just came
+       *        from the email picker.
        */
-      self.emailSpecified = options.email;
-      if (self.emailSpecified) {
+      if (self.emailSpecified && !self.emailMutable) {
         dom.addClass(BODY_SELECTOR, EMAIL_IMMUTABLE_CLASS);
         dom.setAttr(EMAIL_SELECTOR, "disabled", "disabled");
       }
 
-      self.allowUnverified = options.allowUnverified;
 
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);
@@ -360,7 +371,7 @@ BrowserID.Modules.Authenticate = (function() {
       self.click(CANCEL_PASSWORD_SELECTOR, cancelPassword);
 
       Module.sc.start.call(self, options);
-      initialState.call(self, options);
+      chooseInitialState.call(self, options);
     },
 
     stop: function() {

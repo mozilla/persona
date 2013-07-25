@@ -140,12 +140,32 @@
     });
   });
 
-  asyncTest("email declared in options - email cannot be changed, " +
+  asyncTest("mutable email declared in options - email can be changed, " +
+      "focus email field", function() {
+    controller.destroy();
+    $(EMAIL_SELECTOR).val("");
+
+    createController({
+      email: "registered@testuser.com",
+      email_mutable: true,
+      ready: function() {
+        equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
+        testElementHasClass("body", "start");
+        testElementNotHasClass("body", "returning");
+        testElementNotHasClass("body", "emailImmutable");
+        start();
+      }
+    });
+  });
+
+  asyncTest("immutable email declared in options - email cannot be changed, " +
       "straight to password field", function() {
     controller.destroy();
     $(EMAIL_SELECTOR).val("");
 
-    createController({ email: "registered@testuser.com",
+    createController({
+      email: "registered@testuser.com",
+      email_mutable: false,
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "registered@testuser.com", "email prefilled");
         testElementHasClass("body", "returning");
