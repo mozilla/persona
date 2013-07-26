@@ -1,9 +1,8 @@
-<%= gettext('Thank you for using Persona.') %>
-
-<%= format(gettext('Click to confirm this email address and sign in to %s'), [site]) %>
+<%= format(gettext('Click this confirmation link to sign in to %(site)s:'), { site: site })%>
 <%= link %>
 
-<%= format(gettext('Note: If you are NOT trying to sign into this website, please ignore this email.'), [site]) %>
+<%= format(gettext('If you did NOT attempt to sign into %(site)s, please ignore this email.'), { site: site }) %>
 
-<%= gettext('Thank you,') %>
-<%= gettext('The Persona team') %>
+:::<%= gettext('Mozilla Persona') %>
+:::<%= gettext('Simplified sign-in by the non-profit behind Firefox') %>
+:::<%= gettext('Learn more at https://login.persona.org/about') %>
