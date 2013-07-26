@@ -138,8 +138,7 @@
     // Windows Phone
     //    - http://stackoverflow.com/questions/11381673/javascript-solution-to-detect-mobile-browser
     var needsPopupFix = userAgent.match(/CriOS/) ||
-                        userAgent.match(/Windows Phone/) ||
-                        userAgent.match(/BlackBerry/);
+                        userAgent.match(/Windows Phone/);
 
     var w;
 
@@ -396,7 +395,7 @@
         }
       }
 
-      if ((needsPopupFix && options.allowRedirect) || options.forceRedirect) {
+      if (needsPopupFix) {
         return doPopupFix();
       }
 
