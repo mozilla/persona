@@ -52,6 +52,7 @@
       moduleManager.register("set_password", modules.SetPassword);
       moduleManager.register("rp_info", modules.RPInfo);
       moduleManager.register("inline_tospp", modules.InlineTosPp);
+      moduleManager.register("complete_sign_in", modules.CompleteSignIn);
 
       moduleManager.start("xhr_delay");
       moduleManager.start("xhr_disable_form");

@@ -13,8 +13,7 @@ BrowserID.Modules.Actions = (function() {
       mediator = bid.Mediator,
       dialogHelpers = bid.Helpers.Dialog,
       runningService,
-      onsuccess,
-      onerror;
+      onsuccess;
 
   function startService(name, options, reported_service_name) {
     mediator.publish("service", { name: reported_service_name || name });
@@ -49,7 +48,6 @@ BrowserID.Modules.Actions = (function() {
       data = data || {};
 
       onsuccess = data.onsuccess;
-      onerror = data.onerror;
 
       sc.start.call(self, data);
 
@@ -127,15 +125,11 @@ BrowserID.Modules.Actions = (function() {
           "transition_to_secondary_confirmed");
     },
 
-    doAssertionGenerated: function(info) {
-      // Clear onerror before the call to onsuccess - the code to onsuccess
-      // calls window.close, which would trigger the onerror callback if we
-      // tried this afterwards.
-      this.hideWait();
-      dialogHelpers.animateClose(function() {
-        onerror = null;
-        if(onsuccess) onsuccess(info);
-      });
+    doCompleteSignIn: function(info) {
+      info.ready = function() {
+        onsuccess(info);
+      };
+      startService("complete_sign_in", info);
     },
 
     doNotMe: function() {

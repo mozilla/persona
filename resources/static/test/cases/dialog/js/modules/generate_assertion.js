@@ -7,6 +7,9 @@
   var bid = BrowserID,
       controller,
       testHelpers = bid.TestHelpers,
+      storage = bid.Storage,
+      mediator = bid.Mediator,
+      xhr = bid.Mocks.xhr,
       user = bid.User;
 
   function createController(config) {
@@ -27,18 +30,38 @@
     }
   });
 
-  asyncTest("start with email, expect an assertion to be generated", function() {
+  asyncTest("start with valid email - " +
+      "expect an assertion to be generated", function() {
     user.syncEmailKeypair("testuser@testuser.com", function() {
+      var assertion;
+      mediator.subscribe("assertion_generated", function(msg, info) {
+        assertion = info.assertion;
+      });
+
       createController({
         email: "testuser@testuser.com",
-        delay: 0,
-        ready: function(assertion) {
+        ready: function() {
           ok(assertion, "assertion generated");
-          testHelpers.testElementExists("#signing_in");
-
           start();
         }
       });
+    });
+  });
+
+  asyncTest("start with error when generating assertion - " +
+      "no assertion generated", function() {
+    xhr.useResult("ajaxError");
+    storage.addEmail("testuser@testuser.com", {});
+    mediator.subscribe("assertion_generated", function(msg, info) {
+      ok(false);
+    });
+
+    createController({
+      email: "testuser@testuser.com",
+      ready: function() {
+        testHelpers.testErrorVisible();
+        start();
+      }
     });
   });
 

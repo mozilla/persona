@@ -48,29 +48,6 @@
     }
   });
 
-  asyncTest("getAssertion happy case", function() {
-    mediator.subscribe("assertion_generated", function(msg, info) {
-      testHelpers.testKeysInObject(info, ["assertion"]);
-    });
-
-    storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock, "registered@testuser.com",
-        function(assertion) {
-      ok(assertion, "assertion given to close");
-      start();
-    });
-  });
-
-  asyncTest("getAssertion with XHR error", function() {
-    unexpectedMessage("assertion_generated");
-    errorCB = expectedError;
-
-    xhr.useResult("ajaxError");
-    storage.addEmail("registered@testuser.com", {});
-    dialogHelpers.getAssertion.call(controllerMock,
-        "registered@testuser.com", testHelpers.expectedFailure);
-  });
-
   asyncTest("authenticateUser happy case", function() {
     expectedMessage("password_submit");
     expectedMessage("authentication_success");
