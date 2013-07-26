@@ -4,15 +4,15 @@
 //
 const platforms = {
   // Firefox
-  "win7_firefox_21": {
-    platform:'Windows 2008',
-    browserName:'firefox',
-    version:'21'
+  "win7_firefox_22": {
+    platform: 'Windows 7',
+    browserName: 'firefox',
+    version: '22'
   },
-  "linux_firefox_21": {
+  "linux_firefox_22": {
     platform: 'Linux',
     browserName: 'firefox',
-    version: '21'
+    version: '22'
   },
   "osx_firefox_21": {
     platform: 'Mac 10.6',
@@ -77,4 +77,4 @@ const defaultCapabilities = {
 
 exports.platforms = platforms;
 exports.defaultCapabilities = defaultCapabilities;
-exports.defaultPlatform = "win7_firefox_21";
+exports.defaultPlatform = "win7_firefox_22";
