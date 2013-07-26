@@ -24,12 +24,8 @@
       navMock;
 
   function WinMock() {
-    this.location.hash = "#1234";
-  }
-
-  WinMock.prototype = {
     // Oh so beautiful.
-    opener: {
+    this.opener = {
       frames: {
         1234: {
           BrowserID: {
@@ -43,13 +39,12 @@
           }
         }
       }
-    },
-
-    location: {
-    },
-
-    navigator: {}
-  };
+    };
+    this.location = {
+      hash: "#1234"
+    };
+    this.navigator = {};
+  }
 
   function createController(config) {
     // startExternalDependencies defaults to true, for most of our tests we
@@ -171,6 +166,7 @@
     winMock.location.hash = "#NATIVE";
 
     createController({
+      startExternalDependencies: true,
       ready: function() {
         testErrorNotVisible();
         start();
@@ -183,12 +179,38 @@
     winMock.location.hash = "#INTERNAL";
 
     createController({
+      startExternalDependencies: true,
       ready: function() {
         testErrorNotVisible();
         start();
       }
     });
   });
+
+  asyncTest("initialization with RP redirect flow - " +
+      "immediately calls get (which triggers an error)", function() {
+    storage.rpRequest.set({
+      origin: "testuser.com",
+      params: {
+        returnTo: "/"
+      }
+    });
+
+    var err;
+    mediator.subscribe("error_screen", function(msg, info) {
+      err = info.message;
+    });
+
+    createController({
+      startExternalDependencies: true,
+      ready: function() {
+        equal(err, "Error: module not registered for rp_info");
+        start();
+      }
+    });
+  });
+
+
 
   function testReturnFromIdP(verificationInfo, expectedParams) {
     storage.idpVerification.set(verificationInfo);

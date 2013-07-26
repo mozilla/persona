@@ -527,6 +527,42 @@ BrowserID.Storage = (function() {
     }
   }
 
+  function setRpRequestInfo(info) {
+    /**
+     * sessionStorage is used instead of localStorage to enable
+     * multiple tabs to Persona to be open at once
+     */
+    if (!info.origin)
+      throw new Error("missing origin");
+
+    if (!(info.params && info.params.returnTo))
+      throw new Error("missing params.returnTo");
+
+    sessionStorage.rpRequest = JSON.stringify(info);
+  }
+
+  function getRpRequestInfo() {
+    if (sessionStorage.rpRequest) {
+      var data = JSON.parse(sessionStorage.rpRequest);
+
+      try {
+        if (!data.origin)
+          throw new Error("rpRequest missing origin");
+
+        if (!(data.params && data.params.returnTo))
+          throw new Error("rpRequest missing params.returnTo");
+      } catch(e) {
+        clearRpRequestInfo();
+        throw e;
+      }
+
+      return data;
+    }
+  }
+
+  function clearRpRequestInfo() {
+    sessionStorage.removeItem('rpRequest');
+  }
 
   return {
     /**
@@ -719,6 +755,26 @@ BrowserID.Storage = (function() {
        */
       clear: clearIdpVerificationInfo,
       INFO_LIFESPAN_MS: IDP_INFO_LIFESPAN_MS
+    },
+
+    /**
+     * Info used for environments where the RP must redirect to Persona instead
+     * of using a popup
+     */
+    rpRequest: {
+      /**
+       * Get the RP Redirection info
+       * @throws JSON.parse error if invalid JSON.
+       */
+      get: getRpRequestInfo,
+      /**
+       * Set the RP Redirection info
+       */
+      set: setRpRequestInfo,
+      /**
+       * Clear any RP Redirection info
+       */
+      clear: clearRpRequestInfo
     }
   };
 }());

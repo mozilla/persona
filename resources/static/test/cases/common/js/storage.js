@@ -219,7 +219,7 @@
 
     storage.idpVerification.clear();
     info = storage.idpVerification.get();
-    equal(typeof info, "undefined");
+    testHelpers.testUndefined(info);
   });
 
   test("idpVerification - clear old info", function() {
@@ -237,7 +237,23 @@
 
     storage.idpVerification.clear();
     var info = storage.idpVerification.get("expired");
-    equal(typeof info, "undefined");
+    testHelpers.testUndefined(info);
+  });
+
+  test("rpRequest functions, set, get, clear", function() {
+    storage.rpRequest.set({
+      origin: "https://testuser.com"
+      params: {
+        returnTo: "/"
+      }
+    });
+
+    var rpRequestInfo = storage.rpRequest.get();
+    equal(rpRequestInfo.origin, "testuser.com");
+
+    storage.rpRequest.clear();
+    rpRequestInfo = storage.rpRequest.get();
+    testHelpers.testUndefined(rpRequestInfo);
   });
 
 }());
