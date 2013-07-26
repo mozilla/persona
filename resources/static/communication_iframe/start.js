@@ -121,7 +121,7 @@
 
   chan.bind("redirect_flow", function(trans, params) {
     setRemoteOrigin(trans.origin);
-    sessionStorage.rpRequest = JSON.stringify({
+    storage.rpRequest.set({
       origin: remoteOrigin,
       params: JSON.parse(params)
     });
