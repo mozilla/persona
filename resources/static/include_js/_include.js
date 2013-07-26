@@ -388,10 +388,9 @@
               window.location = ipServer + '/sign_in';
             }
           });
-        } else {
-          //it's not ganna work on this browser without watch()!
-          //XXX: warn the console? bail as an error?
-          throw new Error("bonkers");
+        }
+        else {
+          warn("Chrome for iOS and Windows Phone 7 only work with the .watch API");
         }
       }
 
