@@ -14,6 +14,16 @@ BrowserID.Modules.CompleteSignIn = (function() {
       helpers = bid.Helpers,
       complete = helpers.complete,
       dialogHelpers = helpers.Dialog,
+      dom = bid.DOM,
+      // Give a little delay before starting the animation or the dialog
+      // appears jerky.
+      DELAY_BEFORE_ANIMATION_BEGINS = 750,
+      // Give a ittle delay after finishing the animation (750ms, see
+      // style.css) or else the dialog appears jerky.
+      DELAY_AFTER_ANIMATION_BEGINS_BEFORE_CLOSE = 1750,
+      // This is a magic number, it is the same width as the arrow. See
+      // resources/static/dialog/css/style.css #signIn for the arrow width.
+      ARROW_WIDTH = 136,
       sc;
 
   var CompleteSignIn = bid.Modules.PageModule.extend({
@@ -24,6 +34,8 @@ BrowserID.Modules.CompleteSignIn = (function() {
           self = this;
 
       self.checkRequired(options, "email");
+
+      sc.start.call(self, options);
 
       self.hideWait();
       // signing_in is rendered for desktop
@@ -36,13 +48,53 @@ BrowserID.Modules.CompleteSignIn = (function() {
         title: gettext("signing in")
       });
 
-      dialogHelpers.animateClose(function() {
-        complete(options.ready, options.assertion);
-      });
+      animateClose.call(self, options.ready);
+    },
+
+    stop: function() {
+      var self = this;
+      if (self.startAnimationTimeout) {
+        clearTimeout(self.startAnimationTimeout);
+        self.startAnimationTimeout = null;
+      }
+
+      if (self.closeTimeout) {
+        clearTimeout(self.closeTimeout);
+        self.closeTimeout = null;
+      }
+
+      dom.removeClass("body", "completing");
+
+      sc.stop.call(self);
     }
   });
 
   sc = CompleteSignIn.sc;
+
+  function animateClose(callback) {
+    /*jshint validthis: true*/
+    var self = this,
+        bodyWidth = dom.getInnerWidth("body"),
+        doAnimation = dom.exists("#signIn") && bodyWidth > 640;
+
+    if (!doAnimation) return complete(callback);
+
+    self.startAnimationTimeout = setTimeout(function() {
+      // Force the arrow to slide all the way off the screen.
+      var endWidth = bodyWidth + ARROW_WIDTH;
+
+      dom.addClass("body", "completing");
+      /**
+       * CSS transitions are used to do the slide effect. jQuery has a bug
+       * where it does not do transitions correctly if the box-sizing is set to
+       * border-box and the element has a padding
+       */
+      dom.setStyle("#signIn", "width", endWidth + "px");
+
+      self.closeTimeout = setTimeout(complete.curry(callback),
+                              DELAY_AFTER_ANIMATION_BEGINS_BEFORE_CLOSE);
+    }, DELAY_BEFORE_ANIMATION_BEGINS);
+  }
 
   return CompleteSignIn;
 

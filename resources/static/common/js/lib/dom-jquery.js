@@ -20,6 +20,8 @@ BrowserID.DOM = ( function() {
             return jQuery( selector );
         },
 
+
+
         /**
         * Get a set of descendent elements that match the selector
         * @method getDescendentElements
@@ -357,7 +359,7 @@ BrowserID.DOM = ( function() {
          * @method is
          * @param {selector || element} elementToCheck
          * @param {string} type
-         * @returns {boolean} true if elementToCheck matches the specified
+         * @return {boolean} true if elementToCheck matches the specified
          * type, false otw.
          */
         is: function( elementToCheck, type ) {
@@ -493,6 +495,27 @@ BrowserID.DOM = ( function() {
          */
         stopAnimations: function( elementToStop ) {
           return jQuery( elementToStop ).stop();
+        },
+
+        /**
+         * Get the inner width of an element
+         * @method getInnerWidth
+         * @param {selector || element} element
+         * @return {number} inner width of element
+         */
+        getInnerWidth: function( element ) {
+          return jQuery( element ).innerWidth();
+        },
+
+        /**
+         * Set a style on an element
+         * @method setStyle
+         * @param {selector || element} element
+         * @param {string} styleName
+         * @param {number || string} value
+         */
+        setStyle: function( element, propertyName, value ) {
+          return jQuery( element ).css( propertyName, value );
         }
     };
 
