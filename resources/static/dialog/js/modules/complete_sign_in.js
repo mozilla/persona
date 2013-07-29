@@ -16,9 +16,10 @@ BrowserID.Modules.CompleteSignIn = (function() {
       dialogHelpers = helpers.Dialog,
       dom = bid.DOM,
       // Give a little delay before starting the animation or the dialog
-      // appears jerky.
+      // appears jerky. Assertion generation (jwcrypto doesn't yield the UI
+      // thread) is the main suspect here.
       DELAY_BEFORE_ANIMATION_BEGINS = 750,
-      // Give a ittle delay after finishing the animation (750ms, see
+      // Give a little delay after finishing the animation (750ms, see
       // style.css) or else the dialog appears jerky.
       DELAY_AFTER_ANIMATION_BEGINS_BEFORE_CLOSE = 1750,
       // This is a magic number, it is the same width as the arrow. See
