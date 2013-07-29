@@ -178,11 +178,16 @@ BrowserID.Modules.Dialog = (function() {
       // after this point, "params" and "paramsFromRP" can be relied upon
       // to contain safe data
 
+      params.hostname = user.getHostname();
+
       if (params.startTime)
         self.publish("start_time", params.startTime);
 
       if (params.rpAPI)
         kpis.rp_api = params.rpAPI;
+
+      if (params.returnTo)
+        user.setReturnTo(params.returnTo);
 
       // only publish the kpi's in aggregate.
       self.publish("kpi_data", kpis);

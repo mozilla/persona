@@ -11,9 +11,9 @@ BrowserID.Modules.ValidateRpParams = (function() {
    */
 
   var bid = BrowserID,
-      user = bid.User,
       storage = bid.Storage,
       helpers = bid.Helpers,
+      complete = helpers.complete,
       sc;
 
   var Module = bid.Modules.Module.extend({
@@ -23,6 +23,8 @@ BrowserID.Modules.ValidateRpParams = (function() {
       self.window = options.window || window;
 
       sc.start.call(self);
+
+      complete(options.ready);
     },
     validate: function(paramsFromRP) {
       var self = this,
@@ -37,7 +39,6 @@ BrowserID.Modules.ValidateRpParams = (function() {
       // these strings containing <script> tags. We will populate a new
       // object ("params") with suitably type-checked properties.
       var params = {};
-      params.hostname = user.getHostname();
 
       // verify params
       var startTime = paramsFromRP.start_time;
@@ -108,8 +109,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
       // returnTo is used for post verification redirection.  Redirect back
       // to the path specified by the RP.
       if (paramsFromRP.returnTo) {
-        var returnTo = fixupReturnTo(origin_url, paramsFromRP.returnTo);
-        user.setReturnTo(returnTo);
+        params.returnTo = fixupReturnTo(origin_url, paramsFromRP.returnTo);
       }
 
       // forceAuthentication is used by the Marketplace to ensure that the
