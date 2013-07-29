@@ -554,7 +554,7 @@ BrowserID.State = (function() {
         storage.site.set(user.getOrigin(), "logged_in", self.email);
 
         mediator.publish("kpi_data", { orphaned: false });
-        startAction("doAssertionGenerated", {
+        startAction("doCompleteSignIn", {
           assertion: info.assertion,
           email: self.email
         });

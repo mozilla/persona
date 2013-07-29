@@ -4,26 +4,37 @@
 BrowserID.Modules.GenerateAssertion = (function() {
   "use strict";
 
+  /**
+   * This module takes care of generating an assertion. When it is complete, it
+   * triggers the "assertion_generated" message with the assertion. If an
+   * assertion was unable to be created, a null assertion will be passed.
+   */
+
   var bid = BrowserID,
-      dialogHelpers = bid.Helpers.Dialog,
-      sc,
+      complete = bid.Helpers.complete,
       user = bid.User,
-      storage = bid.Storage;
+      errors = bid.Errors,
+      sc;
 
   var GenerateAssertion = bid.Modules.PageModule.extend({
     start: function(options) {
+      options = options || {};
+
       var email = options.email,
-          self=this;
+          self = this;
 
-      if(!email) {
-        throw new Error("email required");
-      }
+      self.checkRequired(options, "email");
 
-      self.renderLoad("load", {
-        title: gettext("signing in")
-      });
+      user.getAssertion(email, user.getOrigin(), function(assertion) {
+        assertion = assertion || null;
 
-      dialogHelpers.getAssertion.call(self, email, options.ready);
+        self.publish("assertion_generated", {
+          assertion: assertion
+        });
+
+        complete(options.ready);
+      }, self.getErrorDialog(errors.getAssertion, options.ready));
+
       sc.start.call(self, options);
     }
   });

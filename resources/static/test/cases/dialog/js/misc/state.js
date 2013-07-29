@@ -437,7 +437,7 @@
     });
   });
 
-  test("assertion_generated with assertion - doAssertionGenerated called", function() {
+  test("assertion_generated with assertion - doCompleteSignIn called", function() {
     setContextInfo("password");
     storage.addEmail(TEST_EMAIL);
 
@@ -447,12 +447,17 @@
       equal(info.orphaned, false);
     });
 
+    mediator.publish("email_chosen", {
+      email: TEST_EMAIL
+    });
     mediator.publish("assertion_generated", {
       assertion: "assertion"
     });
 
-    equal(actions.info.doAssertionGenerated.assertion, "assertion",
-        "doAssertionGenerated called with assertion");
+    testActionStarted("doCompleteSignIn", {
+      email: TEST_EMAIL,
+      assertion: "assertion"
+    });
   });
 
 

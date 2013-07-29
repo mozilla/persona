@@ -87,8 +87,9 @@
     },
 
     teardown: function() {
-      if(controller) {
+      if (controller) {
         controller.destroy();
+        controller = null;
       }
       testHelpers.teardown();
     }
@@ -190,6 +191,11 @@
 
   asyncTest("doCheckAuth of unauthenticated user", function() {
     testDoCheckAuth(true, undefined, undefined, false);
+  });
+
+  asyncTest("doCompleteSignIn starts complete_sign_in service", function() {
+    testActionStartsModule('doCompleteSignIn', { email: TEST_EMAIL },
+      "complete_sign_in");
   });
 
 }());

@@ -10,54 +10,7 @@
       user = bid.User,
       tooltip = bid.Tooltip,
       errors = bid.Errors,
-      dom = bid.DOM,
-      // This is a magic number, it is the same width as the arrow. See
-      // resources/static/dialog/css/style.css #signIn for the arrow width.
-      ARROW_WIDTH = 136;
-
-  function animateClose(callback) {
-    var body = $("body"),
-        bodyWidth = body.innerWidth(),
-        doAnimation = $("#signIn").length && bodyWidth > 640;
-
-    if (doAnimation) {
-      /**
-       * Force the arrow to slide all the way off the screen.
-       */
-      var endWidth = bodyWidth + ARROW_WIDTH;
-
-      body.addClass("completing");
-      /**
-       * CSS transitions are used to do the slide effect.  jQuery has a bug
-       * where it does not do transitions correctly if the box-sizing is set to
-       * border-box and the element has a padding
-       */
-      $("#signIn").css("width", endWidth + "px");
-
-      // Call setTimeout here because on Android default browser, sometimes the
-      // callback is not correctly called, it seems as if jQuery does not know
-      // the animation is complete.
-      setTimeout(complete.curry(callback), 1750);
-    }
-    else {
-      complete(callback);
-    }
-  }
-
-  function getAssertion(email, callback) {
-    /*jshint validthis:true*/
-    var self=this;
-
-    user.getAssertion(email, user.getOrigin(), function(assert) {
-      assert = assert || null;
-
-      self.publish("assertion_generated", {
-        assertion: assert
-      });
-
-      complete(callback, assert);
-    }, self.getErrorDialog(errors.getAssertion, complete));
-  }
+      dom = bid.DOM;
 
   function authenticateUser(email, pass, callback) {
     /*jshint validthis:true*/
@@ -190,7 +143,6 @@
   helpers.Dialog = helpers.Dialog || {};
 
   _.extend(helpers.Dialog, {
-    getAssertion: getAssertion,
     authenticateUser: authenticateUser,
     createUser: createUser,
     addEmail: addEmail,
@@ -200,7 +152,6 @@
     transitionToSecondary: transitionToSecondary,
     reverifyEmail: reverifyEmail,
     cancelEvent: helpers.cancelEvent,
-    animateClose: animateClose,
     showRPTosPP: showRPTosPP
   });
 
