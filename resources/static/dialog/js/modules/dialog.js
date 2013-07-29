@@ -97,6 +97,48 @@ BrowserID.Modules.Dialog = (function() {
     this.publish("window_unload");
   }
 
+  function publishKpis(rpAPI) {
+    /*jshint validthis: true*/
+
+    // By default, a dialog is an orphan. It is only not an orphan if an
+    // assertion is generated. When an assertion is generated, orphaned will
+    // be set to false (currently in state.js).
+    var kpis = {
+      orphaned: true,
+      rp_api: rpAPI || "unknown"
+    };
+
+    // only publish the kpi's in aggregate.
+    this.publish("kpi_data", kpis);
+  }
+
+  function validateRpParams(origin_url, paramsFromRP) {
+    /*jshint validthis: true*/
+    var self=this;
+
+    startValidator.call(self);
+
+    var params;
+    try {
+      paramsFromRP.origin_url = origin_url;
+      params = self.validator.validate(paramsFromRP);
+    } catch(e) {
+      // note: renderError accepts HTML and cheerfully injects it into a
+      // frame with a powerful origin. So convert 'e' first.
+      self.renderError("error", {
+        action: {
+          title: "error in " + _.escape(origin_url),
+          message: "improper usage of API: " + _.escape(e)
+        }
+      });
+
+      throw e;
+    }
+
+    return params;
+  }
+
+
   var Dialog = bid.Modules.PageModule.extend({
     start: function(options) {
       var self=this;
@@ -144,34 +186,16 @@ BrowserID.Modules.Dialog = (function() {
 
       user.setOrigin(origin_url);
 
-      // By default, a dialog is an orphan. It is only not an orphan if an
-      // assertion is generated. When an asseriton is generated, orphaned will
-      // be set to false (currently in state.js).
-      var kpis = {
-        orphaned: true
-      };
-
       if (self.startExternalDependencies) {
         startActions.call(self, success, error);
         startStateMachine.call(self);
       }
 
-      // The validator is always started.
-      startValidator.call(self);
-
       var params;
       try {
-        params = self.validator.validate(paramsFromRP);
+        params = validateRpParams.call(self, origin_url, paramsFromRP);
       } catch(e) {
-        // note: renderError accepts HTML and cheerfully injects it into a
-        // frame with a powerful origin. So convert 'e' first.
-        self.renderError("error", {
-          action: {
-            title: "error in " + _.escape(origin_url),
-            message: "improper usage of API: " + _.escape(e)
-          }
-        });
-
+        // input parameter validation failure. Stop.
         return e;
       }
 
@@ -183,14 +207,10 @@ BrowserID.Modules.Dialog = (function() {
       if (params.startTime)
         self.publish("start_time", params.startTime);
 
-      if (params.rpAPI)
-        kpis.rp_api = params.rpAPI;
+      publishKpis.call(self, params.rpAPI);
 
       if (params.returnTo)
         user.setReturnTo(params.returnTo);
-
-      // only publish the kpi's in aggregate.
-      self.publish("kpi_data", kpis);
 
 
       // XXX Perhaps put this into the state machine.
