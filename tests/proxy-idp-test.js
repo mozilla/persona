@@ -49,6 +49,16 @@ suite.addBatch({
       assert.strictEqual(resp.type, "primary");
       assert.strictEqual(resp.issuer, "example.domain");
     }
+  },
+  "proxy_idps with uppercase domains": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: 'bartholomew@YAHOO.COM'
+    }),
+    "works": function(err, r) {
+      var resp = JSON.parse(r.body);
+      assert.strictEqual(resp.type, 'primary');
+      assert.strictEqual(resp.issuer, 'example.domain');
+    }
   }
 });
 
