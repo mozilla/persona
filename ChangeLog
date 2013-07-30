@@ -8,6 +8,7 @@ train-2013.07.17:
   * Prevent Chrome from logging spurious KPI errors by aborting in-flight xhrs on page unload: #2423, #3618
   * On each Travis-CI run, record linux, mysql, and phantomjs versions for future reference: #3626
   * (hotfix 2013.07.19) fix l10n rpm building: #3683, #3685
+  * (hotfix 2013.07.29) Hotfix primary emails with uppercase: #3728, #3732
 
 train-2013.07.03:
   * [FXOS] Add support for primary IdPs to FirefoxOS: #3572, #3592, #3566, #3567
