@@ -73,6 +73,23 @@ suite.addBatch({
   }
 });
 
+
+suite.addBatch({
+  "Checking email_addition_status for address that has not yet been added": {
+    topic: wsapi.get('/wsapi/email_addition_status', {
+      email: TEST_EMAIL_ADDED,
+    }),
+    "shows that 'status' is now 'failed'": function (err, r) {
+      assert.strictEqual(r.code, 200);
+      assert.strictEqual(r.headers['content-type'].indexOf('application/json'), 0);
+      var data = jsonParse(r.body);
+      if (!data) return assert.fail("Could not parse JSON: " + r.body);
+      assert.strictEqual(data.status, 'failed');
+    },
+  },
+});
+
+
 suite.addBatch({
   "staging another email to add to the account": {
     topic: wsapi.post('/wsapi/stage_email', {
@@ -122,7 +139,7 @@ suite.addBatch({
   "Checking email_for_token": {
     topic: function() {
       wsapi.get('/wsapi/email_for_token', {
-        token: token 
+        token: token
       }).call(this);
     },
     "successfullly returns the correct email": function (err, r) {
