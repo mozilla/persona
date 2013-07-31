@@ -112,7 +112,7 @@ BrowserID.Modules.Dialog = (function() {
     this.publish("kpi_data", kpis);
   }
 
-  function validateRpParams(origin_url, paramsFromRP) {
+  function validateRpParams(originURL, paramsFromRP) {
     /*jshint validthis: true*/
     var self=this;
 
@@ -120,14 +120,14 @@ BrowserID.Modules.Dialog = (function() {
 
     var params;
     try {
-      paramsFromRP.origin_url = origin_url;
+      paramsFromRP.originURL = originURL;
       params = self.validator.validate(paramsFromRP);
     } catch(e) {
       // note: renderError accepts HTML and cheerfully injects it into a
       // frame with a powerful origin. So convert 'e' first.
       self.renderError("error", {
         action: {
-          title: "error in " + _.escape(origin_url),
+          title: "error in " + _.escape(originURL),
           message: "improper usage of API: " + _.escape(e)
         }
       });
@@ -181,10 +181,10 @@ BrowserID.Modules.Dialog = (function() {
       sc.stop.call(this);
     },
 
-    get: function(origin_url, paramsFromRP, success, error) {
+    get: function(originURL, paramsFromRP, success, error) {
       var self=this;
 
-      user.setOrigin(origin_url);
+      user.setOrigin(originURL);
 
       if (self.startExternalDependencies) {
         startActions.call(self, success, error);
@@ -193,7 +193,7 @@ BrowserID.Modules.Dialog = (function() {
 
       var params;
       try {
-        params = validateRpParams.call(self, origin_url, paramsFromRP);
+        params = validateRpParams.call(self, originURL, paramsFromRP);
       } catch(e) {
         // input parameter validation failure. Stop.
         return e;

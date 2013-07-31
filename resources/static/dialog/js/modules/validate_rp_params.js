@@ -30,7 +30,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
       var self = this,
           hash = self.window.location.hash;
 
-      var origin_url = paramsFromRP.origin_url;
+      var originURL = paramsFromRP.originURL;
 
       // Security Note: paramsFromRP is the output of a JSON.parse on an
       // RP-controlled string. Most of these fields are expected to be simple
@@ -64,37 +64,12 @@ BrowserID.Modules.ValidateRpParams = (function() {
         paramsFromRP.privacyPolicy = paramsFromRP.privacyURL;
 
       if (paramsFromRP.termsOfService && paramsFromRP.privacyPolicy) {
-        params.termsOfService = fixupURL(origin_url, paramsFromRP.termsOfService);
-        params.privacyPolicy = fixupURL(origin_url, paramsFromRP.privacyPolicy);
+        params.termsOfService = fixupURL(originURL, paramsFromRP.termsOfService);
+        params.privacyPolicy = fixupURL(originURL, paramsFromRP.privacyPolicy);
       }
 
-      var validLogoSchemes = {"https": 1, 'data': 1};
-      // 'data:image/png;base64,iV...' -> ['data:image/png;base64,iV...', 'image', 'png', ...]
-      // ... therefore mimetype -> [1]/[2]
-      var dataUriRegex = /^data:(.+)\/(.+);base64,(.*)$/;
-      var dataMatches = null;
-      // who needs a shared mimetype parsing library?
-      var imageMimeTypes = {'png': 1, 'gif': 1, 'jpg': 1, 'jpeg':1, 'svg': 1}
       if (paramsFromRP.siteLogo) {
-        dataMatches = paramsFromRP.siteLogo.match(dataUriRegex);
-        if (dataMatches) {
-    if ((dataMatches[1].toLowerCase() === 'image')
-               &&
-              (dataMatches[2].toLowerCase() in imageMimeTypes)) {
-              ; // Good to go.
-          } else {
-            throw new Error("bad data URI for siteLogo: " + paramsFromRP.siteLogo.slice(0, 15) + " ...");
-          }
-  } else {
-          // Regularize URL; throws error if input is relative.
-          params.siteLogo = fixupURL(origin_url, paramsFromRP.siteLogo);
-          /*jshint newcap:false*/
-          if (!(URLParse(params.siteLogo).scheme in validLogoSchemes)) {
-            // This is kind of misleading as URLParse won't actually recognize
-            // the data scheme.
-            throw new Error("siteLogos can only be served from " + _.keys(validLogoSchemes).join(' and ') + " schemes.");
-          }
-        }
+        params.siteLogo = validateSiteLogo(originURL, paramsFromRP.siteLogo);
       }
 
       if (paramsFromRP.backgroundColor) {
@@ -109,7 +84,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
       // returnTo is used for post verification redirection.  Redirect back
       // to the path specified by the RP.
       if (paramsFromRP.returnTo) {
-        params.returnTo = fixupReturnTo(origin_url, paramsFromRP.returnTo);
+        params.returnTo = fixupReturnTo(originURL, paramsFromRP.returnTo);
       }
 
       // forceAuthentication is used by the Marketplace to ensure that the
@@ -164,7 +139,9 @@ BrowserID.Modules.ValidateRpParams = (function() {
     /*jshint newcap:false*/
     if (/^http(s)?:\/\//.test(url)) u = URLParse(url);
     else if (/^\/[^\/]/.test(url)) u = URLParse(origin + url);
-    else throw new Error("relative urls not allowed: (" + url + ")");
+    else if (/^\/\/[^\/]/.test(url)) { // scheme-relative: "//dom.tld/..."
+      u = URLParse(origin.split('//')[0] + '//' + url.slice(2, bid.URL_MAX_LENGTH));
+    } else throw new Error("relative urls not allowed: (" + url + ")");
     // encodeURI limits our return value to [a-z0-9:/?%], excluding <script>
     var encodedURI = encodeURI(u.validate().normalize().toString());
 
@@ -184,20 +161,20 @@ BrowserID.Modules.ValidateRpParams = (function() {
     return encodedURI;
   }
 
-  function fixupAbsolutePath(origin_url, path) {
+  function fixupAbsolutePath(originURL, path) {
     // Ensure URL is an absolute path (not a relative path or a scheme-relative URL)
-    if (/^\/[^\/]/.test(path))  return fixupURL(origin_url, path);
+    if (/^\/[^\/]/.test(path))  return fixupURL(originURL, path);
 
     throw new Error("must be an absolute path: (" + path + ")");
   }
 
-  function fixupReturnTo(origin_url, path) {
+  function fixupReturnTo(originURL, path) {
     // "/" is a valid returnTo, but it is not a valid path for any other
     // parameter. If the path is "/", allow it, otherwise pass the path down
     // the normal checks.
     var returnTo = path === "/" ?
-      origin_url + path :
-      fixupAbsolutePath(origin_url, path);
+      originURL + path :
+      fixupAbsolutePath(originURL, path);
     return returnTo;
   }
 
@@ -240,6 +217,46 @@ BrowserID.Modules.ValidateRpParams = (function() {
 
   }
 
+  function validateSiteLogo(originURL, inputLogoUri) {
+    // return a regularized logo URI if inputLogoUri is valid,
+    // else throw an Error. Valid logo URIs can take only these forms:
+    //   1) data:image/EXT;base64,...
+    //        where EXT is one of imageMimeTypes below
+    //   2) https://domain.tld/path
+    //        where https is explicit or implicit via either
+    //        scheme-relative or site-absolute input.
+    // Relative input such as 'images/myLogo.jpg' is invalid.
+
+    var dataMatches = null; // is this a valid data URI?
+    var outputLogoUri;
+    // Ideally we'd be loading this from a canonical constants library.
+    var imageMimeTypes = ['png', 'gif', 'jpg', 'jpeg', 'svg'];
+    // This regex converts valid input of the form:
+    //   'data:image/png;base64,iV...'
+    // into an array that looks like:
+    //   ['data:image/png;base64,iV...', 'image', 'png', ...]
+    // which means that mimetype proper is represented as-> [1]/[2]
+    var dataUriRegex = /^data:(.+)\/(.+);base64,(.*)$/;
+
+    dataMatches = inputLogoUri.match(dataUriRegex);
+    if (dataMatches) {
+      if ((dataMatches[1].toLowerCase() === 'image')
+           &&
+          (imageMimeTypes.indexOf(dataMatches[2].toLowerCase()) > -1)) {
+        return inputLogoUri; // Good to go.
+      }
+      throw new Error("Bad data URI for siteLogo: " + inputLogoUri.slice(0, 15) + " ...");
+    }
+
+    // Regularize URL; throws error if input is relative.
+    outputLogoUri = fixupURL(originURL, inputLogoUri);
+    /*jshint newcap:false*/
+    if (URLParse(outputLogoUri).scheme !== 'https') {
+      throw new Error("siteLogos can only be served from https and data schemes.");
+    }
+    return outputLogoUri;
+  }
+
   function validateRPAPI(rpAPI) {
     var VALID_RP_API_VALUES = [
       "watch_without_onready",
@@ -276,4 +293,3 @@ BrowserID.Modules.ValidateRpParams = (function() {
   return Module;
 
 }());
-

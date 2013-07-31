@@ -67,7 +67,7 @@
   function testExpectValidationFailure(options, expectedErrorMessage, domain) {
     _.extend(options, {
       ready: function() {
-        options.origin_url = domain || HTTPS_TEST_DOMAIN;
+        options.originURL = domain || HTTPS_TEST_DOMAIN;
         try {
           controller.validate(options);
           ok(false);
@@ -98,7 +98,7 @@
     createController({
       ready: function() {
         var startInfo;
-        options.origin_url = domain || HTTPS_TEST_DOMAIN;
+        options.originURL = domain || HTTPS_TEST_DOMAIN;
 
         try {
           startInfo = controller.validate(options);
@@ -496,4 +496,3 @@
 
 
 }());
-
