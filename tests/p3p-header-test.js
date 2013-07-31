@@ -44,9 +44,7 @@ const userAgents = [
   { ie: true, ua: 'Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)' },
   { ie: true, ua: 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0' },
   { ie: true, ua: 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)' },
-  // FIXME: IE 11 is not yet recognized by 3rd-Eden/useragent: 
-  // https://github.com/3rd-Eden/useragent/issues/27 and https://github.com/mozilla/browserid/issues/3718
-  { ie: false, ua: 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko' },
+  { ie: true, ua: 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko' }
 ];
 
 function addBatch(ua, url) {
