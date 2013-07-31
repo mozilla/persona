@@ -9,6 +9,7 @@ train-2013.07.17:
   * On each Travis-CI run, record linux, mysql, and phantomjs versions for future reference: #3626
   * (hotfix 2013.07.19) fix l10n rpm building: #3683, #3685
   * (hotfix 2013.07.29) Hotfix primary emails with uppercase: #3728, #3732
+  * (hotfix 2013.07.31) Hotfix primary emails with uppercase: #3728, #3739, #3741
 
 train-2013.07.03:
   * [FXOS] Add support for primary IdPs to FirefoxOS: #3572, #3592, #3566, #3567
