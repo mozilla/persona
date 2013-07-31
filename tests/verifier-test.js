@@ -19,6 +19,19 @@ path = require('path'),
 url = require('url'),
 compareAudiences = require('../lib/verifier/certassertion').compareAudiences;
 
+const TEST_DOMAIN_PATH =
+  path.join(__dirname, '..', 'example', 'primary', '.well-known', 'browserid');
+
+process.env['PROXY_IDPS'] = JSON.stringify({
+  "yahoo.com": "example.domain",
+  "real.primary": "example.com", // this should be ignored, because real.primary is a shimmed real primary, below
+  "broken.primary": "example.com" // this should fallback to secondary, because example.com is not a real primary
+});
+
+process.env['SHIMMED_PRIMARIES'] =
+  'example.domain|http://127.0.0.1:10005|' + TEST_DOMAIN_PATH +
+  ',real.primary|http://127.0.0.1:10005|' + TEST_DOMAIN_PATH;
+
 var suite = vows.describe('verifier');
 
 require("jwcrypto/lib/algs/rs");
@@ -1026,6 +1039,69 @@ suite.addBatch({
     }
   }
 });
+
+
+// PROXY IDPS
+suite.addBatch({
+  "certify the user key by proxy_idps for email address with uppercase domain": {
+    topic: function() {
+      var secretKey = jwcrypto.loadSecretKey(
+        require('fs').readFileSync(
+          path.join(__dirname, '..', 'example', 'primary', 'sample.privatekey')));
+
+      var expiration = new Date(new Date().getTime() + (1000 * 60 * 60 * 6));
+      jwcrypto.cert.sign({publicKey: newClientKeypair.publicKey, principal: {email: "foo@YAHOO.COM"}},
+                         {issuedAt: new Date(), issuer: "example.domain",
+                          expiresAt: expiration},
+                         {}, secretKey, this.callback);
+    },
+    "works": function(err, cert) {
+      assert.isNull(err);
+      assert.isString(cert);
+      primaryCert = cert;
+    }
+  }
+});
+
+// now verify that assertions from a primary who does have browserid support
+// and may speak for an email address will succeed
+suite.addBatch({
+  "generating an assertion from a cert signed by proxy idp and uppercase domain": {
+    topic: function() {
+      // primaryCert generated
+      // newClientKeypair generated
+      var expirationDate = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var self = this;
+      jwcrypto.assertion.sign({}, {audience: TEST_ORIGIN, expiresAt: expirationDate},
+                             newClientKeypair.secretKey, function(err, assertion) {
+                               if (err) return self.callback(err);
+                               var b = jwcrypto.cert.bundle([primaryCert],
+                                                            assertion);
+                               self.callback(null, b);
+                             });
+    },
+    "yields a good looking assertion": function (err, r) {
+      assert.isString(r);
+      assert.equal(r.length > 0, true);
+    },
+    "will cause the verifier": {
+      topic: function(err, assertion) {
+        wsapi.post('/verify', {
+          audience: TEST_ORIGIN,
+          assertion: assertion
+        }).call(this);
+      },
+      "to succeed": function (err, r) {
+        var resp = JSON.parse(r.body);
+        assert.strictEqual(resp.status, 'okay');
+        assert.strictEqual(resp.issuer, "example.domain");
+        assert.strictEqual(resp.audience, TEST_ORIGIN);
+        assert.strictEqual(resp.email, "foo@YAHOO.COM");
+      }
+    }
+  }
+});
+
 
 const OTHER_EMAIL = 'otheremail@example.com';
 
