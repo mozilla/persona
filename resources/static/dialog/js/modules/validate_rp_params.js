@@ -242,7 +242,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
     if (dataMatches) {
       if ((dataMatches[1].toLowerCase() === 'image')
            &&
-          (imageMimeTypes.indexOf(dataMatches[2].toLowerCase()) > -1)) {
+          (_.indexOf(imageMimeTypes, dataMatches[2].toLowerCase()) > -1)) {
         return inputLogoUri; // Good to go.
       }
       throw new Error("Bad data URI for siteLogo: " + inputLogoUri.slice(0, 15) + " ...");
