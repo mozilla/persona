@@ -241,17 +241,13 @@
   });
 
   asyncTest("get with data:image/<whitelist>;... siteLogo - allowed", function() {
-    var URL = "data:image/png;base64,FAKEDATA";
-    createController({
-      ready: function() {
-        testExpectValidationSuccess({
-          siteLogo: URL
-        },
-        {
-          siteLogo: URL
-        });
+    testExpectValidationSuccess({
+        siteLogo: "data:image/png;base64,FAKEDATA"
+      },
+      {
+        siteLogo: "data:image/png;base64,FAKEDATA"
       }
-    });
+    );
   });
 
   asyncTest("get with data:<not image>... siteLogo - not allowed", function() {
@@ -265,31 +261,23 @@
   });
 
   asyncTest("get with local https: siteLogo - allowed", function() {
-    createController({
-      ready: function() {
-        var siteLogo = HTTPS_TEST_DOMAIN + "/logo.png";
-        testExpectValidationSuccess({
-          siteLogo: siteLogo
-        },
-        {
-          siteLogo: siteLogo
-        });
-      }
-    });
+    var siteLogo = HTTPS_TEST_DOMAIN + "/logo.png";
+    testExpectValidationSuccess({
+        siteLogo: siteLogo
+      },
+      {
+        siteLogo: siteLogo
+      });
   });
 
   asyncTest("get with arbitrary domain https: siteLogo - allowed", function() {
-    createController({
-      ready: function() {
-        var siteLogo = 'https://cdn.example.com/logo.png';
-        testExpectValidationSuccess({
-          siteLogo: siteLogo
-        },
-        {
-          siteLogo: siteLogo
-        });
-      }
-    });
+    var siteLogo = 'https://cdn.example.com/logo.png';
+    testExpectValidationSuccess({
+      siteLogo: siteLogo
+      },
+      {
+        siteLogo: siteLogo
+      });
   });
 
   asyncTest("get with absolute path and http RP - not allowed", function() {
@@ -310,31 +298,22 @@
   });
 
   asyncTest("get with absolute path and https RP - allowed URL but is properly escaped", function() {
-    createController({
-      ready: function() {
-        var siteLogo = '/i/card.png" onerror="alert(\'xss\')" <script>alert(\'more xss\')</script>';
-        testExpectValidationSuccess({
-          siteLogo: siteLogo
-        },
-        {
-          siteLogo: encodeURI(HTTPS_TEST_DOMAIN + siteLogo)
-        });
-      }
-    });
+    var siteLogo = '/i/card.png" onerror="alert(\'xss\')" <script>alert(\'more xss\')</script>';
+    testExpectValidationSuccess({
+        siteLogo: siteLogo
+      },
+      {
+        siteLogo: encodeURI(HTTPS_TEST_DOMAIN + siteLogo)
+      });
   });
 
   asyncTest("get with a scheme-relative siteLogo URL and https RP - allowed", function() {
-    var URL = "//example.com/image.png";
-    createController({
-      ready: function() {
-        testExpectValidationSuccess({
-          siteLogo: URL
-        },
-        {
-          siteLogo: "https://example.com/image.png"
-        });
-      }
-    });
+    testExpectValidationSuccess({
+        siteLogo: "//example.com/image.png"
+      },
+      {
+        siteLogo: "https://example.com/image.png"
+      });
   });
 
   // This sort of seems like a worthy test case
