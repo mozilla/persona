@@ -141,7 +141,7 @@ var assertSecondary = function (res) {
 // Now let's test the other part of this puzzle - that users can log in with certs issued
 // by our proxy idp servers. (for which the issuer is login.persona.org).
 var primaryUser = new primary({
-  email: "bartholomew@yahoo.com",
+  email: "bartholomew@YAHOO.COM",
   domain: "example.domain",
   privKey: jwcrypto.loadSecretKey(
     require('fs').readFileSync(
