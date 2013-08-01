@@ -1,4 +1,12 @@
-current train:
+train-2013.07.31
+  * Nicely warn primary IdP users that third-party cookies must be enabled: #3520
+  * Update copy and design of persona emails: #1935
+  * Fix bugs in onmatch and oncancel callbacks: #3701, #3170, #3463
+  * Properly handle primaries when entered with uppercase initial letter in domain: #3728, #3741, #3739, #3729
+  * Improvements to the dialog flow: #3708, #3689, #3609, #3671, #3691
+  * Visual tweaks: #3668, #3677, #3668, #3573, #3662
+  * Test improvements: #3733, #3720, #3719, #3665
+  * Refactorings and other minor improvements: #3694, #3740, #3666, #3695, #3718, #3697, #3630, #3670
 
 train-2013.07.17:
   * Simplify tooltip copy and replace tooltips with inline notifications: #3154, #3607
