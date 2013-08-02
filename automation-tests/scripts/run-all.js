@@ -39,7 +39,7 @@ var argv = require('optimist')
   .check(function(a) {
     if (!a.parallel) a.parallel = parseInt(process.env.RUNNERS, 10) || 10;
   })
-  .describe('platform', 'the browser/os to test (globs supported)')
+  .describe('platform', 'the browser/os to test (globs and csv supported)')
   .alias('iterations', 'i')
   .describe('iterations', 'the number of times to repeat specified tests')
   .default("iterations", "1")
@@ -145,9 +145,17 @@ function startTesting() {
   function getTestedPlatforms(platform_glob) {
     var platforms = {};
 
-    Object.keys(supported_platforms).forEach(function(p) {
-      if (glob(p, platform_glob)) platforms[p] = supported_platforms[p];
-    });
+    // see if it's CSV (but don't match a glob brace expansion)
+    if (platform_glob.indexOf(',') > 0 && platform_glob.indexOf('{') !== 0) {
+      var platformList = platform_glob.split(',');
+      Object.keys(supported_platforms).forEach(function(p) {
+        if (platformList.indexOf(p) !== -1) platforms[p] = supported_platforms[p];
+      });
+    } else {
+      Object.keys(supported_platforms).forEach(function(p) {
+        if (glob(p, platform_glob)) platforms[p] = supported_platforms[p];
+      });
+    }
 
     return platforms;
   }

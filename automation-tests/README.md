@@ -111,12 +111,13 @@ Sauce.
       --lp, --list-platforms  list available platforms to test on                           
       --env, -e               target environment: dev/stage/prod or the name of an ephemeral
       --local, -l             run tests locally (instead of on saucelabs)                   
-      --parallel, -p          the number of tests to run at the same time                   
-      --platform              the browser/os to test (globs supported)                      
+      --parallel, -p          the number of tests to run at the same time                     [default: "10"]
+      --platform              the browser/os to test (globs and csv supported)              
       --iterations, -i        the number of times to repeat specified tests                   [default: "1"]
       --list-tests, --lt      list available tests                                          
       --tests, -t             which test(s) to run (globs supported)                          [default: "*"]
       --output, -o            desired ouput format.  one of console, json, xunit              [default: "console"]
+      --ignore-tests, --it    test(s) to ignore (csv supported)                             
 
 ## Running tests: Disabling tests
 
