@@ -177,5 +177,5 @@ runner.run(
   [new_secondary_123done_two_browsers, new_secondary_mfb_two_browsers, new_secondary_personaorg],
   {
     suiteName: path.basename(__filename),
-    cleanup: function(done) { testSetup.teardown(done) }
+    cleanup: function(done) { testSetup.teardown(done); }
   });

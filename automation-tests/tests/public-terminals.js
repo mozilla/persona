@@ -108,5 +108,5 @@ runner.run(module, {
 },
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });
