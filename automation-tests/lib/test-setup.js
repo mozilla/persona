@@ -114,12 +114,12 @@ testSetup.setup = function(opts, cb) {
   if (testidps) {
     fixtures.t = fixtures.testidps = [];
     for (idx = 0; idx < testidps; idx++) {
-      var userPromise = Q.ncall(testidp.qCreateIdP)
+      var testIdpPromise = Q.ncall(testidp.qCreateIdP)
       .then(function (qRes) {
         fixtures.testidps.push(qRes);
       })
       .fail(function (error) {return cb(error);});
-      promises.push(userPromise);
+      promises.push(testIdpPromise);
     }
   }
   if (personatestusers) {
