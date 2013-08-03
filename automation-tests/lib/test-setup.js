@@ -96,23 +96,24 @@ testSetup.setup = function(opts, cb) {
     testidps = opts.testidps || opts.t,
     personatestusers = opts.personatestusers || opts.p,
     browsers = opts.browsers || opts.b,
-    promises = [];
+    promises = [],
+    idx = 0;
 
   if (restmails) {
     fixtures.r = fixtures.restmails = [];
-    for (var i = 0; i < restmails; i++) {
+    for (idx = 0; idx < restmails; idx++) {
       fixtures.restmails.push(restmail.randomEmail(10));
     }
   }
   if (eyedeemails) {
     fixtures.e = fixtures.eyedeemails = [];
-    for (var i = 0; i < eyedeemails; i++) {
+    for (idx = 0; idx < eyedeemails; idx++) {
       fixtures.eyedeemails.push(restmail.randomEmail(10, 'eyedee.me'));
     }
   }
   if (testidps) {
     fixtures.t = fixtures.testidps = [];
-    for (var i=0; i < testidps; i++) {
+    for (idx = 0; idx < testidps; idx++) {
       var userPromise = Q.ncall(testidp.qCreateIdP)
       .then(function (qRes) {
         fixtures.testidps.push(qRes);
@@ -125,7 +126,7 @@ testSetup.setup = function(opts, cb) {
     fixtures.p = fixtures.personatestusers = [];
     // after personatestuser returns, and pushes result onto list of users,
     // then the final promise will be resolved.
-    for (var i = 0; i < personatestusers; i++) {
+    for (idx = 0; idx < personatestusers; idx++) {
       var userPromise = Q.ncall(personatestuser.getVerifiedUser)
         .then(function(user) { fixtures.personatestusers.push(user[0]); })
         .fail(function(error) { return cb(error); });
