@@ -1,3 +1,5 @@
+/*jshint sub: true */
+
 const CSS = require('./css.js'),
     utils = require('../lib/utils.js')
 
