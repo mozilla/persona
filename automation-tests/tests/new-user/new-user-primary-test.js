@@ -51,7 +51,7 @@ var primary_123done = {
   "load 123done, click sign in": function(done) {
     browser.chain({onError: done})
       .get(persona_urls['123done'])
-      .wclick(CSS['123done.org'].signinButton, done)
+      .wclick(CSS['123done.org'].signinButton, done);
   },
   "sign in a new testIdp user": function(done) {
     dialogTestIdpFlow(browser, primaryEmail, done);
@@ -77,7 +77,7 @@ var mcss = CSS['myfavoritebeer.org'],
     "go to mfb, click sign in, switch to dialog": function(done) {
       browser.chain({onError: done})
         .get(persona_urls['myfavoritebeer'])
-        .wclick(mcss.signinButton, done)
+        .wclick(mcss.signinButton, done);
     },
     "sign in using testIdp": function(done) {
       dialogTestIdpFlow(browser, primaryEmail_mfb, done);
@@ -115,7 +115,7 @@ var pcss = CSS['persona.org'],
         .wclick(CSS['testidp.org'].loginButton)
         .wwin()
         .wtext(pcss.accountEmail, function(err, text) {
-          done(err || assert.equal(porg_primaryEmail.toLowerCase(), text)) // note
+          done(err || assert.equal(porg_primaryEmail.toLowerCase(), text)); // note
         });
     },
     "log out": function(done) {

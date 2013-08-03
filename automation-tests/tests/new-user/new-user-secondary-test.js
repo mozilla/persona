@@ -85,8 +85,8 @@ var new_secondary_123done_two_browsers = {
   "tear down both browsers": function(done) {
     browser.quit(function(err) {
       secondBrowser.quit(function(err2) {
-        done(err || err2)
-      })
+        done(err || err2);
+      });
     });
   }
 };
@@ -128,14 +128,14 @@ var new_secondary_mfb_two_browsers = {
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         assert.equal(text, mfbEmail);
-        done()
+        done();
       });
   },
   "shut down browsers": function(done) {
     browser.quit(function(err) {
       secondBrowser.quit(function(err2) {
-        done(err || err2)
-      })
+        done(err || err2);
+      });
     });
   }
 };
@@ -165,7 +165,7 @@ var new_secondary_personaorg = {
       browser.chain({onError: done})
         .wwin()
         .get(link)
-        .wtext(CSS['persona.org'].accountEmail, done)
+        .wtext(CSS['persona.org'].accountEmail, done);
     },
     "shut down zee browzr": function(done) {
       browser.quit(done);

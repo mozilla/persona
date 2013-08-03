@@ -103,8 +103,8 @@ function testEmailNotRegistered(browser, email, done) {
     .wwin(CSS['dialog'].windowName)
     .wtype(CSS['dialog'].emailInput, email)
     .wclick(CSS['dialog'].newEmailNextButton)
-    .wfind(CSS['dialog'].verifyPassword, done)
-}
+    .wfind(CSS['dialog'].verifyPassword, done);
+};
 
 runner.run(module, {
   // first checks to make sure removing the last email address on the

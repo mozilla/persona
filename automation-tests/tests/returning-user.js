@@ -68,7 +68,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].addNewEmailButton)
       .wtype(CSS['dialog'].choosePassword, secondary.split('@')[0])
       .wtype(CSS['dialog'].verifyPassword, secondary.split('@')[0])
-      .wclick(CSS['dialog'].createUserButton, done)
+      .wclick(CSS['dialog'].createUserButton, done);
   },
   "get verification link": function(done) {
     restmail.getVerificationLink({ email: secondary }, done);
@@ -79,7 +79,7 @@ runner.run(module, {
       .get(link)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondary));
-      })
+      });
   },
   "go to mfb, open dialog for first login": function(done) {
     browser.chain({onError: done})
@@ -106,7 +106,7 @@ runner.run(module, {
       .wwin()
       .wclick(CSS['myfavoritebeer.org'].logout)
       .wclick(CSS['myfavoritebeer.org'].signinButton)
-      .wwin(CSS['persona.org'].windowName, done)
+      .wwin(CSS['persona.org'].windowName, done);
   },
   // this time, the first radio should be selected
   "check first radio is selected":function(done, el) {

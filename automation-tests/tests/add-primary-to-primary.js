@@ -70,7 +70,7 @@ runner.run(module, {
       .wclickIfExists(CSS['dialog'].notMyComputerButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, secondPrimaryEmail))
+        done(err || assert.equal(text, secondPrimaryEmail));
       });
   },
   //XXX This could be much more comprehensive by bringing up the dialog
