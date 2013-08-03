@@ -24,9 +24,10 @@ function installDependencies(done) {
 }
 
 function getJSONConfig(name) {
+  var config;
   try {
     var configPath = path.join(__dirname, "..", "..", "..", name);
-    var config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   } catch(e) {
     console.error("cannot read " + name + " or json is invalid");
     process.exit(1);

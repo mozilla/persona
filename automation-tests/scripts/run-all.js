@@ -162,7 +162,7 @@ function startTesting() {
 
   function getTheTests(platforms) {
     var testSet = test_finder.find(args.tests, '', '', args['ignore-tests']);
-    allTests = [];
+    var allTests = [];
 
     // make a copy of the test set for each platform, set the platform of each
     // test, and append the platform specific test set to overall list of
@@ -176,7 +176,7 @@ function startTesting() {
     }
     // handle multiple iterations
     var allTestsCopy = toolbelt.deepCopy(allTests);
-    for (var i = 1; i < parseInt(args.iterations); i++) {
+    for (var i = 1; i < parseInt(args.iterations, 10); i++) {
       allTests = allTests.concat(allTestsCopy);
     }
     return allTests;
@@ -232,7 +232,7 @@ function startTesting() {
     });
 
     testProcess.on('exit', function(code) {
-      var err = (code != 0 ? " (failed with exit code " + code + ")": null);
+      var err = (code !== 0 ? " (failed with exit code " + code + ")": null);
       done && done(err);
     });
   }
@@ -317,8 +317,8 @@ function startTesting() {
 
         // now if this is the console, let's output marks as tests start and complete
         if (args.output === 'console') {
-          aggregator.on('pass', function() { process.stdout.write(".") });
-          aggregator.on('fail', function() { process.stdout.write("!") });
+          aggregator.on('pass', function() { process.stdout.write("."); });
+          aggregator.on('fail', function() { process.stdout.write("!"); });
         }
       }
       return aggregator;
@@ -360,8 +360,8 @@ function startTesting() {
       successes += r.passed;
     });
     console.log("%s/%s tests passed%s", successes, total,
-                (successes != total) ? ", here are your failures:" : "");
-    if (successes != total) {
+                (successes !== total) ? ", here are your failures:" : "");
+    if (successes !== total) {
       aggregators.forEach(function(rp) {
         var r = rp.results();
         if (r.failed || r.unhandledMessages.length) {
