@@ -68,6 +68,8 @@ runner.run(module, {
       .wfind(CSS['persona.org'].accountManagerHeader, done);
   },
   'hack localStorage to simulate 60 seconds of inactivity': function(done) {
+    /*jshint evil:true */
+
     // JSON.parse to get user id, JSON.parse usersCOmputer, rewind time,
     // stringify and finally set as local storage.
     var rewindOneMinute = '(function() { ' +
@@ -84,7 +86,7 @@ runner.run(module, {
     browser.chain({onError: done})
       .wclick(CSS['persona.org'].header.signIn)
       .wfind(CSS['persona.org'].accountManagerHeader) // make sure we're logged in
-      .eval(rewindOneMinute, function(err, out) {
+      .eval(rewindOneMinute, function(err) {
         // you can echo out eval's return value for debugging
         // console.error(out);
         done(err);
