@@ -15,7 +15,7 @@ restmail = require('../../lib/restmail.js'),
 runner = require('../../lib/runner.js'),
 testSetup = require('../../lib/test-setup.js');
 
-var browser, testUser, testIdp;
+var browser, testUser, testIdp, noAuthTestUser;
 
 runner.run(module, {
   "setup": function(done) {
