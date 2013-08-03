@@ -35,7 +35,7 @@ runner.run(module, {
   "load 123done and wait for the signin button to be visible": function(done) {
     browser.get(persona_urls["123done"], done);
   },
-  "click the signin button": function(done, el) {
+  "click the signin button": function(done) {
     browser.wclick(CSS['123done.org'].signinButton, done);
   },
   "switch to the dialog when it opens": function(done) {

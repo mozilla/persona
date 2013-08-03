@@ -24,8 +24,6 @@ testSetup = require('../../lib/test-setup.js');
 var browser;
 var testidp;
 
-var email1, email2;
-
 runner.run(module, {
   "setup": function(done) {
     testSetup.setup({browsers: 1, testidps: 1}, function(err, fixtures) {

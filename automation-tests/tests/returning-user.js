@@ -87,7 +87,7 @@ runner.run(module, {
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['persona.org'].windowName, done);
   },
-  "check first radio is not selected":function(done, el) {
+  "check first radio is not selected": function(done) {
     browser.wgetAttribute(CSS['dialog'].firstEmail, 'selected', function(err, val) {
       done(err || assert.ok(!val));
     });
@@ -109,7 +109,7 @@ runner.run(module, {
       .wwin(CSS['persona.org'].windowName, done);
   },
   // this time, the first radio should be selected
-  "check first radio is selected":function(done, el) {
+  "check first radio is selected": function(done) {
     browser.wgetAttribute(CSS['dialog'].firstEmail, 'selected', function(err, val) {
       done(err || assert.ok(val));
     });

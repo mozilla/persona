@@ -21,8 +21,7 @@ NEW_PASSWORD = "password";
 
 var browser, verificationBrowser, theUser;
 
-var verifyEmail = user.verifyEmail,
-    getVerifiedUser = user.getVerifiedUser;
+var getVerifiedUser = user.getVerifiedUser;
 
 runner.run(module, {
   "setup": function(done) {
