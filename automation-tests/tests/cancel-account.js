@@ -35,44 +35,9 @@ function setup(done) {
   });
 }
 
-function getEmailIndex(email) {
-  emails = emails.sort(function(a, b) { return a === b ? 0 : a > b ? 1 : -1; });
-  var index = emails.indexOf(email);
-  return index;
-}
-
 function saveEmail(email) {
   emails.push(email);
   return email;
-}
-
-function removeEmail(email, done) {
-  browser.chain({onError: done})
-    .get(persona_urls['persona'])
-    .wclick(CSS['persona.org'].emailListEditButton)
-    .elementsByCssSelector(CSS['persona.org'].removeEmailButton, function(err, elements) {
-      var index = getEmailIndex(email);
-      var button = elements[index];
-
-      browser.chain({onError: done})
-        .clickElement(button)
-        // Give Chrome a bit to display the alert or else the command to
-        // accept the alert is fired too early.
-        .delay(500)
-        .acceptAlert(function() {
-          emails.splice(index, 1);
-
-          if (emails.length) {
-            // if there are emails remaining, click the done button
-            browser.wclick(CSS['persona.org'].emailListDoneButton, done);
-          }
-          else {
-            // if there are no emails remaining, the user will be logged out
-            browser.wfind(CSS['persona.org'].header.signIn, done);
-          }
-        });
-    });
-
 }
 
 function signIn123DoneWithSecondary(browser, email, password, done) {
@@ -107,41 +72,6 @@ function testEmailNotRegistered(browser, email, done) {
 }
 
 runner.run(module, {
-  // first checks to make sure removing the last email address on the
-  // account cancels the account
-  /*
-  "test removing the last email - get a secondary user account": function(done) {
-    setup(done);
-  },
-
-  "setup a browser": function(done) {
-    testSetup.newBrowserSession(browser, done);
-  },
-
-  "log in to 123done using secondaryEmail": function(done) {
-    signIn123DoneWithSecondary(browser, secondaryEmail,
-      secondaryPassword, done);
-  },
-
-  "go to main site, remove both email addresses to cancel the account": function(done) {
-    removeEmail(secondaryEmail, done);
-  },
-
-  "go to 123done, user should no longer be logged in": function(done) {
-    testUserNotSignedIn123Done(browser, done);
-  },
-
-  "user should now be signed out - cannot sign in with deleted addresses": function(done) {
-    testEmailNotRegistered(browser, secondaryEmail, done);
-  },
-
-  "quit the browser": function(done) {
-    browser.quit(function() {
-      done();
-    });
-  },
-
-*/
   // from here below tests an explicit cancel
 
   "test explicit cancel - get a secondary user": function(done) {
