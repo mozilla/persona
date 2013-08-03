@@ -68,10 +68,10 @@ testSetup.startup = function(opts) {
 
   var id = testSetup.browsers.push(browser);
   return id - 1;
-}
+};
 
 // store multiple browsers until we can switch between sessions via d
-testSetup.browsers = []
+testSetup.browsers = [];
 
 // opts could be of the form:
 // { browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2
@@ -127,8 +127,8 @@ testSetup.setup = function(opts, cb) {
     // then the final promise will be resolved.
     for (var i = 0; i < personatestusers; i++) {
       var userPromise = Q.ncall(personatestuser.getVerifiedUser)
-        .then(function(user) { fixtures.personatestusers.push(user[0]) })
-        .fail(function(error) { return cb(error) });
+        .then(function(user) { fixtures.personatestusers.push(user[0]); })
+        .fail(function(error) { return cb(error); });
       promises.push(userPromise);
     }
   }
@@ -137,14 +137,14 @@ testSetup.setup = function(opts, cb) {
     Q.all(promises)
       .then(function() {
         fixtures = setupBrowsers(browsers, fixtures);
-        cb(null, fixtures)
+        cb(null, fixtures);
       })
-      .fail(function(error) { cb(error) });
+      .fail(function(error) { cb(error); });
   } else {
     fixtures = setupBrowsers(browsers, fixtures);
-    cb(null, fixtures)
+    cb(null, fixtures);
   }
-}
+};
 
 testSetup.newBrowserSession = function(b, cb) {
   b.newSession(testSetup.sessionOpts, cb);
@@ -156,7 +156,7 @@ testSetup.teardown = function(cb) {
   for (var i = 0, b; b = testSetup.browsers[i]; i++) enders.push(Q.ncall(b.quit, b));
   Q.all(enders)
     .fin(cb);
-}
+};
 
 
 /* private functions */
@@ -208,7 +208,7 @@ function setSessionOpts(opts) {
 }
 
 function setupBrowsers(browserCount, out) {
-  for (var i = 0; i < browserCount; i++) { testSetup.startup() }
+  for (var i = 0; i < browserCount; i++) { testSetup.startup(); }
   // just use the browsers array directly
   out.b = out.browsers = testSetup.browsers;
   return out;

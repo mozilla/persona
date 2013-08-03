@@ -165,7 +165,7 @@ ResultsAggregator.prototype.results = function() {
     errorDetails: this.failures,
     urls: this.urls
   };
-}
+};
 
 module.exports = ResultsAggregator;
 

@@ -6,8 +6,8 @@ var alltests = {},
 
 // register just pushes suites onto a master list
 function register(suites) {
-  if (!suites.length) { suites = [suites] }
-  rawSuites = rawSuites.concat(suites)
+  if (!suites.length) suites = [suites];
+  rawSuites = rawSuites.concat(suites);
 }
 
 // run runs previously-registered suites. for convenience,

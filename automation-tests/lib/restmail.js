@@ -49,6 +49,6 @@ exports.getVerificationLink = function(args, cb) {
       } else {
         doneCB(false);
       }
-    })
+    });
   }, cb);
 };

@@ -23,7 +23,7 @@ exports.getVerifiedUser = function(args, cb) {
 
   request({ url: url, timeout: timeout, json:true}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      if (!body.email) { return cb(new Error('funky getVerifiedUser response')) }
+      if (!body.email) { return cb(new Error('funky getVerifiedUser response')); }
       cb(error, {email: body.email, pass: body.pass}, body);
     } else {
       cb(error || response.body);
