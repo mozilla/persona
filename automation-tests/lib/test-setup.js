@@ -90,6 +90,7 @@ testSetup.browsers = [];
 //   secondUser = fixtures.personatestusers[1];
 // }
 testSetup.setup = function(opts, cb) {
+  /*jshint loopfunc: true */
   var fixtures = {},
     restmails = opts.restmails || opts.r,
     eyedeemails = opts.eyedeemails || opts.e,
