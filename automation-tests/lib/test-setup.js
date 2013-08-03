@@ -1,3 +1,5 @@
+/*jshint sub: true */
+
 const
 personatestuser = require('../lib/personatestuser.js'),
 Q = require('q'),

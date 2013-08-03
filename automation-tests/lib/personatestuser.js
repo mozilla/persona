@@ -1,3 +1,5 @@
+/*jshint sub: true */
+
 const utils = require("./utils.js"),
 urls = require('./urls.js'),
 request = require('request');

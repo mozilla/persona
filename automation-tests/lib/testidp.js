@@ -1,3 +1,5 @@
+/*jshint sub: true */
+
 var _ = require('underscore'),
     request = require('request'),
     restmail = require('./restmail.js'),
