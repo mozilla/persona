@@ -158,7 +158,7 @@ wd.prototype.wwin = function(opts, cb) {
   // special case where just the callback was passed: go to the zeroth window
   if (arguments.length === 1 && typeof arguments[0] === 'function') {
     cb = arguments[0];
-    self.windowHandles(function(err, handles) {
+    self.windowHandles(function(err) {
       if (err) return cb(err);
       self.window(self._parentWindow, cb); // fire cb whether err is defined or not
     });

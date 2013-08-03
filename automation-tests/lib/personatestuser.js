@@ -18,7 +18,6 @@ exports.getVerifiedUser = function(args, cb) {
     args = {};
   }
   var timeout = args.timeout || DEFAULT_TIMEOUT;
-  var env = args.env || process.env['PERSONA_ENV'] || 'dev';
   var url = urls.personatestuser;
 
   request({ url: url, timeout: timeout, json:true}, function (error, response, body) {
