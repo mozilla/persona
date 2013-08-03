@@ -23,7 +23,7 @@ var configPlatforms = process.env['PERSONA_NO_SAUCE'] ? localPlatforms : saucePl
 // this way, any code which wants to programatically interact with the
 // (internal) browserid HTTP API via libraries under tests/lib will be able
 // to do so.
-wsapi = require('../../tests/lib/wsapi.js'),
+var wsapi = require('../../tests/lib/wsapi.js');
 wsapi.configuration.browserid = persona_urls.persona;
 
 /* public API */
