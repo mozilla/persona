@@ -6,5 +6,5 @@ exports.ok = function(fact, desc) {
 exports.equal = function(lhs, rhs, desc) { 
   var defaultMsg = "assertion failed: actual '" + lhs 
                  + "' does not equal expected '" + rhs + "'";
-  if (lhs != rhs) return desc || defaultMsg;
+  if (lhs !== rhs) return desc || defaultMsg;
 };

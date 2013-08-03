@@ -170,7 +170,7 @@ function setSessionOpts(opts) {
 
   // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
   var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
-  if (requestedPlatform && requestedPlatform != 'any' && !configPlatforms.platforms[requestedPlatform]) {
+  if (requestedPlatform && requestedPlatform !== 'any' && !configPlatforms.platforms[requestedPlatform]) {
     throw new Error('requested platform ' + requestedPlatform +
                     ' not found in list of available platforms');
   }
