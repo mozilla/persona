@@ -2,7 +2,7 @@
 
 Name:          browserid-server
 Version:       0.2013.07.31
-Release:       1%{?dist}_%{svnrev}
+Release:       2%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Gene Wood <gene@mozilla.com>
 Group:         Development/Libraries
@@ -23,7 +23,8 @@ persona server & web home for persona.org
 %build
 npm install
 export PATH=$PWD/node_modules/.bin:$PATH
-./locale/compile-json.sh locale/ resources/static/i18n/
+mkdir -p -v resources/static/i18n/
+./node_modules/.bin/compile-json locale/ resources/static/i18n/
 echo "$GIT_REVISION" > resources/static/ver.txt
 echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
 env CONFIG_FILES=$PWD/config/l10n-all.json scripts/compress
