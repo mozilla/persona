@@ -1,7 +1,3 @@
-// local embedded copy of winchan: http://github.com/lloyd/winchan
-// winchan git sha a3acb073
-// BEGIN WINCHAN
-
 ;WinChan = (function() {
   var RELAY_FRAME_NAME = "__winchan_relay_frame";
   var CLOSE_CMD = "die";
@@ -211,6 +207,3 @@
     };
   }
 })();
-
-// END WINCHAN
-
