@@ -198,11 +198,86 @@
             }
           }
         };
+      },
+      onOpen: function(cb) {
+        var o = "*";
+        var msgTarget = isIE ? findRelay() : window.opener;
+        if (!msgTarget) throw "can't find relay frame";
+        function doPost(msg) {
+          msg = JSON.stringify(msg);
+          if (isIE) msgTarget.doPost(msg, o);
+          else msgTarget.postMessage(msg, o);
+        }
+
+        function onMessage(e) {
+          // only one message gets through, but let's make sure it's actually
+          // the message we're looking for (other code may be using
+          // postmessage) - we do this by ensuring the payload can
+          // be parsed, and it's got an 'a' (action) value of 'request'.
+          var d;
+          try {
+            d = JSON.parse(e.data);
+          } catch(err) { }
+          if (!d || d.a !== 'request') return;
+          removeListener(window, 'message', onMessage);
+          o = e.origin;
+          if (cb) {
+            // this setTimeout is critically important for IE8 -
+            // in ie8 sometimes addListener for 'message' can synchronously
+            // cause your callback to be invoked.  awesome.
+            setTimeout(function() {
+              cb(o, d.d, function(r) {
+                cb = undefined;
+                doPost({a: 'response', d: r});
+              });
+            }, 0);
+          }
+        }
+
+        function onDie(e) {
+          if (e.data === CLOSE_CMD) {
+            try { window.close(); } catch (o_O) {}
+          }
+        }
+        addListener(isIE ? msgTarget : window, 'message', onMessage);
+        addListener(isIE ? msgTarget : window, 'message', onDie);
+
+        // we cannot post to our parent that we're ready before the iframe
+        // is loaded. (IE specific possible failure)
+        try {
+          doPost({a: "ready"});
+        } catch(e) {
+          // this code should never be exectued outside IE
+          addListener(msgTarget, 'load', function(e) {
+            doPost({a: "ready"});
+          });
+        }
+
+        // if window is unloaded and the client hasn't called cb, it's an error
+        var onUnload = function() {
+          try {
+            // IE8 doesn't like this...
+            removeListener(isIE ? msgTarget : window, 'message', onDie);
+          } catch (ohWell) { }
+          if (cb) doPost({ a: 'error', d: 'client closed window' });
+          cb = undefined;
+          // explicitly close the window, in case the client is trying to reload or nav
+          try { window.close(); } catch (e) { }
+        };
+        addListener(window, 'unload', onUnload);
+        return {
+          detach: function() {
+            removeListener(window, 'unload', onUnload);
+          }
+        };
       }
     };
   } else {
     return {
       open: function(url, winopts, arg, cb) {
+        setTimeout(function() { cb("unsupported browser"); }, 0);
+      },
+      onOpen: function(cb) {
         setTimeout(function() { cb("unsupported browser"); }, 0);
       }
     };
