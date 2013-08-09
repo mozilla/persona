@@ -100,10 +100,6 @@
     testExpectGetFailure(options, "relative urls not allowed: (" + path + ")");
   }
 
-  function testMustBeAbsolutePath(options, path) {
-    testExpectGetFailure(options, "must be an absolute path: (" + path + ")");
-  }
-
   function testExpectGetSuccess(options, expected, domain, done) {
     createController({
       ready: function() {
@@ -330,71 +326,16 @@
   });
 
 
-  asyncTest("get with relative termsOfService & valid privacyPolicy - print error screen", function() {
+  asyncTest("get with invalid RP parameter (termsOfService) - print error screen", function() {
     testRelativeURLNotAllowed({
       termsOfService: "relative.html",
       privacyPolicy: "/privacy.html"
     }, "relative.html");
   });
 
-  asyncTest("get with script containing termsOfService - print error screen", function() {
-    var URL = "relative.html<script>window.scriptRun=true;</script>";
-    testRelativeURLNotAllowed({
-      termsOfService: URL,
-      privacyPolicy: "/privacy.html"
-    }, URL);
-  });
-
-  asyncTest("get with valid termsOfService & relative privacyPolicy - print error screen", function() {
-    var URL = "relative.html";
-    testRelativeURLNotAllowed({
-      termsOfService: "/tos.html",
-      privacyPolicy: URL
-    }, URL);
-  });
-
-  asyncTest("get with valid termsOfService & privacyPolicy='/' - print error screen", function() {
-    var URL = "/";
-    testRelativeURLNotAllowed({
-      termsOfService: "/tos.html",
-      privacyPolicy: URL
-    }, URL);
-  });
-
-  asyncTest("get with valid termsOfService='/' and valid privacyPolicy - print error screen", function() {
-    var URL = "/";
-    testRelativeURLNotAllowed({
-      termsOfService: URL,
-      privacyPolicy: "/privacy.html"
-    }, URL);
-  });
-
-  asyncTest("get with script containing privacyPolicy - print error screen", function() {
-    var URL = "relative.html<script>window.scriptRun=true;</script>";
-    testRelativeURLNotAllowed({
-      termsOfService: "/tos.html",
-      privacyPolicy: URL
-    }, URL);
-  });
-
-  asyncTest("get with javascript protocol for privacyPolicy - print error screen", function() {
-    var URL = "javascript:alert(1)";
-    testRelativeURLNotAllowed({
-      termsOfService: "/tos.html",
-      privacyPolicy: URL
-    }, URL);
-  });
-
-  asyncTest("get with invalid httpg protocol for privacyPolicy - print error screen", function() {
-    var URL = "httpg://testdomain.com/privacy.html";
-    testRelativeURLNotAllowed({
-      termsOfService: "/tos.html",
-      privacyPolicy: URL
-    }, URL);
-  });
 
 
-  asyncTest("get with valid absolute termsOfService & privacyPolicy - go to start", function() {
+  asyncTest("get with valid RP parameters - go to start", function() {
     testExpectGetSuccess({
       termsOfService: "/tos.html",
       privacyPolicy: "/privacy.html"
@@ -405,272 +346,51 @@
     });
   });
 
-  asyncTest("get with valid fully qualified http termsOfService & privacyPolicy - go to start", function() {
+  asyncTest("get with valid rp_api parameters - go to start, set rp_api in KPIs", function() {
+    var receivedKPIs;
+    mediator.subscribe("kpi_data", function(msg, info) {
+      receivedKPIs = info;
+    });
+
     testExpectGetSuccess({
-      termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
-      privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
+      rp_api: "get"
     },
     {
-      termsOfService: HTTP_TEST_DOMAIN + "/tos.html",
-      privacyPolicy: HTTP_TEST_DOMAIN + "/privacy.html"
+      rpAPI: "get"
+    }, HTTPS_TEST_DOMAIN, function() {
+      equal(receivedKPIs.rp_api, "get");
     });
   });
 
-
-  asyncTest("get with valid fully qualified https termsOfService & privacyPolicy - go to start", function() {
+  asyncTest("get with returnTo - set returnTo in user", function() {
     testExpectGetSuccess({
-      termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
-      privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
+      returnTo: "/return.html"
     },
     {
-      termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
-      privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
+      returnTo: HTTPS_TEST_DOMAIN + "/return.html"
+    }, HTTPS_TEST_DOMAIN, function() {
+      equal(user.getReturnTo(), HTTPS_TEST_DOMAIN + "/return.html");
     });
   });
 
-  asyncTest("get with valid termsOfService, tosURL & privacyPolicy, privacyURL - use termsOfService and privacyPolicy", function() {
-    testExpectGetSuccess({
-      termsOfService: "/tos.html",
-      tosURL: "/tos_deprecated.html",
-      privacyPolicy: "/privacy.html",
-      privacyURL: "/privacy_deprecated.html"
-    },
-    {
-      termsOfService: HTTPS_TEST_DOMAIN + "/tos.html",
-      privacyPolicy: HTTPS_TEST_DOMAIN + "/privacy.html"
-    });
-  });
 
-  asyncTest("get with relative siteLogo - not allowed", function() {
-    var URL = "logo.png";
-    testMustBeAbsolutePath({ siteLogo: URL }, URL);
-  });
-
-  asyncTest("get with javascript: siteLogo - not allowed", function() {
-    var URL = "javascript:alert('xss')";
-    testMustBeAbsolutePath({ siteLogo: URL }, URL);
-  });
-
-  asyncTest("get with data-uri: siteLogo - not allowed", function() {
-    var URL = "data:image/png,FAKEDATA";
-    testMustBeAbsolutePath({ siteLogo: URL }, URL);
-  });
-
-  asyncTest("get with http: siteLogo - not allowed", function() {
-    var URL = HTTP_TEST_DOMAIN + "://logo.png";
-    testMustBeAbsolutePath({ siteLogo: URL }, URL);
-  });
-
-  asyncTest("get with https: siteLogo - not allowed", function() {
-    var URL = HTTPS_TEST_DOMAIN + "://logo.png";
-    testMustBeAbsolutePath({ siteLogo: URL }, URL);
-  });
-
-  asyncTest("get with absolute path and http RP - not allowed", function() {
-    var siteLogo = '/i/card.png';
-    testExpectGetFailure({ siteLogo: siteLogo }, "only https sites can specify a siteLogo", HTTP_TEST_DOMAIN);
-  });
-
-  asyncTest("get with absolute path that is too long - not allowed", function() {
-    var siteLogo = '/' + testHelpers.generateString(bid.PATH_MAX_LENGTH);
-    testExpectGetFailure({ siteLogo: siteLogo }, "path portion of a url must be < " + bid.PATH_MAX_LENGTH + " characters");
-  });
-
-  asyncTest("get with absolute path causing too long of a URL - not allowed", function() {
-    var shortHTTPSDomain = "https://test.com";
-    // create a URL that is one character too long
-    var siteLogo = '/' + testHelpers.generateString(bid.URL_MAX_LENGTH - shortHTTPSDomain.length);
-    testExpectGetFailure({ siteLogo: siteLogo }, "urls must be < " + bid.URL_MAX_LENGTH + " characters");
-  });
-
-  asyncTest("get with absolute path and https RP - allowed URL but is properly escaped", function() {
-    createController({
-      ready: function() {
-        var startInfo;
-        mediator.subscribe("start", function(msg, info) {
-          startInfo = info;
-        });
-
-        var siteLogo = '/i/card.png" onerror="alert(\'xss\')" <script>alert(\'more xss\')</script>';
-        var retval = controller.get(HTTPS_TEST_DOMAIN, {
-          siteLogo: siteLogo
-        });
-
-        testHelpers.testObjectValuesEqual(startInfo, {
-          siteLogo: encodeURI(HTTPS_TEST_DOMAIN + siteLogo)
-        });
-        equal(typeof retval, "undefined", "no error expected");
-        testErrorNotVisible();
-        start();
-      }
-    });
-  });
-
-  asyncTest("get with a scheme-relative siteLogo URL - not allowed", function() {
-    var URL = "//example.com/image.png";
-    testMustBeAbsolutePath({ siteLogo: URL }, URL);
-  });
-
-  asyncTest("get with siteLogo='/' URL - not allowed", function() {
-    testMustBeAbsolutePath({ siteLogo: "/" }, "/");
-  });
-
-  asyncTest("get with fully qualified returnTo - not allowed", function() {
-    var URL = HTTPS_TEST_DOMAIN + "/path";
-    testMustBeAbsolutePath({ returnTo: URL }, URL);
-  });
-
-  asyncTest("get with a scheme-relative returnTo URL - not allowed", function() {
-    var URL = '//example.com/return';
-    testMustBeAbsolutePath({ returnTo: URL }, URL);
-  });
-
-  asyncTest("get with absolute path returnTo - allowed", function() {
-    testExpectGetSuccess({ returnTo: "/path"}, {}, undefined, function() {
-      equal(user.getReturnTo(),
-        HTTPS_TEST_DOMAIN + "/path", "returnTo correctly set");
-    });
-  });
-
-  asyncTest("get with returnTo='/' - allowed", function() {
-    testExpectGetSuccess({ returnTo: "/"}, {}, undefined, function() {
-      equal(user.getReturnTo(),
-        HTTPS_TEST_DOMAIN + "/", "returnTo correctly set");
-    });
-  });
-
-  asyncTest("experimental_forceAuthentication", function() {
-    testExpectGetSuccess(
-      {experimental_forceAuthentication: true},
-      {forceAuthentication: true}
-    );
-  });
-
-  asyncTest("experimental_forceAuthentication invalid", function() {
-    testExpectGetFailure(
-      {experimental_forceAuthentication: "true"});
-  });
-
-  asyncTest("get with valid issuer - allowed", function() {
-    var issuer = "fxos.persona.org";
-    testExpectGetSuccess(
-      { experimental_forceIssuer: issuer },
-      { forceIssuer: issuer }
-    );
-  });
-
-  asyncTest("get with non hostname issuer - bzzzt", function() {
-    var issuer = "https://issuer.must.be.a.hostname";
-    testExpectGetFailure({ experimental_forceIssuer: issuer });
-  });
-
-  asyncTest("experimental_allowUnverified", function() {
-    testExpectGetSuccess(
-      {experimental_allowUnverified: true},
-      {allowUnverified: true}
-    );
-  });
-
-  asyncTest("experimental_allowUnverified invalid", function() {
-    testExpectGetFailure(
-      {experimental_allowUnverified: "true"});
-  });
-
-  asyncTest("get with valid rp_api - allowed", function() {
-    createController({
-      ready: function() {
-        mediator.subscribe("kpi_data", function(msg, info) {
-          equal(info.rp_api, "get");
-          equal(info.orphaned, true);
-          start();
-        });
-
-        controller.get(HTTPS_TEST_DOMAIN, {
-          rp_api: "get"
-        });
-      }
-    });
-  });
-
-  asyncTest("get with invalid rp_api - not allowed", function() {
-    testExpectGetFailure({
-      rp_api: "invalid_value"
-    }, "invalid value for rp_api: invalid_value");
-  });
-
-  asyncTest("get with invalid start_time - not allowed", function() {
-    testExpectGetFailure({
-      start_time: "invalid_value"
-    }, "invalid value for start_time: invalid_value");
-  });
-
-  asyncTest("get with numeric start_time, the numeric value of the specified date as the number of milliseconds since January 1, 1970, 00:00:00 UTC - allowed", function() {
+  asyncTest("get with start_time - publish start_time with start time", function() {
     var now = new Date().getTime();
 
-    createController({
-      ready: function() {
-        mediator.subscribe("start_time", function(msg, info) {
-          equal(info, now, "correct time passed");
-          start();
-        });
+    var receivedStartTime;
+    mediator.subscribe("start_time", function(msg, startTime) {
+      receivedStartTime = startTime;
+    });
 
-        controller.get(HTTPS_TEST_DOMAIN, {
-          start_time: now.toString()
-        });
-      }
+    testExpectGetSuccess({
+      start_time: now.toString()
+    },
+    {
+      startTime: now
+    }, HTTPS_TEST_DOMAIN, function() {
+      equal(receivedStartTime, now);
     });
   });
 
-  asyncTest("invalid backgroundColor - not allowed", function() {
-    testExpectGetFailure({
-      backgroundColor: "invalid_value"
-    }, "invalid backgroundColor: invalid_value");
-  });
-
-  asyncTest("incorrect length (2) backgroundColor - not allowed", function() {
-    testExpectGetFailure({
-      backgroundColor: "ab"
-    }, "invalid backgroundColor: ab");
-  });
-
-  asyncTest("incorrect length (4) backgroundColor - not allowed", function() {
-    testExpectGetFailure({
-      backgroundColor: "abcd"
-    }, "invalid backgroundColor: abcd");
-  });
-
-  asyncTest("incorrect length (5) backgroundColor - not allowed", function() {
-    testExpectGetFailure({
-      backgroundColor: "abcde"
-    }, "invalid backgroundColor: abcde");
-  });
-
-  asyncTest("incorrect length (7) backgroundColor - not allowed", function() {
-    testExpectGetFailure({
-      backgroundColor: "abcdeff"
-    }, "invalid backgroundColor: abcdeff");
-  });
-
-  asyncTest("valid 3 char backgroundColor - allowed & normalized", function() {
-    testExpectGetSuccess({backgroundColor: "abc"},
-                         {backgroundColor: "aabbcc"});
-  });
-
-  asyncTest("valid 3 char backgroundColor with hash - allowed & normalized",
-      function() {
-    testExpectGetSuccess({backgroundColor: "#123"},
-                         {backgroundColor: "112233"});
-  });
-
-  asyncTest("valid 6 char backgroundColor - allowed", function() {
-    testExpectGetSuccess({backgroundColor: "abcdef"},
-                         {backgroundColor: "abcdef"});
-  });
-
-  asyncTest("valid 6 char backgroundColor with hash - allowed", function() {
-    testExpectGetSuccess({backgroundColor: "#456DEF"},
-                         {backgroundColor: "456DEF"});
-  });
 
 }());
-
