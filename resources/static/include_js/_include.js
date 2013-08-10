@@ -140,6 +140,8 @@
     var needsPopupFix = userAgent.match(/CriOS/) ||
                         userAgent.match(/Windows Phone/);
 
+    var REQUIRES_WATCH = "WATCH_NEEDED";
+    var WINDOW_NAME = "__persona_dialog";
     var w;
 
     // table of registered observers
@@ -339,8 +341,9 @@
         warn("privacyPolicy ignored unless termsOfService also defined");
       }
 
-
       options.rp_api = getRPAPI();
+      var couldDoRedirectIfNeeded = (!needsPopupFix || api_called === 'request');
+
       // reset the api_called in case the site implementor changes which api
       // method called the next time around.
       api_called = null;
@@ -358,17 +361,30 @@
         return;
       }
 
-      if (!BrowserSupport.isSupported()) {
-        var reason = BrowserSupport.getNoSupportReason(),
-        url = "unsupported_dialog";
+      function isSupported() {
+        return BrowserSupport.isSupported() && couldDoRedirectIfNeeded;
+      }
+
+      function noSupportReason() {
+        var reason = BrowserSupport.getNoSupportReason();
+        if (!reason && !couldDoRedirectIfNeeded) {
+          return REQUIRES_WATCH;
+        }
+      }
+      
+      if (!isSupported()) {
+        var reason = noSupportReason();
+        var url = "unsupported_dialog";
 
         if(reason === "LOCALSTORAGE_DISABLED") {
           url = "cookies_disabled";
+        } else if (reason === REQUIRES_WATCH) {
+          url = "unsupported_dialog_without_watch";
         }
 
         w = window.open(
           ipServer + "/" + url,
-          null,
+          WINDOW_NAME,
           windowOpenOpts);
         return;
       }
@@ -389,9 +405,6 @@
             }
           });
         }
-        else {
-          warn("Chrome for iOS and Windows Phone 7 only work with the .watch API");
-        }
       }
 
       if (needsPopupFix) {
@@ -402,7 +415,7 @@
         url: ipServer + '/sign_in',
         relay_url: ipServer + '/relay',
         window_features: windowOpenOpts,
-        window_name: '__persona_dialog',
+        window_name: WINDOW_NAME,
         params: {
           method: "get",
           params: options

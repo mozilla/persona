@@ -1,0 +1,17 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+  <section id="error" class="cookies_disabled">
+      <div class="table">
+        <div class="vertical contents">
+          <h2 id="reason">
+            <%= gettext("Persona requires the watch() API in this browser") %>
+          </h2>
+
+          <p>
+            <%- format(gettext("If you're a developer, look at using <a %s>navigator.id.watch()</a>. If not, tell the website owner."), [" target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/API/navigator.id.watch'"]) %>
+          </p>
+        </div>
+      </div>
+  </section>
