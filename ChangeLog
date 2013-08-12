@@ -8,6 +8,7 @@ train-2013.07.31
   * Test improvements: #3733, #3720, #3719, #3665
   * Refactorings and other minor improvements: #3694, #3740, #3666, #3695, #3718, #3697, #3630, #3670
   * (hotfix 2013.08.06) fix l10n rpm building: #3683, #3685
+  * (hotfix 2013.08.11) Ensure that response was received from expected origin: #3760, bug#868967
 
 train-2013.07.17:
   * Simplify tooltip copy and replace tooltips with inline notifications: #3154, #3607
