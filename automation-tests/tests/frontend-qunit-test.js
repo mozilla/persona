@@ -4,11 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*jshint sub: true */
+
 const
 assert = require('../lib/asserts.js'),
 utils = require('../lib/utils.js'),
 runner = require('../lib/runner.js'),
 persona_urls = require('../lib/urls.js'),
+fs = require('fs'),
+os = require('os'),
 path = require('path'),
 testSetup = require('../lib/test-setup.js');
 
@@ -16,7 +20,7 @@ testSetup = require('../lib/test-setup.js');
 // environment variable, just like all the other automation tests)
 var frontendTestUrl = persona_urls['persona'] + '/test/';
 
-// The test page has jquery and underscore available.
+// The test page has jquery and tinyscore available.
 var queryResult = [
   "(function() {                                               ",
   "  var result = $('#qunit-testresult').text();               ",
@@ -34,6 +38,7 @@ var queryResult = [
   "    total: passFail.total,                                  ",
   "    passed: passFail.passed,                                ",
   "    failed: passFail.failed,                                ",
+  "    ua: navigator.userAgent,                                ",
   "  });                                                       ",
   "})();                                                       ",
 ].join(' ').replace(/\s+/g, ' ');
@@ -46,7 +51,6 @@ var queryFailures = [
   "})();                                                       ",
 ].join(' ').replace(/\s+/g, ' ');
 
-// pull in test environment, including wd
 var browser;
 
 runner.run(module, {
@@ -55,7 +59,6 @@ runner.run(module, {
       if (fix) {
         browser = fix.b[0];
       }
-
       done(err);
     });
   },
@@ -74,6 +77,7 @@ runner.run(module, {
         browser.eval(queryFailures, function(err, failures) {
           if (err) throw err;
           return checkCb(true, {
+            date: new Date().toISOString(),
             result: JSON.parse(res),
             failures: JSON.parse(failures),
           });
@@ -81,6 +85,11 @@ runner.run(module, {
       });
     };
     var complete = function complete(res) {
+      // If it fails, we'll want to know which test(s) failed.
+      var filename = process.env.FRONTENDQUNIT ||
+        'frontend-' + new Date().toISOString().split('T')[0] + '.log';
+      filename = path.join(os.tmpDir(), filename);
+      fs.appendFileSync(filename, JSON.stringify(res) + '\n');
       done(assert.equal(res.result.failed, '0'));
     };
     // The frontend tests take at least 20 seconds to run locally (FF); Chrome
@@ -95,5 +104,5 @@ runner.run(module, {
 },
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });
