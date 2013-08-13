@@ -12,23 +12,9 @@ utils = require('../lib/utils.js'),
 runner = require('../lib/runner.js'),
 persona_urls = require('../lib/urls.js'),
 fs = require('fs'),
+os = require('os'),
 path = require('path'),
 testSetup = require('../lib/test-setup.js');
-
-function tmpdir() {
-  // from nodejs 0.10.15; remove when we are >=0.8.x.
-  var isWindows = (process.platform === 'win32');
-  if (isWindows) {
-    return process.env.TEMP ||
-      process.env.TMP ||
-      (process.env.SystemRoot || process.env.windir) + '\\temp';
-  } else {
-    return process.env.TMPDIR ||
-      process.env.TMP ||
-      process.env.TEMP ||
-      '/tmp';
-  }
-}
 
 // target the proper instance (modified by run-all.js -e or PERSONA_ENV
 // environment variable, just like all the other automation tests)
@@ -102,7 +88,7 @@ runner.run(module, {
       // If it fails, we'll want to know which test(s) failed.
       var filename = process.env.FRONTENDQUNIT ||
         'frontend-' + new Date().toISOString().split('T')[0] + '.log';
-      filename = path.join(tmpdir(), filename);
+      filename = path.join(os.tmpDir(), filename);
       fs.appendFileSync(filename, JSON.stringify(res) + '\n');
       done(assert.equal(res.result.failed, '0'));
     };
