@@ -2,22 +2,26 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-  <section id="error" style="display: block" class="unsupported">
-      <h2>
-        <%- gettext('We are sorry, but currently your browser is not supported.') %>
-      </h2>
+  <section id="error" class="unsupported">
+    <div class="table">
+      <div class="vertical contents">
+        <h2>
+          <%- gettext('We are sorry, but currently your browser is not supported.') %>
+        </h2>
 
 
-      <a href="http://getfirefox.com" target="_blank">
-        <img src="<%- cachify('/dialog/i/firefox_logo.png') %>" width="250" height="88" alt="<%- gettext('Firefox logo') %>" />
-      </a>
+        <a class="isDesktop" href="http://getfirefox.com" target="_blank">
+          <img src="<%- cachify('/dialog/i/firefox_logo.png') %>" width="250" height="88" alt="<%- gettext('Firefox logo') %>" />
+        </a>
 
-      <p>
-        <%- format(gettext('Persona works with <a %(getFirefoxLink)s>Firefox</a>'), { getFirefoxLink: 'href="http://getfirefox.com" target="_blank" title="Get Firefox"' }) %>
-      </p>
+        <p>
+          <%- format(gettext('Persona works with <a %(getFirefoxLink)s>Firefox</a>'), { getFirefoxLink: 'href="http://getfirefox.com" target="_blank" title="Get Firefox"' }) %>
+          <span class="lighter">
+           <%- format(gettext('and other <a %(otherBrowserLink)s>modern browsers.</a>'), { otherBrowserLink: 'href="http://whatbrowser.org" target="_blank"' }) %>
+          </span>
+        </p>
 
-      <p class="lighter">
-       <%- format(gettext('and other <a %(otherBrowserLink)s>modern browsers.</a>'), { otherBrowserLink: 'href="http://whatbrowser.org" target="_blank"' }) %>
-      </p>
+      </div>
+    </div>
 
   </section>
