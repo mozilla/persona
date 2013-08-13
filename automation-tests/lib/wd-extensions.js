@@ -12,7 +12,7 @@ function setTimeouts(opts) {
 
 function noSuchWindowErr(errText) {
   // Firefox returns Window not found
-  // Chrome and Safari return NoSuchWindow
+  // Chrome and Safari return NoSuchWindow (except as Blink begins to diverge from Webkit).
   // IE returns a status of 13 and Unable to find element with css selector
   //
   // Side note for IE
@@ -20,7 +20,8 @@ function noSuchWindowErr(errText) {
   // the window is still available.
   return (/Window not found/.test(errText)        // Firefox
        || /NoSuchWindow/.test(errText)            // Chrome && Safari
-       || (/"status": 13/.test(errText) && /Unable to find element with css selector/.test(errText))); // IE
+       || (/"status": 13/.test(errText) && /Unable to find element with css selector/.test(errText)) // IE
+       || /The window could not be found/.test(errText)); // Chrome after July 2013
 }
 
 // wait for a element to become part of the dom and be visible to
