@@ -12,6 +12,7 @@ path = require('path'),
 urlparse = require('urlparse'),
 util = require('util'),
 cp = require('child_process'),
+os = require('os'),
 async = require('async');
 
 const WEBAPPSSTORE_SQLITE = 'webappsstore.sqlite';
@@ -113,21 +114,6 @@ const OPTIONS = {
     'default': false
   },
 };
-
-function tmpdir() {
-  // from nodejs 0.10.15
-  var isWindows = (process.platform === 'win32');
-  if (isWindows) {
-    return process.env.TEMP ||
-      process.env.TMP ||
-      (process.env.SystemRoot || process.env.windir) + '\\temp';
-  } else {
-    return process.env.TMPDIR ||
-      process.env.TMP ||
-      process.env.TEMP ||
-      '/tmp';
-  }
-}
 
 function adbPullWebappsstore(dbfile, callerCb) {
   var ADB_EOL = '\r\n';
@@ -360,7 +346,7 @@ function processRows(err, rows) {
 }
 
 function queryDatabaseB2G() {
-  args.dbfile = path.join(tmpdir(), WEBAPPSSTORE_SQLITE);
+  args.dbfile = path.join(os.tmpDir(), WEBAPPSSTORE_SQLITE);
   adbPullWebappsstore(args.dbfile, function(err) {
     if (err) {
       console.error('*** ERROR: Pulling from b2g: ', err.message || err);
