@@ -164,6 +164,7 @@
         addListener(window, 'unload', cleanup);
 
         function onMessage(e) {
+          if (e.origin !== origin) { return; }
           try {
             var d = JSON.parse(e.data);
             if (d.a === 'ready') messageTarget.postMessage(req, origin);
