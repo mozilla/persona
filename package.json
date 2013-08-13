@@ -10,6 +10,7 @@
   "license": "MPL 2.0",
   "dependencies": {
     "JSONSelect": "0.4.0",
+    "async": "0.2.9",
     "bcrypt": "0.7.5",
     "cef": "0.3.3",
     "compute-cluster": "0.0.6",

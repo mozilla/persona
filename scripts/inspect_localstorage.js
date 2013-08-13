@@ -4,19 +4,44 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/*
-  Formats Firefox, Chrome and Safari localStorage sqlite databases for a given
-  origin. Useful for stuff.
+const
+fs = require('fs'),
+jwcrypto = require('jwcrypto'),
+optimist = require('optimist'),
+path = require('path'),
+urlparse = require('urlparse'),
+util = require('util'),
+cp = require('child_process'),
+os = require('os'),
+async = require('async');
 
-  Note: To use this script you will need to do `npm install sqlite3`. Works
-    for me with sqlite3 3.7.13 on OSX. YMMV. (DO NOT DO `npm install
-    sqlite`. That is a different package. `sqlite3` is
-    'https://github.com/developmentseed/node-sqlite3'.
+const WEBAPPSSTORE_SQLITE = 'webappsstore.sqlite';
 
-  Caveat: What can be read from the local disk file is not instantaneously in
-    sync with reality (lazy flushing), but is eventually in sync. Generally,
-    just do something with the browser then run this script and the state will
-    be consistent within 1 second.
+function heredoc(fn) {
+  return fn.toString().split('\n').slice(1, -1).join('\n');
+}
+
+const extendedHelp = heredoc(function() {/*
+  Formats Persona information in localStorage for Firefox, Chrome, Safari,
+  Opera+Blink, and B2G localStorage sqlite databases for a given
+  origin. Useful for various testing and development stuff.
+
+  PRE-REQUISITE: To use this script you will need to do `npm install
+  sqlite3`. Works for me with sqlite3 >3.7.13 on OSX. YMMV. (DO NOT do `npm
+  install sqlite`. That is a different package. `sqlite3` is
+  'https://github.com/developmentseed/node-sqlite3'.
+
+  CAVEAT: What can be read from the local disk file is not instantaneously in
+  sync with reality (lazy flushing), but is eventually in sync. Generally,
+  just do something with the browser, wait ~1 second, and the state will then
+  be consistent with browser memory.
+
+  NOTE ABOUT B2G: It works with B2G devices by pulling the webappsstore.sqlite
+  database into a temporary location on your computer. It is up to you to have
+  connected the device with USB to your computer first (and have a working
+  setup with `adb`). Note: the "scope" key on B2G is like the Firefox key, but
+  is prepended with '\d+:[a-z]:'; I haven't researched what that implies.
+  Anyone want to enlighten me?
 
   Examples:
     Show everything for login.persona.org:
@@ -38,38 +63,35 @@
     firefox => ~/Library/Application\ Support/Firefox/Profiles/<salt>.<name>
     chrome  => ~/Library/Application\ Support/Google/Chrome/<profilename>
     safari  => ~/Library/Safari
+    opera   => ~/Library/Application\ Support/com.operasoftware.Opera
+    b2g     => 'adb:/data/b2g/mozilla/<profile>/webappsstore.sqlite' (Hard coded in this script).
 
-*/
-
-const
-fs = require('fs'),
-jwcrypto = require('jwcrypto'),
-optimist = require('optimist'),
-path = require('path'),
-urlparse = require('urlparse'),
-util = require('util');
+*/});
 
 var sqlite3, argv, args;
 try {
   sqlite3 = require('sqlite3');
 } catch(e) {
-  console.log("** ERROR: require('sqlite3'). Try `npm install sqlite3`.\n");
+  console.log("This tool requires you to first do `npm install sqlite3`.\n");
   process.exit(1);
 }
 
 const USAGE =
-  ('Read and format localStorage databases sqlite on ' +
-   'Firefox, Chrome and Safari for a given origin.');
+  ('Read and format localStorage databases sqlite on Firefox, Chrome,\n' +
+   'Safari, Opera Blink and FirefoxOS for a given origin.');
 
 const OPTIONS = {
   h: {
     describe: 'display this usage message'
   },
+  help: {
+    describe: 'Show extended help message'
+  },
   p: {
     describe: 'path to profile directory [default: process.env["INSPECT_LS"]]',
   },
   b: {
-    describe: 'which browser? ["firefox", "chrome", "safari"]',
+    describe: 'which browser? ["firefox", "chrome", "safari", "opera", "b2g"]',
     'default': 'firefox'
   },
   o: {
@@ -88,36 +110,91 @@ const OPTIONS = {
     describe: 'show only these keys from localStorage (csv)',
   },
   v: {
-    describe: 'show the name of the database file',
+    describe: 'show a bit more detail about program operation',
     'default': false
   },
 };
 
-// Firefox persists all localStorage in a single sqlite3 database file.
-// Chrome & Safari persist localStorage in a sqlite3 database file per origin.
-function databaseFilename(origin) {
-  var dbfile;
-  if (args.b === 'firefox') {
-    dbfile = path.join(args.p, 'webappsstore.sqlite');
+function adbPullWebappsstore(dbfile, callerCb) {
+  var ADB_EOL = '\r\n';
+
+  function findSqlitePath(callback) {
+    var glob = './data/b2g/mozilla/*/' + WEBAPPSSTORE_SQLITE;
+    var cmd = "adb shell 'ls " + glob + "'";
+
+    cp.exec(cmd, function(err, stdout, stderr) {
+      if (err) return callback(err);
+      if (stderr && args.v) console.error(stderr);
+
+      var files = stdout.split(ADB_EOL).filter(function(item) {
+        return item !== '';
+      });
+
+      if (files.length === 0) {
+        return callback('Could not find the B2G profile');
+      }
+
+      if (files.length > 1) {
+        console.error('Found more than one profile! Returning the first');
+      }
+
+      callback(null, files[0]);
+    });
   }
-  else if (args.b === 'chrome' || args.b === 'safari') {
-    // Chrome & Safari: convert the origin to the per-origin name of a database
-    // file. e.g., https://login.persona.org -> https_login.persona.org_0.localstorage
-    var url = urlparse(origin).normalize();
-    var parts = [url.scheme, url.host, url.port || 0];
-    var subdir = (args.b === 'chrome') ? 'Local Storage' : 'LocalStorage';
-    dbfile = path.join(args.p, subdir, parts.join('_') + '.localstorage');
+
+  function adbPullSqlite(adbPath, callback) {
+    var cmd = "adb pull " + adbPath + " " + dbfile;
+    if (args.v) console.error('Executing: `' + cmd + '`');
+
+    cp.exec(cmd, function(err, stdout, stderr) {
+      if (err) return callback(err);
+      if (stderr && args.v) console.error(stderr);
+      callback(null);
+    });
   }
+
+  async.waterfall([ findSqlitePath, adbPullSqlite ], callerCb);
+}
+
+function checkDbFileExists(dbfile) {
   if (!fs.existsSync(dbfile)) {
     console.log('*** ERROR: No such sqlite file: ', dbfile);
-    process.exit(1);
+    return process.exit(1);
   }
+}
+
+//
+// Firefox persists all localStorage in a single sqlite3 database file.
+// Chrome, Safari and Opera Blink persist localStorage in a sqlite3 database
+// file per origin.
+//
+function databaseFilename(origin) {
+  var dbfile;
+
+  if (args.b === 'firefox') {
+    dbfile = path.join(args.p, WEBAPPSSTORE_SQLITE);
+  } else if (['chrome', 'safari', 'opera'].indexOf(args.b) !== -1) {
+    // Chrome/Safari/Opera+Blink: convert the origin to the per-origin name of
+    // a database file; '0' implies default port, else the actual IP port number.
+    // i.e., https://login.persona.org -> https_login.persona.org_0.localstorage
+    var url = urlparse(origin).normalize();
+    var parts = [url.scheme, url.host, url.port || 0];
+    var subdir = (['chrome', 'opera'].indexOf(args.b) !== -1)
+      ? 'Local Storage'
+      : 'LocalStorage';
+    dbfile = path.join(args.p, subdir, parts.join('_') + '.localstorage');
+  }
+
+  checkDbFileExists(dbfile);
+
   return dbfile;
 }
 
+//
 // Firefox: convert the origin to the format of a 'scope' key in the shared
 // database file.
 // e.g., https://login.persona.org -> gro.anosrep.nigol.:https:443
+//
 function firefoxScopeKey(origin) {
   var url = urlparse(origin).normalize();
   var host = url.host.split('').reverse().join('') + '.';
@@ -140,29 +217,42 @@ function processOptions() {
     .options(OPTIONS)
     .wrap(80);
   args = argv.argv;
+
   if (args.h) {
     argv.showHelp();
-    process.exit(1);
+    process.exit(0);
   }
 
-  if (['firefox', 'chrome', 'safari'].indexOf(args.b) === -1) {
-    optionError('option -b: must be firefox, chrome or safari');
+  if (args.help) {
+    argv.showHelp();
+    console.log(extendedHelp);
+    process.exit(0);
   }
 
-  if (!args.p) {
-    args.p = process.env.INSPECT_LS;
+  var supportedBrowsers = ['firefox', 'chrome', 'safari', 'opera', 'b2g'];
+  if (supportedBrowsers.indexOf(args.b) === -1) {
+    optionError('option -b: must be one of ' + supportedBrowsers.join(', '));
+  }
+
+  // B2G does not require args.p; it's in a temporary location.
+  if (args.b !== 'b2g') {
     if (!args.p) {
-      optionError('option -p: profile path is required');
+      args.p = process.env.INSPECT_LS;
+      if (!args.p) {
+        optionError('option -p: profile path is required');
+      }
     }
-  }
-  args.p = args.p.replace(/^~/, process.env.HOME);
-  if (args.p[0] !== '/') args.p = path.resolve(process.cwd(), args.p);
-  if (!fs.existsSync(args.p)) {
-    optionError('option -p: profile path does not exist :' + args.p);
-  }
-  var stat = fs.statSync(args.p);
-  if (!stat.isDirectory()) {
-    optionError('option -p: profile path is not a directory: ' + args.p);
+    args.p = args.p.replace(/^~/, process.env.HOME);
+    if (args.p[0] !== '/') args.p = path.resolve(process.cwd(), args.p);
+
+    if (!fs.existsSync(args.p)) {
+      optionError('option -p: profile path does not exist : ' + args.p);
+    }
+
+    var stat = fs.statSync(args.p);
+    if (!stat.isDirectory()) {
+      optionError('option -p: profile path is not a directory: ' + args.p);
+    }
   }
 
   if (args.k) {
@@ -171,8 +261,12 @@ function processOptions() {
   }
 
   args.scopeKey = firefoxScopeKey(args.o);
-  args.dbfile = databaseFilename(args.o);
-  if (args.v) console.log("Inspecting", args.dbfile);
+
+  // we'll figure out the db filename for b2g later
+  if (args.b !== 'b2g') {
+    args.dbfile = databaseFilename(args.o);
+    if (args.v) console.error("Inspecting", args.dbfile);
+  }
 }
 
 function processCertificate(cert) {
@@ -251,17 +345,44 @@ function processRows(err, rows) {
   console.log(JSON.stringify(localStorage, null, 2));
 }
 
-(function() {
-  processOptions();
+function queryDatabaseB2G() {
+  args.dbfile = path.join(os.tmpDir(), WEBAPPSSTORE_SQLITE);
+  adbPullWebappsstore(args.dbfile, function(err) {
+    if (err) {
+      console.error('*** ERROR: Pulling from b2g: ', err.message || err);
+      return process.exit(1);
+    }
+    checkDbFileExists(args.dbfile);
+    if (args.v) console.error("Inspecting", args.dbfile);
+    queryDatabase();
+  });
+}
+
+function queryDatabase() {
   var query, params;
-  if (args.b === 'firefox') {
+
+  if (args.b === 'b2g') {
+    query = 'SELECT scope, key, value FROM webappsstore2 WHERE scope like ?';
+    params = ['%:' + args.scopeKey];
+  } else if (args.b === 'firefox') {
     query = 'SELECT key, value FROM webappsstore2 WHERE scope = ?';
     params = [ args.scopeKey ];
-  } else if (args.b === 'chrome' || args.b === 'safari') {
+  } else if (['chrome', 'safari', 'opera'].indexOf(args.b) !== -1) {
     query = 'SELECT key, value FROM ItemTable';
     params = [];
   }
+
   new sqlite3.Database(args.dbfile, sqlite3.OPEN_READONLY, function(err) {
     if (err) throw err;
   }).all(query, params, processRows);
+}
+
+(function main() {
+  processOptions();
+
+  if (args.b === 'b2g') {
+    queryDatabaseB2G();
+  } else {
+    queryDatabase();
+  }
 }());
