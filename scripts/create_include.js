@@ -17,6 +17,7 @@ const fs        = require('fs'),
 module.exports = function(done) {
   try {
     var dir = path.join(__dirname, '..', 'resources', 'static', 'include_js');
+    var winchan_dir = path.join(__dirname, '..', 'resources', 'static', 'common', 'js', 'lib');
 
     var output_dir = process.env.BUILD_DIR ||
                   path.join(__dirname, '..', 'resources', 'static', 'build');
@@ -31,7 +32,7 @@ module.exports = function(done) {
     // define undefined in case the RP has accidentally redefined undefined.
     output += '\tvar undefined;\n';
     output += fs.readFileSync(path.join(dir, '_jschannel.js'));
-    output += fs.readFileSync(path.join(dir, '_winchan.js'));
+    output += fs.readFileSync(path.join(winchan_dir, 'winchan.js'));
     output += fs.readFileSync(path.join(dir, '_include.js'));
     output += '}());\n';
 
