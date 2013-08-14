@@ -28,6 +28,7 @@ mkdir -p resources/static/i18n/
 echo "$GIT_REVISION" > resources/static/ver.txt
 echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
 env CONFIG_FILES=$PWD/config/l10n-all.json scripts/compress
+cp resources/static/build/include.js %{_builddir}/browserid/resources/static/production/include.orig.js
 rm -r resources/static/build resources/static/test
 
 %install
