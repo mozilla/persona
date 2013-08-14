@@ -36,7 +36,7 @@
      */ %>
   <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
-  <body class="loading">
+  <body <% if (showLoading) { %>class="loading"i<% } %>>
       <% if (useJavascript !== false && enable_development_menu) { %>
         <a href="#" id="showDevelopment">&nbsp;</a>
       <% } %>
@@ -44,6 +44,8 @@
       <div id="content">
         <%- body %>
       </div>
+
+      <% if (showLoading) { %>
 
       <!-- the loading screen should take up the entire
            screen and not just within the borders of the content
@@ -58,6 +60,8 @@
             </div>
         </div>
       </section>
+
+      <% } %>
 
 
       <footer>

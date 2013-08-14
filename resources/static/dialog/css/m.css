@@ -619,6 +619,10 @@
     padding: 10px;
   }
 
+  #error .lighter {
+    color: #fff;
+  }
+
   a.emphasize {
     font-size: 14px;
     padding: 5px;
@@ -653,8 +657,13 @@
    * or else their content is not displayed on mobile devices. See issue #1998
    */
   #error.unsupported, #error.cookies_disabled {
-    position: static;
-    height: 250px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
   }
 
   /**

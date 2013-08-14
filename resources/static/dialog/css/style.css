@@ -287,11 +287,8 @@ section > .contents {
   _height: 100%;
 }
 
-#error.unsupported h2 {
-  margin: 0 0 20px;
-}
-
 #error img {
+    margin-top: 20px;
     border: none;
 }
 
