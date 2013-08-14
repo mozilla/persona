@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*jshint sub: true */
+
 const
 path = require('path'),
 assert = require('../lib/asserts.js'),
@@ -66,7 +68,7 @@ runner.run(module, {
       .wclick(CSS['dialog'].addNewEmailButton)
       .wtype(CSS['dialog'].choosePassword, secondary.split('@')[0])
       .wtype(CSS['dialog'].verifyPassword, secondary.split('@')[0])
-      .wclick(CSS['dialog'].createUserButton, done)
+      .wclick(CSS['dialog'].createUserButton, done);
   },
   "get verification link": function(done) {
     restmail.getVerificationLink({ email: secondary }, done);
@@ -77,7 +79,7 @@ runner.run(module, {
       .get(link)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondary));
-      })
+      });
   },
   "go to mfb, open dialog for first login": function(done) {
     browser.chain({onError: done})
@@ -85,7 +87,7 @@ runner.run(module, {
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['persona.org'].windowName, done);
   },
-  "check first radio is not selected":function(done, el) {
+  "check first radio is not selected": function(done) {
     browser.wgetAttribute(CSS['dialog'].firstEmail, 'selected', function(err, val) {
       done(err || assert.ok(!val));
     });
@@ -104,10 +106,10 @@ runner.run(module, {
       .wwin()
       .wclick(CSS['myfavoritebeer.org'].logout)
       .wclick(CSS['myfavoritebeer.org'].signinButton)
-      .wwin(CSS['persona.org'].windowName, done)
+      .wwin(CSS['persona.org'].windowName, done);
   },
   // this time, the first radio should be selected
-  "check first radio is selected":function(done, el) {
+  "check first radio is selected": function(done) {
     browser.wgetAttribute(CSS['dialog'].firstEmail, 'selected', function(err, val) {
       done(err || assert.ok(val));
     });
@@ -120,5 +122,5 @@ runner.run(module, {
 },
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });

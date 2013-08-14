@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*jshint sub: true */
+
 const
 path = require('path'),
 assert = require('../lib/asserts.js'),
@@ -19,8 +21,7 @@ NEW_PASSWORD = "password";
 
 var browser, verificationBrowser, theUser;
 
-var verifyEmail = user.verifyEmail,
-    getVerifiedUser = user.getVerifiedUser;
+var getVerifiedUser = user.getVerifiedUser;
 
 runner.run(module, {
   "setup": function(done) {

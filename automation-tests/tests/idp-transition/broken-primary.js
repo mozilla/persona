@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*jshint sub: true */
+
 // This test excercised codepaths when primaries become unreachable.  It
 // uses testidp.org to create programatically controlled IdPs that can
 // be turned on or off.
@@ -21,8 +23,6 @@ testSetup = require('../../lib/test-setup.js');
 
 var browser;
 var testidp;
-
-var email1, email2;
 
 runner.run(module, {
   "setup": function(done) {
@@ -102,5 +102,5 @@ runner.run(module, {
 },
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });

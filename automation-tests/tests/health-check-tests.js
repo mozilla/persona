@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*jshint sub: true */
+
 const
 path = require('path'),
 assert = require('../lib/asserts.js'),
@@ -28,7 +30,7 @@ var startup = function(b, email, cb) {
     .wwin(CSS['dialog'].windowName)
     .wtype(CSS['dialog'].emailInput, email)
     .wclick(CSS['dialog'].newEmailNextButton, cb);
-}
+};
 
 var setup = {
   "setup stuff": function(done) {
@@ -40,7 +42,7 @@ var setup = {
         primaryEmail = testIdp.getRandomEmail();
         theEmail = fixtures.restmails[0];
       }
-      done(err)
+      done(err);
     });
   }
 };
@@ -55,7 +57,7 @@ var primaryTest = {
   },
 
   "go to personaorg, click sign in, type testidp addy, click next": function(done) {
-    startup(browser, primaryEmail, done)
+    startup(browser, primaryEmail, done);
   },
   "switch to testidp dialog, submit password, click ok": function(done) {
     browser.chain({onError: done})

@@ -1,3 +1,5 @@
+/*jshint sub: true */
+
 // Depending on the environment variable PERSONA_ENV, we will change the
 // URLS for various sites used during testing.  This lets you target
 // different environments

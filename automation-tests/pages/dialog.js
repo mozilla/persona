@@ -1,5 +1,7 @@
+/*jshint sub: true */
+
 const CSS = require('./css.js'),
-    utils = require('../lib/utils.js')
+    utils = require('../lib/utils.js');
 
 function verifyOpts(optionList, opts) {
   optionList.forEach(function(required) {

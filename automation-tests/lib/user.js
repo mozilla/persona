@@ -28,7 +28,7 @@ exports.verifyEmail = function(email, password, index, browser, done) {
 
     });
   });
-}
+};
 
 // The hope is to make this abstraction interchangable with the personatestuser
 // equivalent. Not there yet.

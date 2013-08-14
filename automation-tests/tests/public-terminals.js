@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*jshint sub: true */
+
 const
 path = require('path'),
 assert = require('../lib/asserts.js'),
@@ -66,6 +68,8 @@ runner.run(module, {
       .wfind(CSS['persona.org'].accountManagerHeader, done);
   },
   'hack localStorage to simulate 60 seconds of inactivity': function(done) {
+    /*jshint evil:true */
+
     // JSON.parse to get user id, JSON.parse usersCOmputer, rewind time,
     // stringify and finally set as local storage.
     var rewindOneMinute = '(function() { ' +
@@ -82,29 +86,29 @@ runner.run(module, {
     browser.chain({onError: done})
       .wclick(CSS['persona.org'].header.signIn)
       .wfind(CSS['persona.org'].accountManagerHeader) // make sure we're logged in
-      .eval(rewindOneMinute, function(err, out) {
+      .eval(rewindOneMinute, function(err) {
         // you can echo out eval's return value for debugging
         // console.error(out);
-        done(err)
-      })
+        done(err);
+      });
   },
   'go to 123done, click log in, click "thats my email" button': function(done) {
     browser.chain({onError: done})
       .get(persona_urls['123done'])
       .wclick(CSS['123done.org'].signinButton)
       .wwin(CSS['persona.org'].windowName)
-      .wclick(CSS['dialog'].signInButton, done)
+      .wclick(CSS['dialog'].signInButton, done);
   },
   // TODO here's where the two tests differ: extract setup vows from assert vows
   // TODO figure out which cases to cover now that we've hacked localStorage
   'click "this is my computer" and the session should last a long time': function(done) {
-    browser.wclick(CSS['dialog'].myComputerButton, done)
+    browser.wclick(CSS['dialog'].myComputerButton, done);
   },
   "until we decide what to do, at least end the session properly": function(done) {
-    browser.quit(done)
+    browser.quit(done);
   }
 },
 {
   suiteName: path.basename(__filename),
-  cleanup: function(done) { testSetup.teardown(done) }
+  cleanup: function(done) { testSetup.teardown(done); }
 });

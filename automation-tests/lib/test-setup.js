@@ -1,3 +1,5 @@
+/*jshint sub: true */
+
 const
 personatestuser = require('../lib/personatestuser.js'),
 Q = require('q'),
@@ -21,7 +23,7 @@ var configPlatforms = process.env['PERSONA_NO_SAUCE'] ? localPlatforms : saucePl
 // this way, any code which wants to programatically interact with the
 // (internal) browserid HTTP API via libraries under tests/lib will be able
 // to do so.
-wsapi = require('../../tests/lib/wsapi.js'),
+var wsapi = require('../../tests/lib/wsapi.js');
 wsapi.configuration.browserid = persona_urls.persona;
 
 /* public API */
@@ -66,10 +68,10 @@ testSetup.startup = function(opts) {
 
   var id = testSetup.browsers.push(browser);
   return id - 1;
-}
+};
 
 // store multiple browsers until we can switch between sessions via d
-testSetup.browsers = []
+testSetup.browsers = [];
 
 // opts could be of the form:
 // { browsers: 2, restmails: 1, eyedeemails: 1, personatestusers: 2
@@ -88,45 +90,47 @@ testSetup.browsers = []
 //   secondUser = fixtures.personatestusers[1];
 // }
 testSetup.setup = function(opts, cb) {
+  /*jshint loopfunc: true */
   var fixtures = {},
     restmails = opts.restmails || opts.r,
     eyedeemails = opts.eyedeemails || opts.e,
     testidps = opts.testidps || opts.t,
     personatestusers = opts.personatestusers || opts.p,
     browsers = opts.browsers || opts.b,
-    promises = [];
+    promises = [],
+    idx = 0;
 
   if (restmails) {
     fixtures.r = fixtures.restmails = [];
-    for (var i = 0; i < restmails; i++) {
+    for (idx = 0; idx < restmails; idx++) {
       fixtures.restmails.push(restmail.randomEmail(10));
     }
   }
   if (eyedeemails) {
     fixtures.e = fixtures.eyedeemails = [];
-    for (var i = 0; i < eyedeemails; i++) {
+    for (idx = 0; idx < eyedeemails; idx++) {
       fixtures.eyedeemails.push(restmail.randomEmail(10, 'eyedee.me'));
     }
   }
   if (testidps) {
     fixtures.t = fixtures.testidps = [];
-    for (var i=0; i < testidps; i++) {
-      var userPromise = Q.ncall(testidp.qCreateIdP)
+    for (idx = 0; idx < testidps; idx++) {
+      var testIdpPromise = Q.ncall(testidp.qCreateIdP)
       .then(function (qRes) {
         fixtures.testidps.push(qRes);
       })
       .fail(function (error) {return cb(error);});
-      promises.push(userPromise);
+      promises.push(testIdpPromise);
     }
   }
   if (personatestusers) {
     fixtures.p = fixtures.personatestusers = [];
     // after personatestuser returns, and pushes result onto list of users,
     // then the final promise will be resolved.
-    for (var i = 0; i < personatestusers; i++) {
+    for (idx = 0; idx < personatestusers; idx++) {
       var userPromise = Q.ncall(personatestuser.getVerifiedUser)
-        .then(function(user) { fixtures.personatestusers.push(user[0]) })
-        .fail(function(error) { return cb(error) });
+        .then(function(user) { fixtures.personatestusers.push(user[0]); })
+        .fail(function(error) { return cb(error); });
       promises.push(userPromise);
     }
   }
@@ -135,14 +139,14 @@ testSetup.setup = function(opts, cb) {
     Q.all(promises)
       .then(function() {
         fixtures = setupBrowsers(browsers, fixtures);
-        cb(null, fixtures)
+        cb(null, fixtures);
       })
-      .fail(function(error) { cb(error) });
+      .fail(function(error) { cb(error); });
   } else {
     fixtures = setupBrowsers(browsers, fixtures);
-    cb(null, fixtures)
+    cb(null, fixtures);
   }
-}
+};
 
 testSetup.newBrowserSession = function(b, cb) {
   b.newSession(testSetup.sessionOpts, cb);
@@ -154,7 +158,7 @@ testSetup.teardown = function(cb) {
   for (var i = 0, b; b = testSetup.browsers[i]; i++) enders.push(Q.ncall(b.quit, b));
   Q.all(enders)
     .fin(cb);
-}
+};
 
 
 /* private functions */
@@ -168,7 +172,7 @@ function setSessionOpts(opts) {
 
   // check for typos: throw error if requestedPlatform not found in list of supported sauce platforms
   var requestedPlatform = opts.platform || process.env['PERSONA_BROWSER'];
-  if (requestedPlatform && requestedPlatform != 'any' && !configPlatforms.platforms[requestedPlatform]) {
+  if (requestedPlatform && requestedPlatform !== 'any' && !configPlatforms.platforms[requestedPlatform]) {
     throw new Error('requested platform ' + requestedPlatform +
                     ' not found in list of available platforms');
   }
@@ -206,7 +210,7 @@ function setSessionOpts(opts) {
 }
 
 function setupBrowsers(browserCount, out) {
-  for (var i = 0; i < browserCount; i++) { testSetup.startup() }
+  for (var i = 0; i < browserCount; i++) { testSetup.startup(); }
   // just use the browsers array directly
   out.b = out.browsers = testSetup.browsers;
   return out;

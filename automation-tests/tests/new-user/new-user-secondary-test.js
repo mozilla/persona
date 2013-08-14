@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/*jshint sub: true */
+
 const
 path = require('path'),
 assert = require('../../lib/asserts.js'),
@@ -83,8 +85,8 @@ var new_secondary_123done_two_browsers = {
   "tear down both browsers": function(done) {
     browser.quit(function(err) {
       secondBrowser.quit(function(err2) {
-        done(err || err2)
-      })
+        done(err || err2);
+      });
     });
   }
 };
@@ -126,14 +128,14 @@ var new_secondary_mfb_two_browsers = {
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
         assert.equal(text, mfbEmail);
-        done()
+        done();
       });
   },
   "shut down browsers": function(done) {
     browser.quit(function(err) {
       secondBrowser.quit(function(err2) {
-        done(err || err2)
-      })
+        done(err || err2);
+      });
     });
   }
 };
@@ -163,7 +165,7 @@ var new_secondary_personaorg = {
       browser.chain({onError: done})
         .wwin()
         .get(link)
-        .wtext(CSS['persona.org'].accountEmail, done)
+        .wtext(CSS['persona.org'].accountEmail, done);
     },
     "shut down zee browzr": function(done) {
       browser.quit(done);
@@ -175,5 +177,5 @@ runner.run(
   [new_secondary_123done_two_browsers, new_secondary_mfb_two_browsers, new_secondary_personaorg],
   {
     suiteName: path.basename(__filename),
-    cleanup: function(done) { testSetup.teardown(done) }
+    cleanup: function(done) { testSetup.teardown(done); }
   });

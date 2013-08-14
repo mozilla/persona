@@ -38,7 +38,7 @@ exports.getVerificationLink = function(args, cb) {
 
   utils.waitFor(poll, timeout, function(doneCB) {
     request(url, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
+      if (!error && response.statusCode === 200) {
         var b = JSON.parse(body);
         var message = b[index];
         if (message && message.headers['x-browserid-verificationurl']) {
@@ -49,6 +49,6 @@ exports.getVerificationLink = function(args, cb) {
       } else {
         doneCB(false);
       }
-    })
+    });
   }, cb);
 };
