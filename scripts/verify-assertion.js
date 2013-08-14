@@ -130,6 +130,7 @@ function postToVerifier(audience, bundle, verifier, callback) {
     hostname: hostname,
     path: '/verify',
     method: 'POST',
+    rejectUnauthorized: true,
     agent: false,
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
