@@ -6,11 +6,12 @@
       <div class="table">
         <div class="vertical contents">
           <h2 id="reason">
-            <%= gettext("Persona requires the watch() API in this browser") %>
+            <%= gettext("Sorry, your browser does not support signing in to this website. 
+") %>
           </h2>
 
           <p>
-            <%- format(gettext("If you're a developer, look at using <a %s>navigator.id.watch()</a>. If not, tell the website owner."), [" target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/API/navigator.id.watch'"]) %>
+            <%- format(gettext("The owner of this website needs to update the Persona sign-in system to use <a %s>navigator.id.watch()</a>."), [" target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/API/navigator.id.watch'"]) %>
           </p>
         </div>
       </div>
