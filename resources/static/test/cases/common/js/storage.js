@@ -242,14 +242,14 @@
 
   test("rpRequest functions, set, get, clear", function() {
     storage.rpRequest.set({
-      origin: "https://testuser.com"
+      origin: "https://testuser.com",
       params: {
         returnTo: "/"
       }
     });
 
     var rpRequestInfo = storage.rpRequest.get();
-    equal(rpRequestInfo.origin, "testuser.com");
+    equal(rpRequestInfo.origin, "https://testuser.com");
 
     storage.rpRequest.clear();
     rpRequestInfo = storage.rpRequest.get();
