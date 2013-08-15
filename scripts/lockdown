@@ -92,6 +92,13 @@ function rewritePackageMD(json) {
   return JSON.stringify(json);
 }
 
+function copy(from, to) {
+  for (var k in from) {
+    to[k] = from[k];
+  }
+  return to;
+}
+
 var server = http.createServer(function (req, res) {
   if (req.method !== 'GET') {
     return res.end('non GET requests not supported', 501);
@@ -163,15 +170,14 @@ var server = http.createServer(function (req, res) {
 
 server.listen(process.env['LOCKDOWN_PORT'] || 0, '127.0.0.1', function() {
   boundPort = server.address().port;
+  var env = copy(process.env, {
+    NPM_CONFIG_REGISTRY: 'http://127.0.0.1:' + boundPort,
+    NPM_LOCKDOWN_RUNNING: "true"
+  });
 
   var child = exec('npm install', {
-    env: {
-      NPM_CONFIG_REGISTRY: 'http://127.0.0.1:' + boundPort,
-      NPM_LOCKDOWN_RUNNING: "true",
-      PATH: process.env['PATH'],
-      HOME: process.env['HOME']
-    },
-    cwd: process.cwd()
+    cwd: process.cwd(),
+    env: env
   }, function(e) {
     if (warn.length) {
       console.log();
