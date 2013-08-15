@@ -36,7 +36,7 @@
      */ %>
   <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
-  <body <% if (showLoading) { %>class="loading"i<% } %>>
+  <body <% if (showLoading) { %>class="loading"<% } %>>
       <% if (useJavascript !== false && enable_development_menu) { %>
         <a href="#" id="showDevelopment">&nbsp;</a>
       <% } %>
