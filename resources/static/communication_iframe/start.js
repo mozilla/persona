@@ -119,6 +119,15 @@
     }
   });
 
+  chan.bind("redirect_flow", function(trans, params) {
+    setRemoteOrigin(trans.origin);
+    storage.rpRequest.set({
+      origin: remoteOrigin,
+      params: JSON.parse(params)
+    });
+    return true;
+  });
+
   chan.bind("dialog_running", function(trans, params) {
     pause = true;
   });

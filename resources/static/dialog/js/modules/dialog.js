@@ -41,13 +41,38 @@ BrowserID.Modules.Dialog = (function() {
   function startChannel() {
     /*jshint validthis: true*/
     var self = this,
+        established,
+        err;
+
+    try {
+      // Native goes before anything. Next, WinChan. If WinChan fails, try the
+      // workaround for environments that do not support popups.
+      established = tryNativeChannel.call(self)
+                 || tryWinChan.call(self)
+                 || tryRpRedirect.call(self);
+    }
+    catch(e) {
+      // generic error message displayed below
+      err = e;
+    }
+
+    if (!established) {
+      var errorInfo = { action: errors.relaySetup };
+      if (err) errorInfo.message = String(err);
+      self.renderError("error", errorInfo);
+    }
+  }
+
+  function tryNativeChannel() {
+    /*jshint validthis: true*/
+    var self = this,
         win = self.window,
         hash = win.location.hash;
 
     // first, we see if there is a local channel
     if (win.navigator.id && win.navigator.id.channel) {
       win.navigator.id.channel.registerController(self);
-      return;
+      return true;
     }
 
     // returning from the primary verification flow, we were native before, we
@@ -56,7 +81,7 @@ BrowserID.Modules.Dialog = (function() {
     try {
       var info = storage.idpVerification.get();
       /*jshint sub: true */
-      if (info && info['native']) return;
+      if (info && info['native']) return true;
     } catch(e) {
       self.renderError("error", {
         action: {
@@ -64,19 +89,23 @@ BrowserID.Modules.Dialog = (function() {
           message: "could not decode localStorage: " + String(e)
         }
       });
+
+      return true;
     }
 
     // next, we see if the caller intends to call native APIs
-    if (hash === "#NATIVE" || hash === "#INTERNAL") {
-      // don't do winchan, let it be.
-      return;
-    }
+    return (hash === "#NATIVE" || hash === "#INTERNAL");
+  }
+
+  function tryWinChan() {
+    /*jshint validthis: true*/
+    var self = this;
 
     try {
       self.channel = WinChan.onOpen(function(origin, args, cb) {
         // XXX this is called whenever the primary provisioning iframe gets
         // added.  If there are no args, then do not do self.get.
-        if(args) {
+        if (args) {
           self.get(origin, args.params, function(r) {
             cb(r);
           }, function (e) {
@@ -84,13 +113,51 @@ BrowserID.Modules.Dialog = (function() {
           });
         }
       });
-    } catch (e) {
-      self.renderError("error", {
-        action: errors.relaySetup
+    } catch(e) {
+      // don't do anything, we'll try the redirect flow next.
+    }
+
+    return !!self.channel;
+  }
+
+  function tryRpRedirect() {
+    /*jshint validthis: true*/
+    // If there was an error opening the WinChan, we have a potential
+    // workaround. We let WinChan try first always, to prevent the
+    // redirect flow happening in an environment where popups work just fine.
+    var self = this;
+    var rpInfo;
+    try {
+      rpInfo = storage.rpRequest.get();
+    } catch(e) {
+      this.renderError("error", {
+        action: {
+          title: "error in sessionStorage",
+          message: "could not decode sessionStorage: " + String(e)
+        }
       });
+
+      return true;
+    }
+
+    if (rpInfo) {
+      var done = function done() {
+        redirectFlowComplete(self.window, user.getReturnTo());
+      };
+      this.get(rpInfo.origin, rpInfo.params, done, done);
+      return true;
     }
   }
 
+  function redirectFlowComplete(win, returnTo) {
+    /**
+     * clear the rpRequest info to prevent users who have visited the dialog
+     * from re-starting the dialog flow by typing the dialog's URL into the
+     * address bar.
+     */
+    storage.rpRequest.clear();
+    win.location = returnTo;
+  }
 
   function onWindowUnload() {
     /*jshint validthis: true*/
