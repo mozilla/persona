@@ -83,7 +83,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 500);
     }
   },
-  "address_info": {
+  "address_info with primary address": {
     topic: wsapi.get('/wsapi/address_info', {
       email: 'test@example.domain'
     }),
@@ -92,7 +92,7 @@ suite.addBatch({
       assert.strictEqual(r.code, 200);
     }
   },
-  "address_info": {
+  "address_info with non-existant domain": {
     topic: wsapi.get('/wsapi/address_info', {
       email: 'test@non-existant.domain'
     }),
