@@ -5,10 +5,10 @@
 
 
   <div id="selectEmail" class="form_section">
-      <h2 class="isMobile"><%= gettext('Sign in with Persona') %></h2>
+      <h2 class="isMobile"><%- format(gettext('Sign in to %s with&hellip;'), [(siteName || hostname) ]) %></h2>
 
       <h2 class="isDesktop">
-        <%- format(gettext('Sign in to %s as&hellip;'), [(siteName || hostname) ]) %>
+        <%- format(gettext('Sign in to %s with&hellip;'), [(siteName || hostname) ]) %>
       </h2>
 
       <ul class="inputs" id="emailList">
