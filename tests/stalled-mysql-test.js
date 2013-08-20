@@ -83,16 +83,15 @@ suite.addBatch({
       assert.strictEqual(r.code, 500);
     }
   },
-  "address_info": {
+  "address_info with primary address": {
     topic: wsapi.get('/wsapi/address_info', {
       email: 'test@example.domain'
     }),
-    "works": function(err, r) {
-      // address info with a primary address doesn't need db access.
-      assert.strictEqual(r.code, 200);
+    "fails with 503": function(err, r) {
+      assert.strictEqual(r.code, 503);
     }
   },
-  "address_info": {
+  "address_info with non-existant domain": {
     topic: wsapi.get('/wsapi/address_info', {
       email: 'test@non-existant.domain'
     }),
