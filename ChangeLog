@@ -9,6 +9,7 @@ train-2013.08.15
 	* Fix invalid CSS: #3765, #3791
 	* Ensure include.orig.js is available on the staging and production servers: #3212, #3795
 	* Refactorings and other improvements: #3751, #3683, #3750, #3758, #3759, #3788, #3774
+  * (hotfix 2013.08.15) Fix unverified users not being able to sign in: #3811, #3817
 
 train-2013.07.31
   * Nicely warn primary IdP users that third-party cookies must be enabled: #3520
