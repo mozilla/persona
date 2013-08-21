@@ -50,17 +50,29 @@ BrowserID.Modules.Authenticate = (function() {
     /*jshint validthis:true*/
     var self = this;
     /*
-     * If this is is a required email, we are making the assumption
-     * that it is a secondary address and has a password. The only two ways to
-     * get here with emailSpecified are post-reset-password where the email
-     * verification occurs in a second browser and when signed in to the
-     * assertion level and then choose a secondary backed address.
+     * If this is is a required email (emailSpecified && !emailMutable),
+     * we make the assumption that the address is a secondary with a password.
+     * emailSpecified can occur when (OR):
+     * 1) post-reset-password where the email verification occurs in a
+     *    second browser.
+     * 2) When signed in to the assertion level and then a fallback IdP backed
+     *    address is chosen.
+     *
+     * An unverified email address can occur when (OR):
+     * 1) User registers address on a site that uses allowUnverified and never
+     *    verifies the address.
+     * 2) User has an account with multiple addresses backed by the fallback
+     *    IdP, they perform a password reset, verify the first address,
+     *    then try to sign in using one of the other addresses in a browser
+     *    without a session.
+     * In either case, the user must enter the account password. If the address
+     * must be verified, verification will be taken care of by the state machine.
      */
     return (self.emailSpecified && !self.emailMutable) ||
               (info && info.email && info.type === "secondary" &&
                   (info.state === "known" ||
                    info.state === "transition_to_secondary" ||
-                   info.state === "unverified" && self.allowUnverified));
+                   info.state === "unverified"));
   }
 
   function isNewPersonaAccount(info) {
@@ -312,7 +324,6 @@ BrowserID.Modules.Authenticate = (function() {
       self.emailSpecified = options.email || "";
       self.emailMutable = "email_mutable" in options
                               ? options.email_mutable : true;
-      self.allowUnverified = options.allowUnverified || false;
 
       lastEmail = options.email || "";
 

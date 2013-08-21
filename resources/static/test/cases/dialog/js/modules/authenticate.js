@@ -175,14 +175,13 @@
     });
   });
 
-  asyncTest("allowUnverified with an unverified email declared in options - show password field", function() {
+  asyncTest("unverified email declared in options - show password field", function() {
     controller.destroy();
     $(EMAIL_SELECTOR).val("");
     createController({
       email: "unverified@testuser.com",
       type: "secondary",
       state: "unverified",
-      allowUnverified: true,
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "unverified@testuser.com", "email prefilled");
         testElementHasClass("body", "returning");
@@ -241,12 +240,11 @@
     controller.checkEmail();
   });
 
-  asyncTest("checkEmail with registered, unverified email, allowUnverified" +
+  asyncTest("checkEmail with registered, unverified email" +
       " set to true - 'enter_password' message", function() {
     controller.destroy();
     $(EMAIL_SELECTOR).val("");
     createController({
-      allowUnverified: true,
       ready: function() {
         $(EMAIL_SELECTOR).val("registered@testuser.com");
 
@@ -255,7 +253,6 @@
           start();
         });
 
-        user.setAllowUnverified(true);
         xhr.useResult("unverified");
         controller.checkEmail();
       }
