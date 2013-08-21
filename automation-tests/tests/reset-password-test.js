@@ -19,42 +19,138 @@ testSetup = require('../lib/test-setup.js'),
 user = require('../lib/user.js'),
 NEW_PASSWORD = "password";
 
-var browser, verificationBrowser, theUser;
+var browser;
+var verificationBrowser;
+
+var addressInitiatingReset;
+var addressVerifiedAtSignIn;
+var addressVerifiedFromEmailPicker;
+var password;
 
 var getVerifiedUser = user.getVerifiedUser;
+
+function addSecondaryAddress(addressToAdd, done) {
+
+  stageNewAddress(function(err) {
+    if (err) return done(err);
+    verifyNewAddress(function(err) {
+      if (err) return done(err);
+      signOutOfMyFavoriteBeer(done);
+    });
+  });
+
+  function stageNewAddress(done) {
+    browser.chain({onError: done})
+      .wclick(CSS['myfavoritebeer.org'].signInButton)
+      .wwin(CSS['dialog'].windowName)
+      .wclick(CSS['dialog'].useNewEmail)
+      .wtype(CSS['dialog'].newEmail, addressToAdd)
+      .wclick(CSS['dialog'].addNewEmailButton, done);
+  }
+
+  function verifyNewAddress(done) {
+    restmail.getVerificationLink({ email: addressToAdd }, function(err, token, link) {
+      testSetup.newBrowserSession(verificationBrowser, function() {
+        verificationBrowser.chain({onError: done})
+          .get(link)
+          .wtype(CSS['persona.org'].signInForm.password, password)
+          .wclick(CSS['persona.org'].signInForm.finishButton)
+          .wfind(CSS['persona.org'].header.signOut)
+          .quit(done);
+      });
+    });
+  }
+
+  function signOutOfMyFavoriteBeer(done) {
+    browser.chain({onError: done})
+      .wwin()
+      .wclick(CSS['myfavoritebeer.org'].logoutLink, done);
+  }
+}
+
+function findElementForAddress(addressToFind, done) {
+  var addressesFound = [];
+
+  browser.elementsByName('email', searchElementsForAddress);
+
+  function searchElementsForAddress(err, elements) {
+    if (err) return done(err);
+
+    var elToCheck = elements.shift();
+    if (!elToCheck)
+        return done("could not find element with address: " + addressToFind + " emails found: " + JSON.stringify(addressesFound, null, 2));
+
+    browser.getValue(elToCheck, function(err, elAddress) {
+      if (err) return done(err);
+
+      addressesFound.push(elAddress);
+
+      if (elAddress == addressToFind) return done(null, elToCheck);
+      searchElementsForAddress(null, elements);
+    });
+  }
+}
+
 
 runner.run(module, {
   "setup": function(done) {
     // this is the more compact setup syntax
-    testSetup.setup({b:2}, function(err, fix) {
+    testSetup.setup({browsers:2, restmails: 2}, function(err, fix) {
       if (fix) {
-        browser = fix.b[0];
-        verificationBrowser = fix.b[1];
+        browser = fix.browsers[0];
+        verificationBrowser = fix.browsers[1];
+        // addressInitiatingReset is fetched in "get a verified user"
+        addressVerifiedAtSignIn = fix.restmails[0];
+        addressVerifiedFromEmailPicker = fix.restmails[1];
       }
       done(err);
     });
   },
+
+  // So much setup to get an account with three addresses!
   "get a verified user": function(done) {
     getVerifiedUser(function(err, user) {
-      theUser = user;
+      addressInitiatingReset = user.email;
+      password = user.password;
       done(err);
     });
   },
   "start browser session": function(done) {
     testSetup.newBrowserSession(browser, done);
   },
-  "open myfavoritebeer, open dialog, click forgotPassword": function(done) {
+  "open myfavoritebeer, open dialog, sign in first user": function(done) {
     browser.chain({onError: done})
       .get(persona_urls['myfavoritebeer'])
+      .wclick(CSS['myfavoritebeer.org'].signInButton)
+      .wwin(CSS['dialog'].windowName)
+      .wtype(CSS['dialog'].emailInput, addressInitiatingReset)
+      .wclick(CSS['dialog'].newEmailNextButton)
+      .wtype(CSS['dialog'].existingPassword, password)
+      .wclick(CSS['dialog'].returningUserButton)
+      .wwin()
+      .wclick(CSS['myfavoritebeer.org'].logoutLink, done);
+  },
+
+  "add addressVerifiedAtSignIn": function(done) {
+    addSecondaryAddress(addressVerifiedAtSignIn, done);
+  },
+
+  "add addressVerifiedFromEmailPicker": function(done) {
+    addSecondaryAddress(addressVerifiedFromEmailPicker, done);
+  },
+
+  "reset password for addressInitiatingReset": function(done) {
+    browser.chain({onError: done})
       .wclick(CSS['myfavoritebeer.org'].signinButton)
       .wwin(CSS['dialog'].windowName)
-      .wtype(CSS['dialog'].emailInput, theUser.email)
+      .wclick(CSS['dialog'].thisIsNotMe)
+      .wtype(CSS['dialog'].emailInput, addressInitiatingReset)
       .wclick(CSS['dialog'].newEmailNextButton)
       .wclick(CSS['dialog'].forgotPassword, done);
   },
 
-  "open reset verification link in new browser window": function(done) {
-    restmail.getVerificationLink({ email: theUser.email, index: 1 }, function(err, token, link) {
+  "complete reset for addressInitiatingReset": function(done) {
+    restmail.getVerificationLink({ email: addressInitiatingReset, index: 1 }, function(err, token, link) {
       testSetup.newBrowserSession(verificationBrowser, function() {
         verificationBrowser.chain({onError: done})
           .get(link)
@@ -77,28 +173,86 @@ runner.run(module, {
     browser.chain({onError: done})
       .wwin()
       .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
-        done(err || assert.equal(text, theUser.email));
+        done(err || assert.equal(text, addressInitiatingReset));
+      });
+  },
+
+
+  "try to sign in with addressVerifiedAtSignIn: user must enter password and verify - address marked as unverified after pw reset": function(done) {
+    browser.chain({onError: done})
+      .wwin()
+      .wclick(CSS['myfavoritebeer.org'].logout)
+      .wclick(CSS['myfavoritebeer.org'].signinButton)
+      .wwin(CSS['dialog'].windowName)
+      .wclick(CSS['dialog'].thisIsNotMe)
+      .wtype(CSS['dialog'].emailInput, addressVerifiedAtSignIn)
+      .wclick(CSS['dialog'].newEmailNextButton)
+      .wtype(CSS['dialog'].existingPassword, NEW_PASSWORD)
+      .wclick(CSS['dialog'].returningUserButton)
+      .wfind(CSS['dialog'].confirmAddressScreen, done);
+  },
+
+  "in a new browser, verify addressVerifiedAtSignIn": function(done) {
+    restmail.getVerificationLink({ email: addressVerifiedAtSignIn, index: 1 }, function(err, token, link) {
+      testSetup.newBrowserSession(verificationBrowser, function() {
+        verificationBrowser.chain({onError: done})
+          .get(link)
+          .wtype(CSS['persona.org'].signInForm.password, NEW_PASSWORD)
+          .wclick(CSS['persona.org'].signInForm.finishButton)
+          .wfind(CSS['persona.org'].accountManagerHeader)
+          .quit(done);
+      });
+    });
+  },
+
+  "make sure user is signed in to RP after password reset as addressVerifiedAtSignIn": function(done) {
+    browser.chain({onError: done})
+      .wwin()
+      .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
+        done(err || assert.equal(text, addressVerifiedAtSignIn));
       });
   },
 
   "open dialog again and make sure user is signed in to Persona": function(done) {
     browser.chain({onError: done})
       .wclick(CSS['myfavoritebeer.org'].logout)
-      .wclick(CSS['myfavoritebeer.org'].signinButton)
+      .wclick(CSS['myfavoritebeer.org'].signInButton)
       .wwin(CSS['dialog'].windowName)
       // the thisIsNotMe button is only displayed if the user is already
       // authenticated.
-      .wclick(CSS['dialog'].thisIsNotMe, function(err) {
-        done(err);
-      });
+      .wfind(CSS['dialog'].thisIsNotMe, done);
   },
 
-  "open dialog and sign in with new password": function(done) {
-    dialog.signInExistingUser({
-      email: theUser.email,
-      password: NEW_PASSWORD,
-      browser: browser
-    }, done);
+  "select addressVerifiedFromEmailPicker from the email picker - it must be verified": function(done) {
+    findElementForAddress(addressVerifiedFromEmailPicker, function(err, el) {
+      if (err) return done(err);
+
+      browser.chain({onError: done})
+        .clickElement(el)
+        .wclick(CSS['dialog'].signInButton)
+        .wfind(CSS['dialog'].confirmAddressScreen, done);
+    });
+  },
+
+  "in a new browser, verify addressVerifiedFromEmailPicker": function(done) {
+    restmail.getVerificationLink({ email: addressVerifiedFromEmailPicker, index: 1 }, function(err, token, link) {
+      testSetup.newBrowserSession(verificationBrowser, function() {
+        verificationBrowser.chain({onError: done})
+          .get(link)
+          .wtype(CSS['persona.org'].signInForm.password, NEW_PASSWORD)
+          .wclick(CSS['persona.org'].signInForm.finishButton)
+          .wfind(CSS['persona.org'].accountManagerHeader)
+          .quit(done);
+      });
+    });
+  },
+
+  "make sure user is signed in to RP after password reset as addressVerifiedFromEmailPicker": function(done) {
+    browser.chain({onError: done})
+      .wwin()
+      .wtext(CSS['myfavoritebeer.org'].currentlyLoggedInEmail, function(err, text) {
+        done(err || assert.equal(text, addressVerifiedFromEmailPicker));
+      });
   },
 
   "shut down remaining browsers": function(done) {
