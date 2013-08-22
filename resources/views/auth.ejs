@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Persona</title>
+</head>
+<body>
+  <input type="email" id="email" name="email" value="" />
+  <input type="password" id="password" name="password" value="asdfadsf" />
+  <button id="next">Next</button>
+  <button id="cancel">Cancel</button>
+</body>
+<!-- script src="/common/js/browserid.js"></script -->
+<script src="/common/js/lib/jquery-1.7.1.min.js"></script>
+<!-- script src="/common/js/lib/tinyscore.js"></script>
+<script src="/common/js/helpers.js"></script>
+<script src="/common/js/lib/module.js"></script>
+<script src="common/js/modules/xhr.js"></script>
+<script src="/common/js/network.js"></script -->
+<script>
+var csrf_token;
+$('#next').click(function(e) {
+  e.preventDefault();
+  var params = {
+    "email": $('#email').val(),
+    "pass": $('#password').val(),
+    "ephemeral":true,
+    "allowUnverified": false,
+    "csrf": csrf_token
+  };
+  console.log('Sending ', params);
+  $.ajax('/wsapi/authenticate_user', {
+    type: 'POST',
+    contentType: 'application/json; charset=UTF-8',
+    data: JSON.stringify(params),
+    dataType: 'json',
+    error: function(xhr, status, err) {
+      console.error('Auth call failed');
+      console.log(xhr, status, err);
+      console.error(err);
+    },
+    success: function(res, status, xhr) {
+      console.log('res data=', typeof res, res, typeof res.success);
+      if (res.success === true ||
+          res.success === "true") {
+        navigator.id.completeAuthentication();
+      }
+    },
+    complete: function(tbd) {
+      console.log('/wsapi/authenticate_user finished');
+    }
+  });
+});
+
+$('#cancel').click(function(e) {
+  e.preventDefault();
+  var msg = "user clicked cancel";
+  navigator.id.raiseProvisioningFailure(msg);
+});
+
+console.log('Starting beginAuthentication');
+navigator.id.beginAuthentication(function(email) {
+  $('#email').val(email);
+  console.log('callback beginAuthentication');
+  console.log(email);
+  $.getJSON('/wsapi/session_context', function(data, status, xhr) {
+    console.log(data);
+    csrf_token = data.csrf_token;
+    console.log('csrf_token=', csrf_token);
+    if (data.authenticated) {
+      $.getJSON('/wsapi/list_emails', function(data, status, xhr) {
+        console.log('list_emails', data);
+        if (data.emails.indexOf(email) !== -1) {
+          console.log('Woo hoo you all clear kid');
+          navigator.id.completeAuthentication();
+        }
+      });
+    }
+  });
+});
+</script>
+</html>
