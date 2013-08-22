@@ -152,6 +152,7 @@ BrowserID.Mocks.xhr = (function() {
       "post /wsapi/logout valid": { success: true },
       "post /wsapi/logout not_authenticated": 400,
       "post /wsapi/logout ajaxError": 401,
+      "post /wsapi/logout no_identities": { success: true },
       "get /wsapi/have_email?email=registered%40testuser.com valid": { email_known: true },
       "get /wsapi/have_email?email=registered%40testuser.com throttle": { email_known: true },
       "get /wsapi/have_email?email=registered%40testuser.com ajaxError": undefined,

@@ -845,6 +845,17 @@
     failureCheck(lib.checkAuthenticationAndSync);
   });
 
+  asyncTest("checkAuthenticationAndSync with no emails", function() {
+    xhr.setContextInfo("auth_level", "assertion");
+    xhr.useResult("no_identities");
+    storage.clear();
+
+    lib.checkAuthenticationAndSync(function(authed) {
+      equal(authed, false, "we are not authenticated");
+      start();
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
   asyncTest("isEmailRegistered with registered email", function() {
     lib.isEmailRegistered("registered@testuser.com", function(registered) {
       ok(registered);

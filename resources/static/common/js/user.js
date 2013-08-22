@@ -1070,7 +1070,16 @@ BrowserID.User = (function() {
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
           User.syncEmails(function() {
-            complete(onComplete, authenticated);
+            // no emails means they must have been removed from this
+            // account. at any rate, the user can't do anything without
+            // any emails, so log them out.
+            if (storage.getEmailCount() === 0) {
+              User.logoutUser(function() {
+                complete(onComplete, false);
+              }, onFailure);
+            } else {
+              complete(onComplete, authenticated);
+            }
           }, onFailure);
         }
         else {
