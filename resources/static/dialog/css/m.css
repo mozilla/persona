@@ -672,5 +672,10 @@
   .lightbox {
     padding: 5px 5px 80px 5px;
   }
+
+  .message_screen h2 {
+    font-size: 14pt;
+    line-height: 22px;
+  }
 }
 
