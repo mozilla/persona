@@ -87,6 +87,8 @@
   }
 
   function testInvalidPassword(password) {
+    expect(0); // we only assert on failure is this asyncTest callback.
+
     register("authenticated", function() {
       ok(false, "authenticated should not be called");
     });
