@@ -565,7 +565,7 @@ header .nav a {
 header .nav a:hover {
   color: #383838;
   background-color: #f4f3f0;
-  border-radius: 3px;
+  border-radius: 7px;
   text-shadow: 0 1px 0 #fff;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 }
