@@ -53,51 +53,63 @@
   }
 
   button, .submit button, .buttonrow a {
-    height: 40px;
     min-width: 105px;
-    font-size: 14px;
-    line-height: 28px;
-    padding: 6px 10px 8px;
+    font-size: 16px;
+    line-height: 38px;
+    padding: 0 10px;
     border-radius: 2px;
     float: right;
     font-weight: 400;
-    color: #414343;
-    text-shadow: 0 1px #fff;
+    color: #333;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
     text-transform: capitalize;
     text-align: center;
     cursor: pointer;
     white-space: nowrap;
     border-radius: 3px;
+    border: 1px solid #a6a6a6;
+    box-shadow: none;
   }
 
   button, .submit button {
     background: #30bed9;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#00c3ec), to(#00aacc));
-    background-image: -webkit-linear-gradient(top, #00c3ec, #00aacc);
-    background-image:    -moz-linear-gradient(top, #00c3ec 0%, #00aacc);
-    background-image:      -ms-linear-gradient(top, #00c3ec, #00aacc);
-    background-image:       -o-linear-gradient(top, #00c3ec, #00aacc);
-    background-image:          linear-gradient(top, #00c3ec, #00aacc);
-    text-shadow: none;
-  }
-
-  button:hover, button:focus,
-  .submit button:hover, .submit button:focus {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#00c3ec), to(#00b6dc));
-    background-image: -webkit-linear-gradient(top, #00c3ec, #00b6dc);
-    background-image:    -moz-linear-gradient(top, #00c3ec 0%, #00b6dc);
-    background-image:      -ms-linear-gradient(top, #00c3ec, #00b6dc);
-    background-image:       -o-linear-gradient(top, #00c3ec, #00b6dc);
-    background-image:          linear-gradient(top, #00c3ec, #00b6dc);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#00caf2), to(#00aacc));
+    background-image: -webkit-linear-gradient(top, #00caf2, #00aacc);
+    background-image:    -moz-linear-gradient(top, #00caf2 0%, #00aacc);
+    background-image:      -ms-linear-gradient(top, #00caf2, #00aacc);
+    background-image:       -o-linear-gradient(top, #00caf2, #00aacc);
+    background-image:          linear-gradient(top, #00caf2, #00aacc);
+    border-color: #008eab;
   }
 
   button:hover, button:focus, button:active,
   .submit button:hover, .submit button:focus, .submit button:active {
     background-image: none;
+    background-color: #018cab;
+    border-color: #008aaa;
+    box-shadow: none;
   }
 
-  button:active, .submit button:active {
-    background-color: #018cab;
+  button.negative, .submit button.negative {
+    background-color: #b70404;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#b50404), to(#830b0b));
+    background-image: -webkit-linear-gradient(top, #b50404, #830b0b);
+    background-image:    -moz-linear-gradient(top, #b50404 0%, #830b0b);
+    background-image:      -ms-linear-gradient(top, #b50404, #830b0b);
+    background-image:       -o-linear-gradient(top, #b50404, #830b0b);
+    background-image:          linear-gradient(top, #b50404, #830b0b);
+    color: #fff;
+    text-shadow: none;
+    border-color: #820000;
+  }
+
+  button.negative:hover, button.negative:focus, button.negative:active,
+  .submit button.negative:hover, .submit button.negative:focus, .submit button.negative:active {
+    box-shadow: none;
+    background-image: none;
+    text-shadow: none;
+    color: #fff;
+    background-color: #890707;
   }
 
   /**
@@ -118,10 +130,10 @@
   .submit_disabled .submit button:active, .submit_disabled .submit .button:active {
     color: #c7c7c7;
     cursor: default;
-    background: #e8e8e8;
-    border: 1px solid #a1c3cc;
+    background: #e7e7e7;
     box-shadow: none;
     text-shadow: none;
+    border-color: #a6a6a6;
   }
 
 
@@ -130,34 +142,23 @@
    * overhaul.
    */
   .buttonrow a {
-    background-color: #fcfcfb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#fcfcfb), to(#d8d9d8));
-    background-image: -webkit-linear-gradient(top, #fcfcfb, #d8d9d8);
-    background-image:    -moz-linear-gradient(top, #fcfcfb, #d8d9d8);
-    background-image:     -ms-linear-gradient(top, #fcfcfb, #d8d9d8);
-    background-image:      -o-linear-gradient(top, #fcfcfb, #d8d9d8);
-    background-image:         linear-gradient(top, #fcfcfb, #d8d9d8);
-    box-shadow: inset 0 -1px #cbcbca;
+    background-color: #fafafa;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#ccc));
+    background-image: -webkit-linear-gradient(top, #fafafa, #ccc);
+    background-image:    -moz-linear-gradient(top, #fafafa, #ccc);
+    background-image:     -ms-linear-gradient(top, #fafafa, #ccc);
+    background-image:      -o-linear-gradient(top, #fafafa, #ccc);
+    background-image:         linear-gradient(top, #fafafa, #ccc);
+    box-shadow: none;
     border: 1px solid #b6b6b5;
   }
 
   .buttonrow a:hover,
-  .buttonrow a:focus {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#fcfcfb), to(#ccc));
-    background-image: -webkit-linear-gradient(top, #fcfcfb, #ccc);
-    background-image:    -moz-linear-gradient(top, #fcfcfb, #ccc);
-    background-image:     -ms-linear-gradient(top, #fcfcfb, #ccc);
-    background-image:      -o-linear-gradient(top, #fcfcfb, #ccc);
-    background-image:         linear-gradient(top, #fcfcfb, #ccc);
-  }
-
+  .buttonrow a:focus,
   .buttonrow a:active {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#d8d9d8), to(#fcfcfb));
-    background-image: -webkit-linear-gradient(top, #d8d9d8, #fcfcfb);
-    background-image:    -moz-linear-gradient(top, #d8d9d8, #fcfcfb);
-    background-image:     -ms-linear-gradient(top, #d8d9d8, #fcfcfb);
-    background-image:      -o-linear-gradient(top, #d8d9d8, #fcfcfb);
-    background-image:         linear-gradient(top, #d8d9d8, #fcfcfb);
+    background-image: none;
+    background-color: #018cab;
+    border-color: #008aaa;
   }
 
   .buttonrow > .right {
