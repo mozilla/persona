@@ -126,7 +126,7 @@ runner.run(module, {
   //
   // Now let's test the non-authenticated case.  A user has an account with
   // and address on it, the address is a secondary email address, and they
-  // go to sign into persona with it one day, only to find that it's
+  // go to sign in to persona with it one day, only to find that it's
   // now a secondary
   //
   "enable primary support for the transition when not authed test": function(done) {
