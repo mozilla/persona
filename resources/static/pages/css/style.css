@@ -589,7 +589,6 @@ header li {
 }
 
 header a.signIn, header a.signOut {
-  border-radius: 6px;
   padding: 6px 20px;
   border-radius: 7px;
   border: 1px solid #333;
