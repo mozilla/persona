@@ -98,7 +98,13 @@
       // https://github.com/mozilla/browserid/issues/3502
       if (!(password && !vpassword)) {
         testTooltipVisible();
+      } else {
+        // Run a no-op test to satisfy QUnit requirement that tests must have
+        // at least one assertion.  The real test is above; that password_set
+        // should not be called.
+        ok(true, "Run a no-op test to satisfy QUnit");
       }
+
       start();
     });
   }
