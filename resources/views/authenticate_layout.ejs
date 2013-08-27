@@ -128,7 +128,7 @@ $('.cancelPassword:visible').click(function(e) {
 console.log('Starting beginAuthentication');
 navigator.id.beginAuthentication(function(email) {
   $('#authentication_email').val(email);
-  $('#authentication_email').attr('disabled', true);
+  $('#authentication_email').attr('disabled', 'disabled');
   console.log('callback beginAuthentication');
   console.log(email);
   $.getJSON('/wsapi/session_context', function(data, status, xhr) {
