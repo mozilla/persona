@@ -379,7 +379,7 @@
       line-height: 32px;
       font-size: 20px;
       display: inline;
-      vertical-align: middle;
+      vertical-align: baseline;
   }
 
   .favicon h3 {
