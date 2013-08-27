@@ -86,6 +86,7 @@ $('#authentication_form').show();
 var csrf_token;
 $('button.isReturning').click(function(e) {
   e.preventDefault();
+  $('#cannot_authenticate').hide('fast');
   var params = {
     "email": $('#authentication_email').val(),
     "pass": $('#authentication_password').val(),
@@ -100,6 +101,7 @@ $('button.isReturning').click(function(e) {
     data: JSON.stringify(params),
     dataType: 'json',
     error: function(xhr, status, err) {
+      $('#cannot_authenticate').show('fast');
       console.error('Auth call failed');
       console.log(xhr, status, err);
       console.error(err);
@@ -126,6 +128,7 @@ $('.cancelPassword:visible').click(function(e) {
 console.log('Starting beginAuthentication');
 navigator.id.beginAuthentication(function(email) {
   $('#authentication_email').val(email);
+  $('#authentication_email').attr('disabled', true);
   console.log('callback beginAuthentication');
   console.log(email);
   $.getJSON('/wsapi/session_context', function(data, status, xhr) {
