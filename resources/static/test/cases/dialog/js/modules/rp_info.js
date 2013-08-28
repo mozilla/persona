@@ -127,32 +127,32 @@
 
   test("get light foregroundColor for black background", function() {
     createController();
-    equal(controller.foregroundColor('000000'), controller.TEXT_COLOR.light);
+    equal(controller.foregroundColorClass('000000'), 'light');
   });
 
   test("get dark foregroundColor for white background", function() {
     createController();
-    equal(controller.foregroundColor('ffffff'), controller.TEXT_COLOR.dark);
+    equal(controller.foregroundColorClass('ffffff'), 'dark');
   });
 
   test("get light foregroundColor for dark background", function() {
     createController();
-    equal(controller.foregroundColor('000088'), controller.TEXT_COLOR.light);
+    equal(controller.foregroundColorClass('000088'), 'light');
   });
 
   test("get light foregroundColor for half-light background", function() {
     createController();
-    equal(controller.foregroundColor('ff00b2'), controller.TEXT_COLOR.light);
+    equal(controller.foregroundColorClass('ff00b2'), 'light');
   });
 
   test("get light foregroundColor for dark text color background", function() {
     createController();
-    equal(controller.foregroundColor('383838'), controller.TEXT_COLOR.light);
+    equal(controller.foregroundColorClass('383838'), 'light');
   });
 
   test("get dark foregroundColor for light text color background", function() {
     createController();
-    equal(controller.foregroundColor('c7c7c7'), controller.TEXT_COLOR.dark);
+    equal(controller.foregroundColorClass('c7c7c7'), 'dark');
   });
 
 }());
