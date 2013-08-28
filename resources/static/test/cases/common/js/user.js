@@ -431,6 +431,16 @@
     );
   }
 
+  function testCertClearedAfterAssertionGeneration(email) {
+    lib.syncEmailKeypair(email, function() {
+      lib.getAssertion(email, "https://testorigin.com", function onSuccess(assertion) {
+        var record = storage.getEmail(email);
+        testHelpers.testUndefined(record.cert);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  }
+
 
   test("setOrigin, getOrigin", function() {
     lib.setOrigin(testOrigin);
@@ -1116,6 +1126,34 @@
     storage.addEmail(TEST_EMAIL, {});
     failureCheck(lib.getAssertion, TEST_EMAIL, lib.getOrigin());
   });
+
+  asyncTest("getAssertion with confirmed session - cert is retained after getAssertion", function() {
+    storage.updateEmailToUserIDMapping(1, [TEST_EMAIL]);
+    storage.usersComputer.setConfirmed(TEST_EMAIL);
+    lib.syncEmailKeypair(TEST_EMAIL, function() {
+      lib.getAssertion(TEST_EMAIL, "https://testorigin.com", function onSuccess(assertion) {
+        var record = storage.getEmail(TEST_EMAIL);
+        testHelpers.testNotUndefined(record.cert);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
+
+  asyncTest("getAssertion with unconfirmed computer status - cert is removed after getAssertion", function() {
+    storage.updateEmailToUserIDMapping(1, [TEST_EMAIL]);
+    storage.usersComputer.clear(TEST_EMAIL);
+    testCertClearedAfterAssertionGeneration(TEST_EMAIL);
+  });
+
+  asyncTest("getAssertion with denied computer status - cert is removed after getAssertion", function() {
+    storage.updateEmailToUserIDMapping(1, [TEST_EMAIL]);
+    storage.usersComputer.setDenied(TEST_EMAIL);
+    testCertClearedAfterAssertionGeneration(TEST_EMAIL);
+  });
+
+
+
 
   asyncTest("getSilentAssertion with logged out user, " +
     "null email and assertion",

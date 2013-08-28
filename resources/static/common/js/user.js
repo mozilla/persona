@@ -26,7 +26,8 @@ BrowserID.User = (function() {
       userid,
       auth_status,
       issuer = "default",
-      allowUnverified = false;
+      allowUnverified = false,
+      PERSONA_ORG_AUDIENCE = "https://login.persona.org";
 
   var TRANSITION_STATES = [
     "transition_to_secondary",
@@ -603,7 +604,7 @@ BrowserID.User = (function() {
           persistEmailKeypair(email, authInfo.keypair, authInfo.cert,
             function() {
               // We are getting an assertion for persona.org.
-              User.getAssertion(email, "https://login.persona.org", function(assertion) {
+              User.getAssertion(email, PERSONA_ORG_AUDIENCE, function(assertion) {
                 if (assertion) {
                   onComplete("primary.verified", {
                     assertion: assertion
@@ -1382,6 +1383,12 @@ BrowserID.User = (function() {
                   // issuer is used for B2G to get silent assertions to get
                   // assertions backed by certs from a special issuer.
                   storage.site.set(audience, "issuer", issuer);
+                  if (audience !== PERSONA_ORG_AUDIENCE && !storage.usersComputer.confirmed(email)) {
+                    // If the user has not confirmed that this is their
+                    // computer, immediately invalidate the cert so that nobody
+                    // else can sign in using this address.
+                    storage.invalidateEmail(email);
+                  }
                   complete(onComplete, assertion);
                 });
             }, 0);
