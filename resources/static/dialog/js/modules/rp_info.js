@@ -20,31 +20,32 @@ BrowserID.Modules.RPInfo = (function() {
       FAVICON_CLASS = "showMobileFavicon",
       sc;
 
-  function calculateInverseGamma(color) {
+  function inverseGamma(color) {
     return color <= 0.03928 ? (color / 12.92) : Math.pow((color + 0.055) / 1.055, 2.4);
   }
 
-  function calculateLuminance(rgbColor) {
+  function luminanceForRgb(rgbColor) {
     // Determine relative luminance per WCAG20
     // http://w3.org/TR/WCAG20/#relativeluminancedef
-    var luminance = (0.2126 * calculateInverseGamma(rgbColor[0]))
-          + (0.7152 * calculateInverseGamma(rgbColor[1]))
-          + (0.0722 * calculateInverseGamma(rgbColor[2]));
+    var luminance = (0.2126 * inverseGamma(rgbColor.r))
+          + (0.7152 * inverseGamma(rgbColor.g))
+          + (0.0722 * inverseGamma(rgbColor.b));
 
     return luminance;
   }
 
   function convertToRGB(color) {
-    var rgb = [0, 0, 0];
+    var rgb = { r: 0, g: 0, b: 0 };
+    var colors = ['r', 'g', 'b'];
     for (var i = 0; i < 3; i++) {
-      rgb[i] = parseInt(color.substr(i * 2, 2), 16) / 255;
+      rgb[colors[i]] = parseInt(color.substr(i * 2, 2), 16) / 255;
     }
     return rgb;
   }
 
   function foregroundColorClass(bg) {
     var bgRgb = convertToRGB(bg);
-    var luminance = calculateLuminance(bgRgb);
+    var luminance = luminanceForRgb(bgRgb);
 
     return luminance > 0.5 ? 'dark' : 'light';
   }
