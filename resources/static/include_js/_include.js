@@ -518,6 +518,7 @@
         opts.siteName = passedOptions.siteName || undefined;
         opts.siteLogo = passedOptions.siteLogo || undefined;
         opts.backgroundColor = passedOptions.backgroundColor || undefined;
+        opts.experimental_emailHint = passedOptions.experimental_emailHint || undefined;
         // api_called could have been set to getVerifiedEmail already
         api_called = api_called || "get";
         if (checkDeprecated(passedOptions, "silent")) {

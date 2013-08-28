@@ -179,7 +179,8 @@ BrowserID.State = (function() {
     handleState("authenticate", function(msg, info) {
       _.extend(info, {
         siteName: self.siteName,
-        siteTOSPP: self.siteTOSPP
+        siteTOSPP: self.siteTOSPP,
+        email: "foo@eyedee.me"
       });
 
       startAction("doAuthenticate", info);
