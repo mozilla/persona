@@ -70,83 +70,28 @@
 
 
       <% if (useJavascript !== false) { %>
-<!-- script src="/common/js/browserid.js"></script -->
+
+<!-- 
+I'm having trouble re-using our modules...
+The following are added to quite errors, not that we want them
+* hub
+* lib/module
+* mediator
+* modules/module
+-->
+<script src="/common/js/browserid.js"></script>
 <script src="/common/js/lib/jquery-1.7.1.min.js"></script>
-<!-- script src="/common/js/lib/tinyscore.js"></script>
+<script src="/common/js/lib/tinyscore.js"></script>
+<script src="/common/js/javascript-extensions.js"></script>
+<script src="/common/js/lib/hub.js"></script> 33
+<script src="/common/js/lib/module.js"></script> 35
+<script src="/common/js/class.js"></script> 35
+<script src="/common/js/mediator.js"></script>
 <script src="/common/js/helpers.js"></script>
-<script src="/common/js/lib/module.js"></script>
-<script src="common/js/modules/xhr.js"></script>
-<script src="/common/js/network.js"></script -->
-<script>
-// authentication_form add returning
-// or #signin .contents
-$('#authentication_form').addClass('returning');
-$('.isMobile').removeClass('isMobile');
-$('#authentication_form').show();
-var csrf_token;
-$('button.isReturning').click(function(e) {
-  e.preventDefault();
-  $('#cannot_authenticate').hide('fast');
-  var params = {
-    "email": $('#authentication_email').val(),
-    "pass": $('#authentication_password').val(),
-    "ephemeral":true,
-    "allowUnverified": false,
-    "csrf": csrf_token
-  };
-  console.log('Sending ', params);
-  $.ajax('/wsapi/authenticate_user', {
-    type: 'POST',
-    contentType: 'application/json; charset=UTF-8',
-    data: JSON.stringify(params),
-    dataType: 'json',
-    error: function(xhr, status, err) {
-      $('#cannot_authenticate').show('fast');
-      console.error('Auth call failed');
-      console.log(xhr, status, err);
-      console.error(err);
-    },
-    success: function(res, status, xhr) {
-      console.log('res data=', typeof res, res, typeof res.success);
-      if (res.success === true ||
-          res.success === "true") {
-        navigator.id.completeAuthentication();
-      }
-    },
-    complete: function(tbd) {
-      console.log('/wsapi/authenticate_user finished');
-    }
-  });
-});
-
-$('.cancelPassword:visible').click(function(e) {
-  e.preventDefault();
-  var msg = "user clicked cancel";
-  navigator.id.raiseProvisioningFailure(msg);
-});
-
-console.log('Starting beginAuthentication');
-navigator.id.beginAuthentication(function(email) {
-  $('#authentication_email').val(email);
-  $('#authentication_email').attr('disabled', 'disabled');
-  console.log('callback beginAuthentication');
-  console.log(email);
-  $.getJSON('/wsapi/session_context', function(data, status, xhr) {
-    console.log(data);
-    csrf_token = data.csrf_token;
-    console.log('csrf_token=', csrf_token);
-    if (data.authenticated) {
-      $.getJSON('/wsapi/list_emails', function(data, status, xhr) {
-        console.log('list_emails', data);
-        if (data.emails.indexOf(email) !== -1) {
-          console.log('Woo hoo you all clear kid');
-          navigator.id.completeAuthentication();
-        }
-      });
-    }
-  });
-});
-</script>
+<script src="/common/js/modules/module.js"></script>
+<script src="/common/js/modules/xhr.js"></script>
+<script src="/common/js/network.js"></script>
+<script src="/pages/js/idp_authenticate.js"></script>
       <% } %>
 	</body>
 </html>
