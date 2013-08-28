@@ -338,6 +338,18 @@ section > .contents {
     z-index: 10;
 }
 
+/* dark text on a light background */
+.favicon.dark,
+.favicon.dark a {
+  color: #000;
+}
+
+/* light text on a dark background */
+.favicon.light,
+.favicon.light a {
+  color: #fff;
+}
+
 .favicon strong {
     font-size: 18px;
     line-height: 24px;
@@ -411,17 +423,24 @@ section > .contents {
 
 .tospp {
   font-size: 11px;
-  color: #787878;
 }
+
 
 #rptospp {
   display: none;
-  margin: 10px auto;
-  max-width: 280px;
 }
+
 
 .rptospp #rptospp {
   display: block;
+  margin: 10px auto;
+  max-width: 260px;
+}
+
+#rptospp a {
+  text-shadow: none;
+  border-bottom: 1px dotted;
+  font-weight: 400;
 }
 
 a.emphasize {

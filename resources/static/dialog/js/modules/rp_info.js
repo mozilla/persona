@@ -15,27 +15,39 @@ BrowserID.Modules.RPInfo = (function() {
       dom = bid.DOM,
       renderer = bid.Renderer,
       BODY_SELECTOR = "body",
+      RP_BACKGROUND_SELECTOR = ".rpBackground",
+      RP_FOREGROUND_SELECTOR = ".favicon",
       FAVICON_CLASS = "showMobileFavicon",
-      TEXT_COLOR = {dark: '#383838', light: '#c7c7c7'},
       sc;
 
-  function foregroundColor(bg) {
+  function inverseGamma(color) {
+    return color <= 0.03928 ? (color / 12.92) : Math.pow((color + 0.055) / 1.055, 2.4);
+  }
 
-    // Convert to RGB number values
-    var list = [0, 0, 0];
+  function luminanceForRgb(rgbColor) {
+    // Determine relative luminance per WCAG20
+    // http://w3.org/TR/WCAG20/#relativeluminancedef
+    var luminance = (0.2126 * inverseGamma(rgbColor.r))
+          + (0.7152 * inverseGamma(rgbColor.g))
+          + (0.0722 * inverseGamma(rgbColor.b));
+
+    return luminance;
+  }
+
+  function convertToRGB(color) {
+    var rgb = { r: 0, g: 0, b: 0 };
+    var colors = ['r', 'g', 'b'];
     for (var i = 0; i < 3; i++) {
-      list[i] = parseInt(bg.substr(i * 2, 2), 16);
+      rgb[colors[i]] = parseInt(color.substr(i * 2, 2), 16) / 255;
     }
+    return rgb;
+  }
 
-    // Determine the luminance (L in HSL)
-    var r = list[0] / 255, g = list[1] / 255, b = list[2] / 255;
-    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-    if ((max + min) / 2 > 0.5) {
-      return TEXT_COLOR.dark; // high L => light background => dark text
-    } else {
-      return TEXT_COLOR.light; // low L => dark background => light text
-    }
+  function foregroundColorClass(bg) {
+    var bgRgb = convertToRGB(bg);
+    var luminance = luminanceForRgb(bgRgb);
 
+    return luminance > 0.5 ? 'dark' : 'light';
   }
 
   var Module = bid.Modules.PageModule.extend({
@@ -61,8 +73,11 @@ BrowserID.Modules.RPInfo = (function() {
 
       renderer.render(".rpInfo", "rp_info", templateData);
       if (options.backgroundColor) {
-        $('.rpBackground').css('background-color', '#' + options.backgroundColor);
-        $('.favicon').css('color', foregroundColor(options.backgroundColor));
+        dom.setStyle(RP_BACKGROUND_SELECTOR, 'background-color', '#' + options.backgroundColor);
+
+        dom.removeClass(RP_FOREGROUND_SELECTOR, 'dark');
+        dom.removeClass(RP_FOREGROUND_SELECTOR, 'light');
+        dom.addClass(RP_FOREGROUND_SELECTOR, foregroundColorClass(options.backgroundColor));
       }
 
       /**
@@ -83,8 +98,7 @@ BrowserID.Modules.RPInfo = (function() {
 
     // BEGIN TESTING API
     ,
-    TEXT_COLOR: TEXT_COLOR,
-    foregroundColor: foregroundColor
+    foregroundColorClass: foregroundColorClass
     // END TESTING API
 
   });
