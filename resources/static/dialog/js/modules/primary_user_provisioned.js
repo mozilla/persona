@@ -26,6 +26,7 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
         network.addEmailWithAssertion(assertion, function(status) {
           if (status) {
             self.publish("primary_user_ready", options);
+            complete(status);
           }
           else {
             self.getErrorDialog(errors.addEmailWithAssertion, complete)();
@@ -36,6 +37,7 @@ BrowserID.Modules.PrimaryUserProvisioned = (function() {
         user.authenticateWithAssertion(email, assertion, function(status) {
           if (status) {
             self.publish("primary_user_ready", options);
+            complete(status);
           }
           else {
             self.getErrorDialog(errors.authenticateWithAssertion, complete)();

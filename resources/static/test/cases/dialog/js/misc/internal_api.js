@@ -24,6 +24,7 @@
   ModuleMock.prototype = {
     init: function() {},
     start: function() {},
+    stop: function() {},
     get: function(getOrigin, options, onsuccess, onerror) {
       this.controllerOrigin = getOrigin;
       // simulate the full dialog flow.
