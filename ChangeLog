@@ -1,4 +1,14 @@
-current train:
+train-2013.08.28
+  * Add redirect flow, fixing Persona on Chrome for iOS and Windows Phone: #2034
+  * Ensure ToS/PP links are legible for any backgroundColor: #3725
+  * Add Webmaker example RP, replacing Times Crossword app: #3716
+  * If an unverified user was created via an allowUnverified RP, ensure that user can sign into non-allowUnverified RPs: #3811
+  * Update mobile button styles to match FXOS style guide: #3635
+  * Add MPL2 license header missing from some files: #3715
+  * Update lockdown version: #3303
+  * Fix duplicate key in unit tests: #3808
+  * Visual tweaks: #3636, #3814, #3813, #3765
+  * Copy tweaks: #3823, #3833
 
 train-2013.08.15
 	* Relax restrictions on siteLogo - allow siteLogo from any https URL or image dataURI: #3705, #3743
