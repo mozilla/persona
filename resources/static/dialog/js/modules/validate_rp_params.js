@@ -115,8 +115,9 @@ BrowserID.Modules.ValidateRpParams = (function() {
       // of the desired email to verify.  It allows a site who knows an
       // email but must verify it to offer a streamlined user experience
       if (paramsFromRP.experimental_emailHint) {
-        // XXX: validate me!
-        params.emailHint = paramsFromRP.experimental_emailHint;
+        params.emailHint = validateEmail(
+            paramsFromRP.experimental_emailHint,
+            "experimental_emailHint");
       }
 
       if (hash.indexOf("#AUTH_RETURN") === 0) {
@@ -296,6 +297,14 @@ BrowserID.Modules.ValidateRpParams = (function() {
     }
 
     return bool;
+  }
+
+  function validateEmail(email, name) {
+    if (!bid.verifyEmail(email)) {
+      throw new Error("invalid email for " + name + ": " + email);
+    }
+
+    return email;
   }
 
   return Module;
