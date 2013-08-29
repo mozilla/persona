@@ -76,7 +76,7 @@
     testElementFocused("input[type=radio]:eq(0)", "if there is no email associated with the site, but there are multiple addresses, focus the first email address");
   });
 
-  test("email associated with site - check correct email", function() {
+  test("email associated with site, no emailHint passed - preselect last used email", function() {
     storage.addEmail("testuser@testuser.com", {});
     storage.addEmail("testuser2@testuser.com", {});
     storage.site.set(testOrigin, "email", "testuser2@testuser.com");
@@ -84,15 +84,54 @@
     createController();
 
     var radioButton = $("input[type=radio]").eq(0);
-    testElementChecked(radioButton, "the email address we specified is checked");
-    testElementFocused(radioButton, "checked element is focused");
+    testElementChecked(radioButton);
+    testElementFocused(radioButton);
     testLabelForRadioButtonHasSelectedClass(radioButton);
 
     var label = $("label[for=" + radioButton.attr("id") + "]");
-    ok(label.hasClass("preselected"), "the label has the preselected class");
+    ok(label.hasClass("preselected"));
   });
 
-  test("single email, no email associated with site - check first radio button", function() {
+  test("email associated with site, email that user owns specified in emailHint - " +
+          "select email from emailHint", function() {
+    storage.addEmail("testuser@testuser.com", {});
+    storage.addEmail("testuser2@testuser.com", {});
+    storage.site.set(testOrigin, "email", "testuser2@testuser.com");
+
+    createController({
+      emailHint: "testuser@testuser.com"
+    });
+
+    var radioButton = $("input[type=radio]").eq(1);
+    testElementChecked(radioButton);
+    testElementFocused(radioButton);
+    testLabelForRadioButtonHasSelectedClass(radioButton);
+
+    var label = $("label[for=" + radioButton.attr("id") + "]");
+    ok(label.hasClass("preselected"));
+  });
+
+  test("email associated with site, email that user does not own specified in emailHint - " +
+          "select last used email", function() {
+    storage.addEmail("testuser@testuser.com", {});
+    storage.addEmail("testuser2@testuser.com", {});
+    storage.site.set(testOrigin, "email", "testuser2@testuser.com");
+
+    createController({
+      emailHint: "not_owned@testuser.com"
+    });
+
+    var radioButton = $("input[type=radio]").eq(0);
+    testElementChecked(radioButton);
+    testElementFocused(radioButton);
+    testLabelForRadioButtonHasSelectedClass(radioButton);
+
+    var label = $("label[for=" + radioButton.attr("id") + "]");
+    ok(label.hasClass("preselected"));
+  });
+
+
+  test("single email, no email associated with site, no hint passed - check first radio button", function() {
     storage.addEmail("testuser@testuser.com", {});
 
     createController();

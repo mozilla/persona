@@ -121,6 +121,17 @@ BrowserID.Modules.PickEmail = (function() {
     this.publish("notme");
   }
 
+  function getPreselectedEmail(options) {
+    var emailHint = options.emailHint;
+    // Only use the email hint as the preselected email if the user owns the
+    // address, otherwise get the last used email for this site.
+    if (emailHint && user.getStoredEmailKeypair(emailHint)) {
+      return emailHint;
+    }
+
+    return user.getOriginEmail();
+  }
+
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       var origin = user.getOrigin(),
@@ -134,7 +145,7 @@ BrowserID.Modules.PickEmail = (function() {
 
       self.renderForm("pick_email", {
         identities: identities,
-        siteEmail: user.getOriginEmail(),
+        preselectedEmail: getPreselectedEmail(options),
         privacyPolicy: options.privacyPolicy,
         termsOfService: options.termsOfService,
         siteName: options.siteName,

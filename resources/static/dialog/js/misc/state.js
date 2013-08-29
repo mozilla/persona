@@ -178,11 +178,16 @@ BrowserID.State = (function() {
     });
 
     handleState("authenticate", function(msg, info) {
-      _.extend(info, {
+      // authenticate is called to either sign an unauthenticated user or to
+      // authenticate a user who is signed in with primary credentials and must
+      // sign in to the fallback IdP. If the user must upgrade their
+      // credentials, an email address is passed in the info object and should
+      // override the emailHint.
+      info = _.extend({
         siteName: self.siteName,
         siteTOSPP: self.siteTOSPP,
         email: self.emailHint
-      });
+      }, info);
 
       startAction("doAuthenticate", info);
       complete(info.complete);
@@ -382,6 +387,7 @@ BrowserID.State = (function() {
     handleState("pick_email", function() {
       var originEmail = user.getOriginEmail();
       startAction("doPickEmail", {
+        emailHint: self.emailHint,
         origin: self.hostname,
         privacyPolicy: !originEmail && self.privacyPolicy,
         termsOfService: !originEmail && self.termsOfService,
