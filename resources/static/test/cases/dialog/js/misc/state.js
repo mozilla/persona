@@ -506,6 +506,33 @@
     testActionStarted("doAuthenticate", { email: TEST_EMAIL, siteTOSPP: true });
   });
 
+  test("authenticate passes along emailHint option if email not specified in message", function() {
+    mediator.publish("start", {
+      emailHint: "testuser@testuser.com"
+    });
+
+    mediator.publish("authenticate");
+
+    testActionStarted("doAuthenticate", {
+      email: "testuser@testuser.com"
+    });
+  });
+
+  test("authenticate passes specified email from message even if there is an email hint", function() {
+    mediator.publish("start", {
+      emailHint: "testuser@testuser.com"
+    });
+
+    mediator.publish("authenticate", {
+      email: "mustauth@testuser.com"
+    });
+
+    testActionStarted("doAuthenticate", {
+      email: "mustauth@testuser.com"
+    });
+  });
+
+
   test("start with no special parameters - go straight to checking auth", function() {
     mediator.publish("start");
 
@@ -792,6 +819,18 @@
     });
   });
 
+  test("pick_email passes along emailHint options if available", function() {
+
+    mediator.publish("start", {
+      emailHint: "testuser@testuser.com"
+    });
+
+    mediator.publish("pick_email");
+
+    testActionStarted("doPickEmail", {
+      emailHint: "testuser@testuser.com"
+    });
+  });
 
   asyncTest("new_user KPI for new users", function() {
     mediator.subscribe("kpi_data", function(msg, info) {

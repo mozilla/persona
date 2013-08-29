@@ -473,5 +473,16 @@
                          {backgroundColor: "456DEF"});
   });
 
+  asyncTest("valid email address for experimental_emailHint - allowed", function() {
+    testExpectValidationSuccess({experimental_emailHint: "testuser@testuser.com"},
+                         {emailHint: "testuser@testuser.com"});
+  });
+
+  asyncTest("invalid email address for experimental_emailHint - not allowed", function() {
+    testExpectValidationFailure({
+      experimental_emailHint: "testuser.testuser.com"
+    }, "invalid email for experimental_emailHint: testuser.testuser.com");
+  });
+
 
 }());

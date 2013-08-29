@@ -111,6 +111,15 @@ BrowserID.Modules.ValidateRpParams = (function() {
             "experimental_allowUnverified");
       }
 
+      // emailHint allows a site to provide a hint to the persona dialog
+      // of the desired email to verify.  It allows a site who knows an
+      // email but must verify it to offer a streamlined user experience
+      if (paramsFromRP.experimental_emailHint) {
+        params.emailHint = validateEmail(
+            paramsFromRP.experimental_emailHint,
+            "experimental_emailHint");
+      }
+
       if (hash.indexOf("#AUTH_RETURN") === 0) {
         var primaryParams = storage.idpVerification.get();
         if (!primaryParams)
@@ -288,6 +297,14 @@ BrowserID.Modules.ValidateRpParams = (function() {
     }
 
     return bool;
+  }
+
+  function validateEmail(email, name) {
+    if (!bid.verifyEmail(email)) {
+      throw new Error("invalid email for " + name + ": " + email);
+    }
+
+    return email;
   }
 
   return Module;

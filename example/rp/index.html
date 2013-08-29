@@ -80,6 +80,10 @@ pre {
       <label for="backgroundColor">Supply Background Color:</label>
       <input type="text" id="backgroundColor" value="#008" />
     </li><li>
+      <input type="checkbox" id="supplyEmailHint">
+      <label for="emailHint">Email Hint:</label>
+      <input type="text" id="emailHint" value="" />
+    </li><li>
       <input type="checkbox" id="returnTo">
       <label for="returnTo">Supply returnTo</label>
     </li><li>
@@ -214,6 +218,7 @@ $(document).ready(function() {
       backgroundColor: $('#supplyBackgroundColor').attr('checked')
           ? $('#backgroundColor').val() : undefined,
       returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
+      experimental_emailHint: $('#supplyEmailHint').attr('checked') ? $('#emailHint').val() : undefined,
       experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
       experimental_forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
       experimental_allowUnverified: $('#allowUnverified').attr('checked') ? true : false,
