@@ -131,6 +131,7 @@ BrowserID.State = (function() {
       self.privacyPolicy = info.privacyPolicy;
       self.termsOfService = info.termsOfService;
       self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
+      self.emailHint = info.emailHint;
 
       if (info.forceIssuer) {
         user.setIssuer(info.forceIssuer);
@@ -180,7 +181,7 @@ BrowserID.State = (function() {
       _.extend(info, {
         siteName: self.siteName,
         siteTOSPP: self.siteTOSPP,
-        email: "foo@eyedee.me"
+        email: self.emailHint
       });
 
       startAction("doAuthenticate", info);
