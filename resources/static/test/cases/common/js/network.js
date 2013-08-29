@@ -10,6 +10,7 @@
       user = bid.User,
       network = bid.Network,
       testHelpers = bid.TestHelpers,
+      RpInfo = bid.Models.RpInfo,
       TEST_EMAIL = "testuser@testuser.com",
       TEST_PASSWORD = "password",
       failureCheck = testHelpers.failureCheck,
@@ -57,11 +58,12 @@
       args.push("password");
     }
 
-    args.push("origin");
+    var rpInfo = RpInfo.create({
+      origin: "testuser.com",
+      allowUnverified: !!config.unverified
+    });
 
-    if (config.unverified) {
-      args.push(false);
-    }
+    args.push(rpInfo);
 
     args.push(onComplete, onFailure || testHelpers.unexpectedFailure);
     return args;

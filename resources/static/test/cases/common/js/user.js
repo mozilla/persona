@@ -149,7 +149,7 @@
 
     asyncTest(stageFuncName + " with XHR failure", function() {
       storage.addEmail(TEST_EMAIL);
-      var args = [lib[stageFuncName], TEST_EMAIL];
+      var args = [lib[stageFuncName].bind(lib), TEST_EMAIL];
       if (config.password) args.push(config.password);
 
       failureCheck.apply(null, args);

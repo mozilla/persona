@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Persona</title>
+        <style type="text/css">
+            #outlook a{padding:0;} /* Force Outlook to provide a "view in browser" button. */
+            body{width:100% !important;} .ReadMsgBody{width:100%;} .ExternalClass{width:100%;} /* Force Hotmail to display emails at full width */
+            body{-webkit-text-size-adjust:none;} /* Prevent Webkit platforms from changing default text sizes. */
+
+            body {
+              background: <%= backgroundColor %>;
+              margin:0;
+              padding:0;
+              width:100% !important;
+              -webkit-text-size-adjust:none;
+              font-family: Helvetica, Arial, sans-serif;
+              font-size: 14px;
+              color: #3d3f3f;
+            }
+
+            img {
+              display: block;
+              border:0;
+              height:auto;
+              line-height:100%;
+              outline:none;
+              text-decoration:none;
+            }
+
+            a {
+              color: #3d3f3f;
+              text-decoration: none;
+            }
+
+            a:hover {
+              text-decoration: underline;
+            }
+
+            p {
+              margin: 0;
+              line-height: 1.5;
+            }
+
+            table td {
+              border-collapse:collapse;
+            }
+        </style>
+  </head>
+  <body style="-webkit-text-size-adjust: none;padding:0;margin:0;">
+    <center>
+    <table border="0" cellpadding="20" cellspacing="0" height="100%" width="100%"><!-- body area -->
+      <tr style="margin: 0;
+        padding: 0;
+        height: 100% !important;
+        width: 100% !important;
+        background: <%= backgroundColor %>
+        -webkit-text-size-adjust:none;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: #3d3f3f;">
+        <td align="center" valign="top" style="border-collapse: collapse;" bgcolor="<%= backgroundColor %>">
+          <table border="0" cellpadding="0" cellspacing="0"><!-- bg color area -->
+            <tr class="spacer">
+              <td height="40px"></td>
+            </tr>
+
+            <tr>
+              <td width="600" align="center" valign="top" style="border-collapse: collapse;">
+                <img style="max-width: 200px; max-height: 200px;" src="<%= siteLogo || cachify('/pages/i/persona-logo-wordmark.png') %>" alt="<%= site %>" />
+              </td>
+            </tr>
+
+            <tr class="spacer">
+              <td height="10px"> </td>
+            </tr>
+
+            <tr>
+              <td width="600" align="center" valign="top" class="email-content"
+              bgcolor="#fff" style="text-align: center; border-collapse:
+              collapse; padding: 0 10px;">
+                <table border="0" cellpadding="0" cellspacing="0"><!-- white area -->
+
+                  <tr class="spacer">
+                    <td height="30px" width="600"> </td>
+                  </tr>
+
+

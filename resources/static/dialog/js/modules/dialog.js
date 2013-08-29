@@ -288,6 +288,10 @@ BrowserID.Modules.Dialog = (function() {
       // no matter what, we clear the primary flow state for this window
       storage.idpVerification.clear();
 
+      params.origin = user.getOrigin();
+      var rpInfo = bid.Models.RpInfo.create(params);
+      user.setRpInfo(rpInfo);
+
       function start() {
         self.publish("start", params);
       }

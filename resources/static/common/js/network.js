@@ -222,18 +222,21 @@ BrowserID.Network = (function() {
      * @param {string} email
      * @param {string} password
      * @param {string} origin - site user is trying to sign in to.
+     * @param {string} backgroundColor - backgroundColor to set in the email
      * @param {boolean} allowUnverified
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    createUser: function(email, password, origin, allowUnverified,
-        onComplete, onFailure) {
+    createUser: function(email, password, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
         pass: password,
-        site : origin,
-        allowUnverified: allowUnverified
+        site : rpInfo.getOrigin(),
+        allowUnverified: rpInfo.getAllowUnverified(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getSiteLogo()
       };
+
       stageAddressForVerification(postData, "/wsapi/stage_user", onComplete, onFailure);
     },
 
@@ -303,10 +306,12 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, origin, onComplete, onFailure) {
+    requestPasswordReset: function(email, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
     },
@@ -343,10 +348,12 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestEmailReverify: function(email, origin, onComplete, onFailure) {
+    requestEmailReverify: function(email, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_reverify", onComplete, onFailure);
     },
@@ -457,11 +464,13 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - called when complete.
      * @param {function} [onFailure] - called on xhr failure.
      */
-    addSecondaryEmail: function(email, password, origin, onComplete, onFailure) {
+    addSecondaryEmail: function(email, password, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
         pass: password,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_email", onComplete, onFailure);
     },
@@ -707,11 +716,13 @@ BrowserID.Network = (function() {
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestTransitionToSecondary: function(email, password, origin, onComplete, onFailure) {
+    requestTransitionToSecondary: function(email, password, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
         pass: password,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_transition", onComplete, onFailure);
     },
