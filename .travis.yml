@@ -23,7 +23,6 @@ notifications:
     use_notice: false
     skip_join: false
   email:
-    - lloyd@mozilla.com
     - jrgm@mozilla.com
 
 env:

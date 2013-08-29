@@ -59,7 +59,7 @@ page.open(phantom.args[0], function(status){
         waitFor(function(){
             return page.evaluate(function(){
                 var el = document.getElementById('qunit-testresult');
-                if (el && el.innerText.match('completed')) {
+                if (el && el.innerText.match(/Tests completed in \d+ milliseconds/)) {
                     return true;
                 }
                 return false;

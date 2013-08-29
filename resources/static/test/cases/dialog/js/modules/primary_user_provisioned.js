@@ -115,8 +115,9 @@
   });
 
   asyncTest("start controller with `add: true` adds email to user's list", function() {
+    var primaryUserReadyCalled;
     register("primary_user_ready", function(msg, info) {
-      start();
+      primaryUserReadyCalled = true;
     });
 
     xhr.useResult("valid");
@@ -125,7 +126,9 @@
       add: true,
       assertion: "test_assertion",
       ready: function(status) {
-        equal(true, status, "valid status");
+        equal(status, true);
+        equal(primaryUserReadyCalled, true);
+        start();
       }
     });
   });

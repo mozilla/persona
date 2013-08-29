@@ -8,6 +8,7 @@
       mediator = bid.Mediator,
       State = bid.State,
       user = bid.User,
+      moduleManager = bid.module,
       machine,
       actions,
       network = bid.Network,
@@ -387,13 +388,8 @@
   });
 
   test("primary_user_authenticating stops all modules", function() {
-    try {
-      mediator.publish("primary_user_authenticating");
-
-      equal(machine.success, true, "success flag set");
-    } catch(e) {
-      // ignore exception, it tries shutting down all the modules.
-    }
+    mediator.publish("primary_user_authenticating");
+    equal(machine.success, true, "success flag set");
   });
 
   test("primary_user - call doProvisionPrimaryUser", function() {

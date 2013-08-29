@@ -24,6 +24,7 @@
   ModuleMock.prototype = {
     init: function() {},
     start: function() {},
+    stop: function() {},
     get: function(getOrigin, options, onsuccess, onerror) {
       this.controllerOrigin = getOrigin;
       // simulate the full dialog flow.
@@ -135,6 +136,8 @@
   });
 
   test(".get with invalid string passed for options - assertion is not generated", function() {
+    expect(0); // we only assert when called unexpectedly
+
     dialogModule.get_success_value = "simulated_assertion";
 
     internal.get(ORIGIN, function(assertion) {

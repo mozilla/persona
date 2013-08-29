@@ -330,6 +330,7 @@
     var startTime = new Date().getTime() - 1000;
     try {
       controller.addEvent("start_time", startTime);
+      ok(true); // assert affirmatively that the previous line did not throw.
     } catch(e) {
       ok(false);
     }

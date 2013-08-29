@@ -238,6 +238,8 @@
   });
 
   asyncTest("success responses not called after module stops", function() {
+    expect(0); // neither the error nor success callbacks below should fire.
+
     xhr.get({
       url: "/wsapi/session_context",
       error: testHelpers.unexpectedXHRFailure,
@@ -251,7 +253,10 @@
   });
 
   asyncTest("error responses not called after module stops", function() {
+    expect(0); // neither the error nor success callbacks below should fire.
+
     transport.useResult("contextAjaxError");
+
     xhr.get({
       url: "/wsapi/session_context",
       error: testHelpers.unexpectedXHRFailure,

@@ -166,30 +166,12 @@
     });
   });
 
-  asyncTest("redirect: message shows with correct timeout", function() {
+  asyncTest("redirect: location correctly updated", function() {
     var returnTo = 'http://test.domain/path';
     storage.setReturnTo(returnTo);
-    var timeout = 2;
 
-    //mock out helper so we can check progress of redirectTimeout el
-    var replaceFormWithNotice = pageHelpers.replaceFormWithNotice;
-    pageHelpers.replaceFormWithNotice = function(selector, cb) {
-      // mock out 2s network response
-      setTimeout(function mockedNetwork() {
-        replaceFormWithNotice.call(this, selector, function intercepted() {
-          equal(parseInt($('#redirectTimeout').html(), 10), timeout,
-            'timeout should not have started countdown yet');
-
-          //at the end, finish with cb
-          cb && cb();
-        });
-      }, (timeout - 1) * 1000);
-    };
-
-    var options = _.extend({ redirectTimeout: timeout * 1000 }, config);
-    createController(options, function() {
-      // teardown
-      pageHelpers.replaceFormWithNotice = replaceFormWithNotice;
+    createController(config, function() {
+      equal(doc.location, returnTo);
       start();
     });
   });

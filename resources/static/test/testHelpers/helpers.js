@@ -11,6 +11,7 @@ BrowserID.TestHelpers = (function() {
       network = bid.Network,
       user = bid.User,
       storage = bid.Storage,
+      moduleManager = bid.module,
       XHR = bid.Modules.XHR,
       xhr,
       transport = bid.Mocks.xhr,
@@ -101,7 +102,8 @@ BrowserID.TestHelpers = (function() {
         provisioning: provisioning
       });
       user.setOrigin(testOrigin);
-
+      moduleManager.stopAll();
+      moduleManager.reset();
     },
 
     teardown: function() {
@@ -115,6 +117,8 @@ BrowserID.TestHelpers = (function() {
       tooltip.reset();
       provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
       user.reset();
+      moduleManager.stopAll();
+      moduleManager.reset();
     },
 
     testOrigin: testOrigin,
@@ -358,7 +362,9 @@ BrowserID.TestHelpers = (function() {
           if (focusedEl.length) $(focusedEl).focus();
         }
         else {
-          window.console && console.log("currently unable to focus elements, focus check skipped - try focusing the unit test page");
+          var msg = "currently unable to focus elements, focus check skipped - try focusing the unit test page";
+          window.console && console.log(msg);
+          ok(true, msg); // Make QUnit happy if a test contains no other assertions and focus cannot be checked.
         }
         input.remove();
       }
