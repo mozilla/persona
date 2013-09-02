@@ -6,8 +6,6 @@ BrowserID.Modules.PickEmail = (function() {
 
   var bid = BrowserID,
       user = bid.User,
-      errors = bid.Errors,
-      storage = bid.Storage,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
       tooltip = bid.Tooltip,
@@ -41,8 +39,7 @@ BrowserID.Modules.PickEmail = (function() {
   function checkEmail(email) {
     /*jshint validthis: true*/
     if (!email) {
-      tooltip.showTooltip("#must_choose_email");
-      return;
+      return tooltip.showTooltip("#must_choose_email");
     }
 
     var identity = user.getStoredEmailKeypair(email);
@@ -121,8 +118,8 @@ BrowserID.Modules.PickEmail = (function() {
     this.publish("notme");
   }
 
-  function getPreselectedEmail(options) {
-    var emailHint = options.emailHint;
+  function getPreselectedEmail(rpInfo) {
+    var emailHint = rpInfo.getEmailHint();
     // Only use the email hint as the preselected email if the user owns the
     // address, otherwise get the last used email for this site.
     if (emailHint && user.getStoredEmailKeypair(emailHint)) {
@@ -134,25 +131,29 @@ BrowserID.Modules.PickEmail = (function() {
 
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
-      var origin = user.getOrigin(),
-          self=this;
+      var self=this;
 
       options = options || {};
 
+      self.checkRequired(options, 'rpInfo');
+
       dom.addClass(BODY_SELECTOR, PICK_EMAIL_CLASS);
 
-      var identities = getSortedIdentities();
+      var rpInfo = options.rpInfo;
 
       self.renderForm("pick_email", {
-        identities: identities,
-        preselectedEmail: getPreselectedEmail(options),
-        privacyPolicy: options.privacyPolicy,
-        termsOfService: options.termsOfService,
-        siteName: options.siteName,
-        hostname: options.hostname
+        identities: getSortedIdentities(),
+        preselectedEmail: getPreselectedEmail(rpInfo),
+        privacyPolicy: rpInfo.getPrivacyPolicy(),
+        termsOfService: rpInfo.getTermsOfService(),
+        siteName: rpInfo.getSiteName(),
+        hostname: rpInfo.getHostname()
       });
 
-      if (options.privacyPolicy && options.termsOfService) {
+      var originEmail = user.getOriginEmail();
+      // only show the termsOfService and privacyPolicy if the user has not
+      // visited this site before and both are defined
+      if (!originEmail && rpInfo.getPrivacyPolicy() && rpInfo.getTermsOfService()) {
         dialogHelpers.showRPTosPP.call(self);
       }
 

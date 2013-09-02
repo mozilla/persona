@@ -17,11 +17,10 @@ BrowserID.Modules.CheckRegistration = (function() {
       var self=this;
       options = options || {};
 
-      self.checkRequired(options, "email", "siteName");
+      self.checkRequired(options, "email", "rpInfo");
       var templateData = {
         email: options.email,
-        required: options.required,
-        siteName: options.siteName
+        siteName: options.rpInfo.getSiteName()
       };
 
       // The error screen normally has a button row. Hide the button row before

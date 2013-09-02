@@ -143,7 +143,7 @@ BrowserID.Modules.Dialog = (function() {
 
     if (rpInfo) {
       var done = function done() {
-        redirectFlowComplete(self.window, user.getReturnTo());
+        redirectFlowComplete(self.window, user.rpInfo.getReturnTo());
       };
       this.get(rpInfo.origin, rpInfo.params, done, done);
       return true;
@@ -247,8 +247,6 @@ BrowserID.Modules.Dialog = (function() {
     get: function(originURL, paramsFromRP, success, error) {
       var self=this;
 
-      user.setOrigin(originURL);
-
       if (self.startExternalDependencies) {
         startActions.call(self, success, error);
         startStateMachine.call(self);
@@ -264,26 +262,21 @@ BrowserID.Modules.Dialog = (function() {
 
       // after this point, "params" and "paramsFromRP" can be relied upon
       // to contain safe data
-
-      params.hostname = user.getHostname();
+      params.origin = originURL;
 
       if (params.startTime)
         self.publish("start_time", params.startTime);
 
       publishKpis.call(self, params.rpAPI);
 
-      if (params.returnTo)
-        user.setReturnTo(params.returnTo);
-
+      var rpInfo = bid.Models.RpInfo.create(params);
+      user.setRpInfo(rpInfo);
+      params.rpInfo = rpInfo;
 
       self.publish("channel_established");
 
       // no matter what, we clear the primary flow state for this window
       storage.idpVerification.clear();
-
-      params.origin = user.getOrigin();
-      var rpInfo = bid.Models.RpInfo.create(params);
-      user.setRpInfo(rpInfo);
 
       function start() {
         self.publish("start", params);

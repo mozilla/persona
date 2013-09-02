@@ -5,8 +5,9 @@ BrowserID.Models.RpInfo = (function() {
   "use strict";
 
   /**
-   * This model represents RP specific info. This is created on startup, only
-   * origin and hostname are required.
+   * This model represents RP specific info, most of which is passed by the RP.
+   * An RpInfo model is created on startup.
+   * origin is required.
    */
 
   var bid = BrowserID,
@@ -15,27 +16,34 @@ BrowserID.Models.RpInfo = (function() {
 
   var Module = bid.Modules.Module.extend({
     origin: und,
-    hostname: und,
     backgroundColor: und,
     siteName: und,
     siteLogo: und,
     privacyPolicy: und,
     termsOfService: und,
-    allowUnverified: und,
+    allowUnverified: false,
+    returnTo: und,
+    issuer: 'default',
+    emailHint: und,
 
     init: function(options) {
       var self = this;
 
+      self.checkRequired(options, 'origin');
+
       self.importFrom(options,
         'origin',
-        'hostname',
         'backgroundColor',
         'siteName',
         'siteLogo',
         'privacyPolicy',
         'termsOfService',
-        'allowUnverified'
+        'allowUnverified',
+        'returnTo',
+        'emailHint'
         );
+
+      if (options.forceIssuer) self.issuer = options.forceIssuer;
 
       sc.init.call(self, options);
     },
@@ -45,7 +53,7 @@ BrowserID.Models.RpInfo = (function() {
     },
 
     getHostname: function() {
-      return this.hostname;
+      return this.origin && this.origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
     },
 
     getBackgroundColor: function() {
@@ -67,12 +75,32 @@ BrowserID.Models.RpInfo = (function() {
       }
     },
 
+    getPrivacyPolicy: function() {
+      return this.privacyPolicy;
+    },
+
     getTermsOfService: function() {
       return this.termsOfService;
     },
 
     getAllowUnverified: function() {
       return this.allowUnverified;
+    },
+
+    getReturnTo: function() {
+      return this.returnTo;
+    },
+
+    getIssuer: function() {
+      return this.issuer;
+    },
+
+    isDefaultIssuer: function() {
+      return this.issuer === "default";
+    },
+
+    getEmailHint: function() {
+      return this.emailHint;
     }
   });
 

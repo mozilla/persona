@@ -13,6 +13,7 @@ BrowserID.Modules.GenerateAssertion = (function() {
   var bid = BrowserID,
       complete = bid.Helpers.complete,
       user = bid.User,
+      storage = bid.Storage,
       errors = bid.Errors,
       sc;
 
@@ -20,13 +21,19 @@ BrowserID.Modules.GenerateAssertion = (function() {
     start: function(options) {
       options = options || {};
 
+      var self = this;
+
+      self.checkRequired(options, "email", "rpInfo");
+
       var email = options.email,
-          self = this;
+          origin = options.rpInfo.getOrigin();
 
-      self.checkRequired(options, "email");
-
-      user.getAssertion(email, user.getOrigin(), function(assertion) {
+      user.getAssertion(email, origin, function(assertion) {
         assertion = assertion || null;
+
+        if (assertion) {
+          storage.site.set(origin, "logged_in", email);
+        }
 
         self.publish("assertion_generated", {
           assertion: assertion
