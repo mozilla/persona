@@ -7,7 +7,14 @@ BrowserID.Models.RpInfo = (function() {
   /**
    * This model represents RP specific info, most of which is passed by the RP.
    * An RpInfo model is created on startup.
-   * origin is required.
+   *
+   * Note: a major assumption is made that all RP provided parameters passed
+   * to this object are already checked for validity and properly escaped.
+   * This should be done in dialog/js/modules/dialog.js and
+   * dialog/js/modules/validate_rp_params.js
+   *
+   * origin is required and comes from a trusted sources (WinChan or native
+   * hooks)
    */
 
   var bid = BrowserID,

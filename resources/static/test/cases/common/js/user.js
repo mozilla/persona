@@ -444,27 +444,6 @@
   }
 
 
-  test("getOrigin", function() {
-    /*lib.setOrigin(testOrigin);*/
-    equal(lib.rpInfo.getOrigin(), testOrigin);
-  });
-
-  /*
-  test("getHostname", function() {
-    var origin = "http://persona.org";
-    lib.setOrigin(origin);
-
-    var hostname = lib.getHostname();
-    equal(hostname, "login.persona.org", "getHostname returns only the hostname");
-  });
-
-  test("setReturnTo, getReturnTo", function() {
-    var returnTo = "http://samplerp.org";
-    lib.setReturnTo(returnTo);
-    equal(lib.getReturnTo(), returnTo, "get/setReturnTo work as expected");
-  });
-*/
-
   test("setOriginEmail/getOriginEmail", function() {
     storage.addEmail("testuser@testuser.com");
     storage.addEmail("testuser2@testuser.com");
@@ -1508,24 +1487,6 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
-
-  /*
-  test("getIssuer/isDefaultIssuer with default issuer", function() {
-    equal(lib.getIssuer(), "default");
-    equal(lib.isDefaultIssuer(), true);
-  });
-
-  test("getIssuer/isDefaultIssuer with updated issuer", function() {
-    var issuer = "fxos.personatest.org";
-    var rpInfo = RpInfo.create({
-      origin: "https://testuser.com",
-      forceIssuer: issuer
-    });
-    lib.setRpInfo(rpInfo);
-    equal(lib.getIssuer(), issuer);
-    equal(lib.isDefaultIssuer(), false);
-  });
-*/
 
   asyncTest("createSecondaryUser with allowUnverified " +
                 " should update address cache", function() {

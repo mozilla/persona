@@ -28,9 +28,15 @@
   function setRemoteOrigin(o) {
     if (!remoteOrigin) {
       remoteOrigin = o;
-      user.setOrigin(remoteOrigin);
-      var issuer = storage.site.get(o, "issuer");
-      user.setIssuer(issuer || "default");
+      var options = {
+        origin: remoteOrigin
+      };
+
+      var issuer = storage.site.get(remoteOrigin, "issuer");
+      if (issuer) options.issuer = issuer;
+
+      var rpInfo = bid.Models.RpInfo.create(options);
+      user.setRpInfo(rpInfo);
     }
   }
 

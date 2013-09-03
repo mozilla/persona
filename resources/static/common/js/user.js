@@ -406,11 +406,6 @@ BrowserID.User = (function() {
         pollDuration = config.pollDuration;
       }
       // END TESTING API
-
-      /*
-      if (config.issuer) {
-        issuer = config.issuer;
-      }*/
     },
 
     reset: function() {
@@ -1338,7 +1333,7 @@ BrowserID.User = (function() {
         }
         else {
           User.addressInfo(email, function(info) {
-            if (info.type === "primary" && User.isDefaultIssuer()) {
+            if (info.type === "primary" && User.rpInfo.isDefaultIssuer()) {
               // first we have to get the address info, then attempt
               // a provision, then if the user is provisioned, go and get an
               // assertion.
@@ -1597,18 +1592,6 @@ BrowserID.User = (function() {
       }, onFailure);
     }
   };
-
-  // Set origin to default to the current domain.  Other contexts that use user.js,
-  // like dialogs or iframes, will call setOrigin themselves to update this to
-  // the origin of the of the RP.  On login.persona.org, it will remain the origin of
-  // login.persona.org
-  /*
-  var currentOrigin = window.location.protocol + '//' + window.location.hostname;
-  if (window.location.port) {
-    currentOrigin += ':' + window.location.port;
-  }
-  User.setOrigin(currentOrigin);
-*/
 
   return User;
 }());

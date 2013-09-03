@@ -76,11 +76,13 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function isNewPersonaAccount(info) {
+    /*jshint validthis: true*/
     return (info.state === "unknown" && info.type === "secondary"
                 && this.rpInfo.isDefaultIssuer());
   }
 
   function isNewFxAccount(info) {
+    /*jshint validthis: true*/
     return (info.state === "unknown" && !this.rpInfo.isDefaultIssuer());
   }
 
