@@ -1053,7 +1053,7 @@
 
 
   asyncTest("getAssertion with known secondary email that does not have a key", function() {
-    storage.addEmail(TEST_EMAIL, { type: "secondary" });
+    storage.addEmail(TEST_EMAIL, { });
     lib.getAssertion(TEST_EMAIL, lib.getOrigin(), function onSuccess(assertion) {
       testAssertion(assertion, start);
       equal(storage.site.get(testOrigin, "email"), TEST_EMAIL, "email address was persisted");
@@ -1064,14 +1064,14 @@
   asyncTest("getAssertion with known primary email, expired cert, user authenticated with IdP - expect assertion", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.AUTHENTICATED);
-    storage.addEmail("unregistered@testuser.com", { type: "primary" });
+    storage.addEmail("registered@testuser.com", {});
 
     lib.getAssertion(
-      "unregistered@testuser.com",
+      "registered@testuser.com",
       lib.getOrigin(),
       function(assertion) {
         testAssertion(assertion, start);
-        equal(storage.site.get(testOrigin, "email"), "unregistered@testuser.com", "email address was persisted");
+        equal(storage.site.get(testOrigin, "email"), "registered@testuser.com", "email address was persisted");
       },
       testHelpers.unexpectedXHRFailure);
   });
@@ -1079,7 +1079,7 @@
   asyncTest("getAssertion with known primary email, expired cert, user not authenticated with IdP - expect null assertion", function() {
     xhr.useResult("primary");
     provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
-    storage.addEmail("registered@testuser.com", { type: "primary" });
+    storage.addEmail("registered@testuser.com", { });
 
     lib.getAssertion(
       "registered@testuser.com",
