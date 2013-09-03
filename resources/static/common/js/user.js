@@ -1416,11 +1416,11 @@ BrowserID.User = (function() {
           }, 0);
         }
         else {
-          if (storedID.type === "primary" && User.isDefaultIssuer()) {
-            // first we have to get the address info, then attempt
-            // a provision, then if the user is provisioned, go and get an
-            // assertion.
-            User.addressInfo(email, function(info) {
+          User.addressInfo(email, function(info) {
+            if (info.type === "primary" && User.isDefaultIssuer()) {
+              // first we have to get the address info, then attempt
+              // a provision, then if the user is provisioned, go and get an
+              // assertion.
               User.provisionPrimaryUser(email, info, function(status) {
                 if (status === "primary.verified") {
                   User.getAssertion(email, audience, onComplete, onFailure);
@@ -1429,15 +1429,15 @@ BrowserID.User = (function() {
                   complete(onComplete, null);
                 }
               }, onFailure);
-            }, onFailure);
-          }
-          else {
-            // we have no key for this identity, go generate the key,
-            // sync it and then get the assertion recursively.
-            User.syncEmailKeypair(email, function(status) {
-              User.getAssertion(email, audience, onComplete, onFailure);
-            }, onFailure);
-          }
+            }
+            else {
+              // we have no key for this identity, go generate the key,
+              // sync it and then get the assertion recursively.
+              User.syncEmailKeypair(email, function(status) {
+                User.getAssertion(email, audience, onComplete, onFailure);
+              }, onFailure);
+            }
+          }, onFailure);
         }
       }
       else {
