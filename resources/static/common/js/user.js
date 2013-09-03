@@ -695,21 +695,6 @@ BrowserID.User = (function() {
     },
 
     /**
-     * Get the IdP authentication status for a user.
-     * @method isUserAuthenticatedToPrimary
-     * @param {string} email
-     * @param {object} info - provisioning info
-     * @param {function} [onComplete] - called when complete.  Called with
-     *   status field - true if user authenticated with IdP, false otw.
-     * @param {function} [onFailure] - called on failure
-     */
-    isUserAuthenticatedToPrimary: function(email, info, onComplete, onFailure) {
-      User.primaryUserAuthenticationInfo(email, info, function(authInfo) {
-        onComplete(authInfo.authenticated);
-      }, onFailure);
-    },
-
-    /**
      * Poll the server until user registration is complete.
      * @method waitForUserValidation
      * @param {string} email - email address to check.
@@ -1148,8 +1133,6 @@ BrowserID.User = (function() {
      *     type: <secondary|primary>
      *     known: boolean, present if type is secondary.  True if email
      *        address is registered with BrowserID.
-     *     authed: boolean, present if type is primary - whether the user
-     *        is authenticated to the IdP as this user.
      *     auth: string - url to send users for auth - present if type is
      *        primary.
      *     prov: string - url to embed for silent provisioning - present
@@ -1176,14 +1159,8 @@ BrowserID.User = (function() {
         info.email = normalizedEmail;
         User.checkForInvalidCerts(normalizedEmail, info, function(cleanedInfo) {
           if (cleanedInfo.type === "primary") {
-            withContext(function() {
-              User.isUserAuthenticatedToPrimary(normalizedEmail, cleanedInfo,
-                  function(authed) {
-                cleanedInfo.authed = authed;
-                cleanedInfo.idpName = _.escape(getIdPName(cleanedInfo));
-                complete(cleanedInfo);
-              }, onFailure);
-            }, onFailure);
+            cleanedInfo.idpName = _.escape(getIdPName(cleanedInfo));
+            complete(cleanedInfo);
           }
           else {
             complete(cleanedInfo);

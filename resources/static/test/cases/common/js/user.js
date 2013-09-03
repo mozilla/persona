@@ -404,7 +404,6 @@
         testObjectValuesEqual(info, {
           type: "primary",
           email: normalizedEmail,
-          authed: true,
           idpName: "testuser.com"
         });
         start();
@@ -422,7 +421,6 @@
         testObjectValuesEqual(info, {
           type: "primary",
           email: normalizedEmail,
-          authed: false,
           idpName: "testuser.com"
         });
         start();
@@ -624,39 +622,6 @@
     lib.primaryUserAuthenticationInfo(
       TEST_EMAIL,
       {},
-      testHelpers.unexpectedSuccess,
-      testHelpers.expectedXHRFailure
-    );
-  });
-
-  asyncTest("isUserAuthenticatedToPrimary with authed user, expect true status", function() {
-    provisioning.setStatus(provisioning.AUTHENTICATED);
-
-    lib.isUserAuthenticatedToPrimary(TEST_EMAIL, {},
-      function(status) {
-        equal(status, true, "user is authenticated, correct status");
-        start();
-      },
-      testHelpers.unexpectedXHRFailure
-    );
-  });
-
-  asyncTest("isUserAuthenticatedToPrimary with non-authed user, expect false status", function() {
-    provisioning.setStatus(provisioning.NOT_AUTHENTICATED);
-
-    lib.isUserAuthenticatedToPrimary(TEST_EMAIL, {},
-      function(status) {
-        equal(status, false, "user is not authenticated, correct status");
-        start();
-      },
-      testHelpers.unexpectedXHRFailure
-    );
-  });
-
-  asyncTest("isUserAuthenticatedToPrimary with failure", function() {
-    provisioning.setFailure("failure");
-
-    lib.isUserAuthenticatedToPrimary(TEST_EMAIL, {},
       testHelpers.unexpectedSuccess,
       testHelpers.expectedXHRFailure
     );
