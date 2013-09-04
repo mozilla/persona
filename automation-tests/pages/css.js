@@ -5,8 +5,8 @@
 module.exports = {
   "123done.org": {
     // XXX Change all signinButton's to signInButton to be consistent
-    signinButton: 'li#loggedout button img',
-    signInButton: 'li#loggedout button img',
+    signinButton: 'button.btn-persona',
+    signInButton: 'button.btn-persona',
     // the email address of the user who is currently logged in
     currentlyLoggedInEmail: 'li#loggedin span',
     logoutLink: 'li#loggedin a'
