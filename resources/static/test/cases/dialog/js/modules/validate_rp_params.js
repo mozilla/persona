@@ -68,14 +68,18 @@
     _.extend(options, {
       ready: function() {
         options.originURL = domain || HTTPS_TEST_DOMAIN;
+        var receivedError;
         try {
           controller.validate(options);
           ok(false);
         } catch(error) {
-          if (expectedErrorMessage)
-            equal(error.message, expectedErrorMessage, "expected error: " + expectedErrorMessage);
-
+          receivedError = error;
         }
+
+        ok(receivedError);
+
+        if (expectedErrorMessage)
+          equal(receivedError.message, expectedErrorMessage, "expected error: " + expectedErrorMessage);
 
         // If a parameter is not properly escaped, scriptRun will be true.
         equal(typeof window.scriptRun, "undefined", "script was not run");
@@ -252,6 +256,15 @@
 
   asyncTest("get with data:<not image>... siteLogo - not allowed", function() {
     var URL = "data:text/html;base64,FAKEDATA";
+    testExpectValidationFailure({siteLogo: URL});
+  });
+
+  asyncTest("get with too large of a data:image... siteLogo - not allowed",
+      function() {
+    var URL = "data:image/png;base64,";
+    for(var i = 0; i < bid.MAX_SITE_LOGO_SIZE; i++) {
+      URL += (i % 10);
+    }
     testExpectValidationFailure({siteLogo: URL});
   });
 

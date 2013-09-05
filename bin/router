@@ -76,9 +76,10 @@ app.use(express.logger({
   }
 }));
 
-// limit all content bodies to 10kb, at which point we'll forcefully
-// close down the connection.
-app.use(express.limit("10kb"));
+// limit all content bodies to 128kb, at which point we'll forcefully
+// close down the connection. The large limit is to accommodate data URIs
+// for the siteLogo
+app.use(express.limit("128kb"));
 
 var statsd_config = config.get('statsd');
 if (statsd_config && statsd_config.enabled) {

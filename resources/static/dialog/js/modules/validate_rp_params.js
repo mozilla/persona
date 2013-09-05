@@ -249,6 +249,11 @@ BrowserID.Modules.ValidateRpParams = (function() {
 
     dataMatches = inputLogoUri.match(dataUriRegex);
     if (dataMatches) {
+      if (inputLogoUri.length > (bid.MAX_SITE_LOGO_SIZE)) {
+        throw new Error("data URI for siteLogo is too large, " +
+                        "max size is: " + bid.MAX_SITE_LOGO_SIZE);
+      }
+
       if ((dataMatches[1].toLowerCase() === 'image')
            &&
           (_.indexOf(imageMimeTypes, dataMatches[2].toLowerCase()) > -1)) {
@@ -256,6 +261,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
       }
       throw new Error("Bad data URI for siteLogo: " + inputLogoUri.slice(0, 15) + " ...");
     }
+
 
     // Regularize URL; throws error if input is relative.
     outputLogoUri = fixupURL(originURL, inputLogoUri);

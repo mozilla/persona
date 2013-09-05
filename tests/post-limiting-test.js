@@ -21,6 +21,9 @@ var suite = vows.describe('post-limiting');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
+// Set a max post size of 128kb to accommodate data URIs when staging users.
+const MAX_POST_SIZE = 1024 * 128;
+
 start_stop.addStartupBatches(suite);
 
 var code_version;
@@ -41,9 +44,9 @@ function request(opts, done) {
 }
 
 function addTests(port, path) {
-  // test posting more than 10kb
+  // test posting more than allowed
   suite.addBatch({
-    "posting more than 10kb": {
+    "posting more than allowed": {
       topic: function()  {
         var cb = this.callback;
         getVersion(function() {
@@ -60,7 +63,7 @@ function addTests(port, path) {
           }).on('error', function (e) {
             cb(e);
           });
-          req.write(secrets.weakGenerate(1024 * 10 + 1));
+          req.write(secrets.weakGenerate(MAX_POST_SIZE + 1));
           req.end();
         });
       },
@@ -70,9 +73,9 @@ function addTests(port, path) {
     }
   });
 
-  // test posting more than 10kb with content-length header
+  // test posting more than allowed with content-length header
   suite.addBatch({
-    "posting more than 10kb with content-length": {
+    "posting more than allowed with content-length": {
       topic: function()  {
         var cb = this.callback;
         getVersion(function() {
@@ -82,7 +85,7 @@ function addTests(port, path) {
             path: path,
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              'Content-Length': 1024 * 10 + 1
+              'Content-Length': MAX_POST_SIZE + 1
             },
             method: "POST"
           }, function (res) {
@@ -90,7 +93,7 @@ function addTests(port, path) {
           }).on('error', function (e) {
             cb(e);
           });
-          req.write(secrets.weakGenerate(1024 * 10 + 1));
+          req.write(secrets.weakGenerate(MAX_POST_SIZE + 1));
           req.end();
         });
       },
