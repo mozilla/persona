@@ -329,25 +329,6 @@
     });
   });
 
-  asyncTest("onWindowUnload", function() {
-    createController({
-      ready: function() {
-        var error;
-
-        try {
-          controller.onWindowUnload();
-        }
-        catch(e) {
-          error = e;
-        }
-
-        equal(typeof error, "undefined", "unexpected error thrown when unloading window (" + error + ")");
-        start();
-      }
-    });
-  });
-
-
   asyncTest("get with invalid RP parameter (termsOfService) - print error screen", function() {
     testRelativeURLNotAllowed({
       termsOfService: "relative.html",

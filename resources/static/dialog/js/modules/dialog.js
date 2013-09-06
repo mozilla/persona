@@ -159,11 +159,6 @@ BrowserID.Modules.Dialog = (function() {
     win.location = returnTo;
   }
 
-  function onWindowUnload() {
-    /*jshint validthis: true*/
-    this.publish("window_unload");
-  }
-
   function publishKpis(rpAPI) {
     /*jshint validthis: true*/
 
@@ -280,9 +275,6 @@ BrowserID.Modules.Dialog = (function() {
         user.setReturnTo(params.returnTo);
 
 
-      // XXX Perhaps put this into the state machine.
-      self.bind(self.window, "unload", onWindowUnload);
-
       self.publish("channel_established");
 
       // no matter what, we clear the primary flow state for this window
@@ -308,12 +300,6 @@ BrowserID.Modules.Dialog = (function() {
         start();
       }
     }
-
-    // BEGIN TESTING API
-    ,
-    onWindowUnload: onWindowUnload
-    // END TESTING API
-
   });
 
   sc = Dialog.sc;

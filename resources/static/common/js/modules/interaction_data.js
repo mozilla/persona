@@ -81,7 +81,6 @@ BrowserID.Modules.InteractionData = (function() {
    *   may be a couple of exceptions).
    * window.redirect_to_primary - the user has to authenticate with their
    *   IdP so they are being redirected away.
-   * window.unload - the last thing in every event stream.
    * generate_assertion - the order was given to generate an assertion.
    * assertion_generated - the assertion generation is complete -
    *   these two together are useful to measure how long crypto is taking
@@ -103,7 +102,6 @@ BrowserID.Modules.InteractionData = (function() {
     cancel_state: "screen.cancel",
     primary_user_authenticating: "window.redirect_to_primary",
     dom_loading: "window.dom_loading",
-    window_unload: "window.unload",
     channel_established: "window.channel_established",
     user_can_interact: "user.can_interact",
     generate_assertion: null,
