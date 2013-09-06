@@ -28,6 +28,7 @@ BrowserID.Modules.Development = (function() {
         this.click("#hideAll,footer,#errorBackground", hideScreens);
         this.click("#clearLocalStorage", clearLocalStorage);
         this.click("#clearEmailsForSites", clearEmailsForSites);
+        this.click("#clearCerts", clearCerts);
         this.click("#forceIsThisYourComputer", forceIsThisYourComputer);
         this.click("#redirectTo", redirectTo);
         this.click("#closeDevelopment", close);
@@ -91,6 +92,13 @@ BrowserID.Modules.Development = (function() {
 
   function clearEmailsForSites() {
     localStorage.removeItem("siteInfo");
+  }
+
+  function clearCerts() {
+    var records = storage.getEmails("default");
+    for (var email in records) {
+      storage.invalidateEmail(email, "default");
+    }
   }
 
   function forceIsThisYourComputer() {
