@@ -9,15 +9,14 @@ $(function() {
   /**
    * For the main page
    */
-/*
   var bid = BrowserID,
       helpers = bid.Helpers,
-      pageHelpers = bid.PageHelpers,
       user = bid.User,
       dom = bid.DOM,
       network = bid.Network,
-      token = pageHelpers.getParameterByName("token"),
       path = document.location.pathname || "/",
+      mediator = bid.Mediator,
+      dialogHelpers = bid.Helpers.Dialog,
       moduleManager = bid.module,
       modules = bid.Modules,
       CookieCheck = modules.CookieCheck,
@@ -26,81 +25,98 @@ $(function() {
       Development = modules.Development,
       ANIMATION_TIME = 500,
       checkCookiePaths = [ "/add_email_address", "/confirm", "/verify_email_address" ];
+
+  network.init();
+  user.init();
+
+  // Does the IdP care about checking cookies?
+  moduleManager.register("cookie_check", modules.CookieCheck);
+  moduleManager.start("cookie_check", {
+    ready: function(status) {
+      if(!status) return;
+
+      moduleManager.register("dialog", modules.Dialog);
+      moduleManager.register("add_email", modules.AddEmail);
+      moduleManager.register("authenticate", modules.Authenticate);
+      moduleManager.register("check_registration", modules.CheckRegistration);
+      moduleManager.register("xhr_delay", modules.XHRDelay);
+      moduleManager.register("xhr_disable_form", modules.XHRDisableForm);
+      moduleManager.register("set_password", modules.SetPassword);
+      moduleManager.register("inline_tospp", modules.InlineTosPp);
+      moduleManager.register("complete_sign_in", modules.CompleteSignIn);
+
+      moduleManager.start("xhr_delay");
+      moduleManager.start("xhr_disable_form");
+      moduleManager.start("dialog");
+      moduleManager.start("inline_tospp");
+
+      start({});
+    }
+  });
+
   function start(status) {
     // If cookies are disabled, do not run any of the page specific code and
     // instead just show the error message.
     if (!status) return;
 
-  }
-*/
-});
-
-
-// authentication_form add returning
-// or #signin .contents
-$('#authentication_form').addClass('returning');
-$('.isMobile').removeClass('isMobile');
-$('#authentication_form').show();
-var csrf_token;
-$('button.isReturning').click(function(e) {
-  e.preventDefault();
-  $('#cannot_authenticate').hide('fast');
-  var params = {
-    "email": $('#authentication_email').val(),
-    "pass": $('#authentication_password').val(),
-    "ephemeral":true,
-    "allowUnverified": false,
-    "csrf": csrf_token
-  };
-  console.log('Sending ', params);
-  $.ajax('/wsapi/authenticate_user', {
-    type: 'POST',
-    contentType: 'application/json; charset=UTF-8',
-    data: JSON.stringify(params),
-    dataType: 'json',
-    error: function(xhr, status, err) {
-      $('#cannot_authenticate').show('fast');
-      console.error('Auth call failed');
-      console.log(xhr, status, err);
-      console.error(err);
-    },
-    success: function(res, status, xhr) {
-      console.log('res data=', typeof res, res, typeof res.success);
-      if (res.success === true ||
-          res.success === "true") {
-        navigator.id.completeAuthentication();
-      }
-    },
-    complete: function(tbd) {
-      console.log('/wsapi/authenticate_user finished');
-    }
-  });
-});
-
-$('.cancelPassword:visible').click(function(e) {
-  e.preventDefault();
-  var msg = "user clicked cancel";
-  navigator.id.raiseProvisioningFailure(msg);
-});
-
-console.log('Starting beginAuthentication');
 navigator.id.beginAuthentication(function(email) {
-  $('#authentication_email').val(email);
-  $('#authentication_email').attr('disabled', 'disabled');
-  console.log('callback beginAuthentication');
-  console.log(email);
-  $.getJSON('/wsapi/session_context', function(data, status, xhr) {
-    console.log(data);
-    csrf_token = data.csrf_token;
-    console.log('csrf_token=', csrf_token);
-    if (data.authenticated) {
-      $.getJSON('/wsapi/list_emails', function(data, status, xhr) {
-        console.log('list_emails', data);
-        if (data.emails.indexOf(email) !== -1) {
-          console.log('Woo hoo you all clear kid');
-          navigator.id.completeAuthentication();
-        }
-      });
-    }
+//$('#authentication_form').addClass('returning');
+//$('.isMobile').removeClass('isMobile');
+//$('#authentication_form').show();
+  mediator.subscribe("authentication_success", function(msg, info) {
+    // Are we ensured that we authed as email?
+    navigator.id.completeAuthentication();
   });
+  mediator.subscribe("new_user", function(msg, info) {
+    var email = info.email;
+    // Are we ensured that we authed as email?
+    moduleManager.start("set_password", info);
+    mediator.subscribe("password_set", function(msg, info) {
+      dialogHelpers.createUser.call({
+	getErrorDialog: function(a, b, c) {
+	  console.log('getErrorDialog called', a, b, c);
+	},
+	publish: function(msg, info) {
+	  if ('user_staged') {
+
+	    info.siteName = 'TODO';
+            info.verifier = "waitForUserValidation";
+	    info.verificationMessage = "user_confirmed";
+
+	    moduleManager.start("check_registration", info);
+            user.waitForUserValidation(info.email, function(msg) {
+	      if ('complete' === msg) {
+                // user_confirmed doesn't appear to do anything
+		//mediator.publish('user_confirmed', info);
+                // email_valid_and_ready doesn't appear to do anything
+		//mediator.publish('email_valid_and_ready', info);
+		//mediator.publish('generate_assertion', info);
+                navigator.id.completeAuthentication();
+	      }
+	    },
+            function(a, b, c) {
+		 console.log('ERROR', a, b, c);
+	    });
+            
+
+            mediator.subscribe("user_confirmed", function(a, b, c) {
+	      console.log('user_confirmed', a, b, c);
+	    });
+	  }
+	}
+      }, email, info.password, function(a, b, c) {
+	console.log(a, b, c);
+      });
+    });
+  });
+  moduleManager.start("authenticate");
+  $('#authentication_email').val(email);
+
+
+  //TODO 1) Auto click next, so I don't have too
+  // 2) Listen for authenicated or something? blank screen
+
+});
+
+  }
 });
