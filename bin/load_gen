@@ -218,8 +218,8 @@ function poll() {
             completed[act][2]++;
           } else {
             completed[act][1]++;
-            winston.error('('+act+') ' + err.toString());
           }
+          winston.error('('+act+') ' + err.toString());
         } else {
           completed[act][0]++;
         }
