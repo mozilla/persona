@@ -21,8 +21,7 @@ var suite = vows.describe('post-limiting');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
-// Set a max post size of 128kb to accommodate data URIs when staging users.
-const MAX_POST_SIZE = 1024 * 128;
+const MAX_POST_SIZE = 1024 * 10;
 
 start_stop.addStartupBatches(suite);
 

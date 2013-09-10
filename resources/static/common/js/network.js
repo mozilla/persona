@@ -234,7 +234,7 @@ BrowserID.Network = (function() {
         site : rpInfo.getOrigin(),
         allowUnverified: rpInfo.getAllowUnverified(),
         backgroundColor: rpInfo.getBackgroundColor(),
-        siteLogo: rpInfo.getSiteLogo()
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
 
       stageAddressForVerification(postData, "/wsapi/stage_user", onComplete, onFailure);
@@ -311,7 +311,7 @@ BrowserID.Network = (function() {
         email: email,
         site : rpInfo.getOrigin(),
         backgroundColor: rpInfo.getBackgroundColor(),
-        siteLogo: rpInfo.getSiteLogo()
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
     },
@@ -353,7 +353,7 @@ BrowserID.Network = (function() {
         email: email,
         site : rpInfo.getOrigin(),
         backgroundColor: rpInfo.getBackgroundColor(),
-        siteLogo: rpInfo.getSiteLogo()
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_reverify", onComplete, onFailure);
     },
@@ -470,7 +470,7 @@ BrowserID.Network = (function() {
         pass: password,
         site : rpInfo.getOrigin(),
         backgroundColor: rpInfo.getBackgroundColor(),
-        siteLogo: rpInfo.getSiteLogo()
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_email", onComplete, onFailure);
     },
@@ -722,7 +722,7 @@ BrowserID.Network = (function() {
         pass: password,
         site : rpInfo.getOrigin(),
         backgroundColor: rpInfo.getBackgroundColor(),
-        siteLogo: rpInfo.getSiteLogo()
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_transition", onComplete, onFailure);
     },

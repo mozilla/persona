@@ -19,12 +19,6 @@ const FIRST_EMAIL   = secrets.weakGenerate(12) + '@somedomain.com',
       TEST_PASS     = 'thisismypassword',
       TEST_SITE     = 'https://fakesite.com';
 
-var generatedEmails;
-function interceptor(email, site, secret, emails) {
-  assert.ok(false);
-  generatedEmails = emails;
-}
-
 var suite = vows.describe('rp-branded-emails');
 
 start_stop.addStartupBatches(suite);
@@ -56,7 +50,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: siteLogos can only be served from https and data schemes.");
+      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: images must be served over https.");
     }
   }
 });
@@ -106,7 +100,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: siteLogos can only be served from https and data schemes.");
+      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: images must be served over https.");
     }
   }
 });
@@ -151,7 +145,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: siteLogos can only be served from https and data schemes.");
+      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: images must be served over https.");
     }
   }
 });
@@ -196,7 +190,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: siteLogos can only be served from https and data schemes.");
+      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: images must be served over https.");
     }
   }
 });
@@ -242,7 +236,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: siteLogos can only be served from https and data schemes.");
+      assert.equal(JSON.parse(r.body).reason, "siteLogo: Error: images must be served over https.");
     }
   }
 });

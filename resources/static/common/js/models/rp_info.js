@@ -60,6 +60,13 @@ BrowserID.Models.RpInfo = (function() {
       return this.siteLogo;
     },
 
+    getEmailableSiteLogo: function() {
+      // data URI siteLogos are not universally mailable.
+      if (/^https:/.test(this.siteLogo)) {
+        return this.siteLogo;
+      }
+    },
+
     getTermsOfService: function() {
       return this.termsOfService;
     },
