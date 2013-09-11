@@ -75,7 +75,27 @@ BrowserID.Modules.XHR = (function() {
      * Abort all outstanding XHR requests
      * @method abortAll
      */
-    abortAll: abortAll
+    abortAll: abortAll,
+
+    /**
+     * If a request is already mid-flight to the same resource with the
+     * same parameters (and GET), then we can just piggyback on that
+     * existing request, and trigger our handlers when it's done.
+     *
+     * This method will find an existing request if one exists.
+     *
+     * @method getExistingRequest
+     */
+    getExistingRequest: getExistingRequest,
+
+    /**
+     * If an existing request was not found, then we store the created
+     * one so that it can be found again. Don't worry, we'll be sure to
+     * cleanup after ourselves in all cases.
+     *
+     * @method setExistingRequest
+     */
+    setExistingRequest: setExistingRequest
   });
 
   sc = XHR.sc;
@@ -90,6 +110,7 @@ BrowserID.Modules.XHR = (function() {
 
     self.outstandingRequests = {};
     self.outstandingTimers = [];
+    self.existingRequests = {};
     self.transport = config.transport || XHRTransport;
     self.time_until_delay = config.time_until_delay;
 
@@ -134,7 +155,16 @@ BrowserID.Modules.XHR = (function() {
     /*jshint validthis: true*/
     var self = this;
 
+    var existingRequest = self.getExistingRequest(options);
+    if (existingRequest) {
+      existingRequest.successHandlers.push(options.success);
+      existingRequest.errorHandlers.push(options.error);
+      return existingRequest;
+    }
+
     var request = getRequestInfo(options);
+
+    self.setExistingRequest(request);
 
     // The request obj must be added to list of outstanding requests in
     // case request is synchronous. This makes sure all housekeeping is kept in
@@ -167,6 +197,22 @@ BrowserID.Modules.XHR = (function() {
     request.xhr = self.transport.ajax(transportConfig);
 
     return request;
+  }
+
+  function getExistingRequest(options) {
+    /*jshint validthis: true*/
+  
+    if (options.type === "GET") {
+      return this.existingRequests[options.url];
+    }
+  }
+
+  function setExistingRequest(request) {
+    /*jshint validthis: true*/
+
+    if (request.type === "GET") {
+      this.existingRequests[request.url] = request;
+    }
   }
 
   function get(options) {
@@ -210,6 +256,10 @@ BrowserID.Modules.XHR = (function() {
       delete outstandingRequests[eventTime];
     }
 
+    for (var existingRequest in self.existingRequests) {
+      delete self.existingRequests[existingRequest];
+    }
+
     // abort any outstanding response timers
     var timer;
     while (timer = self.outstandingTimers.pop()) {
@@ -219,6 +269,8 @@ BrowserID.Modules.XHR = (function() {
 
   function getRequestInfo(options) {
     return _.extend({}, options, {
+      successHandlers: [options.success],
+      errorHandlers: [options.error],
       network: {
         type: options.type.toUpperCase(),
         url: options.url
@@ -240,6 +292,12 @@ BrowserID.Modules.XHR = (function() {
     return errorInfo;
   }
 
+  function triggerHandlers(handlers, resp, xhrObj, textResponse) {
+    for (var i = 0; i < handlers.length; i++) {
+      complete(handlers[i], resp, xhrObj, textResponse);
+    }
+  }
+
   function onXHRSuccess(request, resp, textResponse, xhrObj) {
     /*jshint validthis: true*/
     var self = this;
@@ -250,12 +308,12 @@ BrowserID.Modules.XHR = (function() {
     if (request.defer_success) {
       var timer = setTimeout(function() {
         removeTimer.call(self, timer);
-        complete(request.success, resp, xhrObj, textResponse);
+        triggerHandlers(request.successHandlers, resp, xhrObj, textResponse);
       }, 0);
       addTimer.call(self, timer);
     }
     else {
-      request.success(resp, xhrObj, textResponse);
+      triggerHandlers(request.successHandlers, resp, xhrObj, textResponse);
     }
   }
 
@@ -286,7 +344,7 @@ BrowserID.Modules.XHR = (function() {
       removeTimer.call(self, timer);
       var errorInfo = getErrorInfo(request, textStatus, errorThrown);
       self.publish("xhr_error", errorInfo);
-      complete(request.error, errorInfo);
+      triggerHandlers(request.errorHandlers, errorInfo);
     }, 0);
 
     addTimer.call(self, timer);
@@ -303,6 +361,10 @@ BrowserID.Modules.XHR = (function() {
     var outstandingRequests = this.outstandingRequests;
     outstandingRequests[request.eventTime] = null;
     delete outstandingRequests[request.eventTime];
+
+    if (request.type === "GET" && this.existingRequests[request.url]) {
+      delete this.existingRequests[request.url];
+    }
 
     var timer = request.slowRequestTimeout;
     if (timer) {

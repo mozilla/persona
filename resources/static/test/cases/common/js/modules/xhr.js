@@ -13,6 +13,7 @@
       mediator = bid.Mediator,
       testHelpers = bid.TestHelpers;
 
+
   module("common/js/modules/xhr", {
     setup: function() {
       transport.setDelay(0);
@@ -298,5 +299,48 @@
 
   });
 
+  asyncTest("multiple GETs to the same resource use 1 request", function() {
+    var first;
+    xhr.get({
+      url: "/slow_request",
+      error: testHelpers.unexpectedXHRFailure,
+      success: function(info) {
+        first = info.time;
+      }
+    });
+
+    setTimeout(function() {
+      xhr.get({
+        url: "/slow_request",
+        error: testHelpers.unexpectedXHRFailure,
+        success: function(info) {
+          equal(info.time, first, "used same request");
+          start();
+        }
+      });
+    }, 100);
+  });
+
+  asyncTest("multiple GETs to the different resources DONT use same request", function() {
+    var first;
+    xhr.get({
+      url: "/slow_request?foo",
+      error: testHelpers.unexpectedXHRFailure,
+      success: function(info) {
+        first = info.time;
+      }
+    });
+
+    setTimeout(function() {
+      xhr.get({
+        url: "/slow_request?bar",
+        error: testHelpers.unexpectedXHRFailure,
+        success: function(info) {
+          notEqual(info.time, first, "used separate requests");
+          start();
+        }
+      });
+    }, 100);
+  });
 
 }());
