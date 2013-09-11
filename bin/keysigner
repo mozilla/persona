@@ -20,8 +20,9 @@ heartbeat = require('../lib/heartbeat'),
 shutdown = require('../lib/shutdown'),
 computecluster = require('compute-cluster'),
 urlparse = require('urlparse'),
-toobusy = require('../lib/busy_middleware.js');
-certKey = require('../lib/wsapi/cert_key.js');
+toobusy = require('../lib/busy_middleware.js'),
+certKey = require('../lib/wsapi/cert_key.js'),
+statsd = require('../lib/logging/statsd.js');
 
 logger.info("keysigner starting up");
 
@@ -52,15 +53,7 @@ app.use(express.logger({
   }
 }));
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  var logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.keysigner."
-  }));
-}
+statsd.setupMiddleware(app);
 
 // parse POST bodies
 app.use(express.bodyParser());

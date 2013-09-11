@@ -20,7 +20,8 @@ logger = require('../lib/logging').logger,
 config = require('../lib/configuration'),
 shutdown = require('../lib/shutdown'),
 booleanQuery = require('../lib/boolean-query'),
-toobusy = require('../lib/busy_middleware.js');
+toobusy = require('../lib/busy_middleware.js'),
+statsd = require("../lib/logging/statsd");
 
 logger.info("verifier server starting up");
 
@@ -50,15 +51,7 @@ app.use(express.logger({
 // close down the connection.
 app.use(express.limit("10kb"));
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  var logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.verifier."
-  }));
-}
+statsd.setupMiddleware(app);
 
 app.use(express.bodyParser());
 app.use(booleanQuery);
