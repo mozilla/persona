@@ -19,7 +19,6 @@ heartbeat = require('../lib/heartbeat'),
 logger = require('../lib/logging').logger,
 config = require('../lib/configuration'),
 shutdown = require('../lib/shutdown'),
-statsd = require('../lib/statsd'),
 booleanQuery = require('../lib/boolean-query'),
 toobusy = require('../lib/busy_middleware.js');
 
@@ -128,14 +127,14 @@ function doVerification(req, resp, next) {
     allowUnverified: !!allowUnverified
   }, function (err, r) {
     var reqTime = new Date - startTime;
-    statsd.timing('assertion_verification_time', reqTime);
+    logger.info('timing.assertion_verification_time', reqTime);
 
     // consider "application" errors to be the same as harder errors
     if (!err && r && r.error) err = r.error;
     else if (!r || !r.success) err = "no response returned from child process";
 
     if (err) {
-      statsd.increment("assertion_failure");
+      logger.info("increment.assertion_failure");
       resp.json({"status":"failure", reason: err});  //Could be 500 or 200 OK if invalid cert
       metrics.report('verify', {
         result: 'failure',

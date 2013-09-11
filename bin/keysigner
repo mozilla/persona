@@ -11,9 +11,6 @@ require('../lib/baseExceptions').addExceptionHandler();
 const
 path = require('path'),
 express = require('express'),
-statsd = require('../lib/statsd');
-
-const
 _ = require('underscore'),
 config = require('../lib/configuration.js'),
 httputils = require('../lib/httputils.js'),
@@ -111,7 +108,7 @@ app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ep
     hostname: HOSTNAME
   }), function (err, r) {
     var reqTime = new Date - startTime;
-    statsd.timing('certification_time', reqTime);
+    logger.info('timing.certification_time', reqTime);
 
     // consider "application" errors to be the same as harder errors
     if (!err && r && r.error) err = r.error;
