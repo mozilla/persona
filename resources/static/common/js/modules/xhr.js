@@ -275,7 +275,7 @@ BrowserID.Modules.XHR = (function() {
 
   function triggerHandlers(handlers, resp, xhrObj, textResponse) {
     for (var i = 0; i < handlers.length; i++) {
-      complete(handlers[i], resp, xhrObj, textResponse);
+      complete(handlers[i], _.extend({}, resp), xhrObj, textResponse);
     }
   }
 
