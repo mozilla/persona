@@ -273,9 +273,11 @@ BrowserID.Modules.XHR = (function() {
     return errorInfo;
   }
 
-  function triggerHandlers(handlers, resp, xhrObj, textResponse) {
+  function triggerHandlers(handlers, response, xhrObj, textResponse) {
     for (var i = 0; i < handlers.length; i++) {
-      complete(handlers[i], _.extend({}, resp), xhrObj, textResponse);
+      var resp = response;
+      if (typeof resp === 'object') resp = _.extend({}, resp);
+      complete(handlers[i], resp, xhrObj, textResponse);
     }
   }
 
