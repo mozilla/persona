@@ -86,16 +86,8 @@ BrowserID.Modules.XHR = (function() {
      *
      * @method getExistingRequest
      */
-    getExistingRequest: getExistingRequest,
+    getExistingRequest: getExistingRequest
 
-    /**
-     * If an existing request was not found, then we store the created
-     * one so that it can be found again. Don't worry, we'll be sure to
-     * cleanup after ourselves in all cases.
-     *
-     * @method setExistingRequest
-     */
-    setExistingRequest: setExistingRequest
   });
 
   sc = XHR.sc;
@@ -110,7 +102,6 @@ BrowserID.Modules.XHR = (function() {
 
     self.outstandingRequests = {};
     self.outstandingTimers = [];
-    self.existingRequests = {};
     self.transport = config.transport || XHRTransport;
     self.time_until_delay = config.time_until_delay;
 
@@ -164,8 +155,6 @@ BrowserID.Modules.XHR = (function() {
 
     var request = getRequestInfo(options);
 
-    self.setExistingRequest(request);
-
     // The request obj must be added to list of outstanding requests in
     // case request is synchronous. This makes sure all housekeeping is kept in
     // order.
@@ -201,17 +190,13 @@ BrowserID.Modules.XHR = (function() {
 
   function getExistingRequest(options) {
     /*jshint validthis: true*/
-  
     if (options.type === "GET") {
-      return this.existingRequests[options.url];
-    }
-  }
-
-  function setExistingRequest(request) {
-    /*jshint validthis: true*/
-
-    if (request.type === "GET") {
-      this.existingRequests[request.url] = request;
+      for (var key in this.outstandingRequests) {
+        var request = this.outstandingRequests[key];
+        if (request.type === "GET" && request.url === options.url) {
+          return request;
+        }
+      }
     }
   }
 
@@ -254,10 +239,6 @@ BrowserID.Modules.XHR = (function() {
       outstandingRequests[eventTime].xhr.abort();
       outstandingRequests[eventTime] = null;
       delete outstandingRequests[eventTime];
-    }
-
-    for (var existingRequest in self.existingRequests) {
-      delete self.existingRequests[existingRequest];
     }
 
     // abort any outstanding response timers
@@ -361,10 +342,6 @@ BrowserID.Modules.XHR = (function() {
     var outstandingRequests = this.outstandingRequests;
     outstandingRequests[request.eventTime] = null;
     delete outstandingRequests[request.eventTime];
-
-    if (request.type === "GET" && this.existingRequests[request.url]) {
-      delete this.existingRequests[request.url];
-    }
 
     var timer = request.slowRequestTimeout;
     if (timer) {
