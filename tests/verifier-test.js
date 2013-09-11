@@ -76,7 +76,11 @@ suite.addBatch({
     'http://fakesite.com:80 and http://fakesite.com:8000': matchesAudience(false),
     'https://fakesite.com:443 and https://fakesite.com:9000': matchesAudience(false),
 
-    'app://browser.gaiamobile.org and app://browser.gaiamobile.org:80': matchesAudience(true)
+    'app://browser.gaiamobile.org and app://browser.gaiamobile.org:80': matchesAudience(true),
+    'app://marketplace.firefox.com and app://marketplace.firefox.com': matchesAudience(true),
+    'app://{5041b155-d1c0-4957-9914-c3af6aa41cf1} and app://{5041b155-d1c0-4957-9914-c3af6aa41cf1}': matchesAudience(true), 
+    'app://{5041b155-d1c0-4957-9914-c3af6aa41cf1} and app://{5041b155-d1c0-4957-9914-c3af6aa41cf2}': matchesAudience(false), 
+    'app://marketplace.firefox.com and app://{5041b155-d1c0-4957-9914-c3af6aa41cf2}': matchesAudience(false)
   }
 });
 
