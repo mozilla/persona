@@ -1,7 +1,7 @@
 %define _rootdir /opt/browserid
 
 Name:          browserid-server
-Version:       0.2013.09.11
+Version:       0.2013.09.25
 Release:       1%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Gene Wood <gene@mozilla.com>
