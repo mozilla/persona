@@ -75,7 +75,19 @@ BrowserID.Modules.XHR = (function() {
      * Abort all outstanding XHR requests
      * @method abortAll
      */
-    abortAll: abortAll
+    abortAll: abortAll,
+
+    /**
+     * If a request is already mid-flight to the same resource with the
+     * same parameters (and GET), then we can just piggyback on that
+     * existing request, and trigger our handlers when it's done.
+     *
+     * This method will find an existing request if one exists.
+     *
+     * @method getExistingRequest
+     */
+    getExistingRequest: getExistingRequest
+
   });
 
   sc = XHR.sc;
@@ -134,6 +146,13 @@ BrowserID.Modules.XHR = (function() {
     /*jshint validthis: true*/
     var self = this;
 
+    var existingRequest = self.getExistingRequest(options);
+    if (existingRequest) {
+      existingRequest.successHandlers.push(options.success);
+      existingRequest.errorHandlers.push(options.error);
+      return existingRequest;
+    }
+
     var request = getRequestInfo(options);
 
     // The request obj must be added to list of outstanding requests in
@@ -167,6 +186,18 @@ BrowserID.Modules.XHR = (function() {
     request.xhr = self.transport.ajax(transportConfig);
 
     return request;
+  }
+
+  function getExistingRequest(options) {
+    /*jshint validthis: true*/
+    if (options.type === "GET") {
+      for (var key in this.outstandingRequests) {
+        var request = this.outstandingRequests[key];
+        if (request.type === "GET" && request.url === options.url) {
+          return request;
+        }
+      }
+    }
   }
 
   function get(options) {
@@ -219,6 +250,8 @@ BrowserID.Modules.XHR = (function() {
 
   function getRequestInfo(options) {
     return _.extend({}, options, {
+      successHandlers: [options.success],
+      errorHandlers: [options.error],
       network: {
         type: options.type.toUpperCase(),
         url: options.url
@@ -240,6 +273,14 @@ BrowserID.Modules.XHR = (function() {
     return errorInfo;
   }
 
+  function triggerHandlers(handlers, response, xhrObj, textResponse) {
+    for (var i = 0; i < handlers.length; i++) {
+      var resp = response;
+      if (typeof resp === 'object') resp = _.extend({}, resp);
+      complete(handlers[i], resp, xhrObj, textResponse);
+    }
+  }
+
   function onXHRSuccess(request, resp, textResponse, xhrObj) {
     /*jshint validthis: true*/
     var self = this;
@@ -250,12 +291,12 @@ BrowserID.Modules.XHR = (function() {
     if (request.defer_success) {
       var timer = setTimeout(function() {
         removeTimer.call(self, timer);
-        complete(request.success, resp, xhrObj, textResponse);
+        triggerHandlers(request.successHandlers, resp, xhrObj, textResponse);
       }, 0);
       addTimer.call(self, timer);
     }
     else {
-      request.success(resp, xhrObj, textResponse);
+      triggerHandlers(request.successHandlers, resp, xhrObj, textResponse);
     }
   }
 
@@ -286,7 +327,7 @@ BrowserID.Modules.XHR = (function() {
       removeTimer.call(self, timer);
       var errorInfo = getErrorInfo(request, textStatus, errorThrown);
       self.publish("xhr_error", errorInfo);
-      complete(request.error, errorInfo);
+      triggerHandlers(request.errorHandlers, errorInfo);
     }, 0);
 
     addTimer.call(self, timer);
