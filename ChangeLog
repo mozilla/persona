@@ -1,17 +1,14 @@
 current train:
 
 train-2013.09.11:
-	* Add support for experimental_emailHint - pre-fill email input box or pre-select an email address when dialog opens: #3843
-	* Fix backgroundColor color clash with text color: #3837
-	* Add support for "one time certs" - if a user has not selected "Yes" to "Is 
-	this your computer", clear cert as soon as it is used to generate an 
-	assertion: #3840
-	* If user has no email addresses after sync, sign them out: #3820
-	* Ensure only one GET request to a URL can be in flight at a time: #3877
-	* Upgrade to qunit 1.12.0 to ensure all exceptions are caught in frontend 
-	unit tests: #3836, #3839
-	* Remove window.unload event from KPI event stream: #3864
-	* Improved logging/test reporting: #3862
+  * Add support for experimental_emailHint - pre-fill email input box or pre-select an email address when dialog opens: #3843
+  * Fix backgroundColor color clash with text color: #3837
+  * Add support for "one time certs" - if a user has not selected "Yes" to "Is this your computer", clear cert as soon as it is used to generate an assertion: #3840
+  * If user has no email addresses after sync, sign them out: #3820
+  * Ensure only one GET request to a URL can be in flight at a time: #3877
+  * Upgrade to qunit 1.12.0 to ensure all exceptions are caught in frontend unit tests: #3836, #3839
+  * Remove window.unload event from KPI event stream: #3864
+  * Improved logging/test reporting: #3862
   * Add MPL2 license header missing from some files: #3875
 
 train-2013.08.28:
@@ -27,14 +24,14 @@ train-2013.08.28:
   * Copy tweaks: #3823, #3833
 
 train-2013.08.15:
-	* Relax restrictions on siteLogo - allow siteLogo from any https URL or image dataURI: #3705, #3743
-	* Allow CSV list of platforms when running Selenium tests: #3748
-	* Fix mobile layout of unsupported_dialog and cookies_disabled: #3783, #3784, #3785
-	* Record frontend test details in a temp file when run from Selenium tests: #3780
-	* Fix "noSuchWindow" error for new Chrome Selenium driver: #3683, #3788
-	* Fix invalid CSS: #3765, #3791
-	* Ensure include.orig.js is available on the staging and production servers: #3212, #3795
-	* Refactorings and other improvements: #3751, #3683, #3750, #3758, #3759, #3788, #3774
+  * Relax restrictions on siteLogo - allow siteLogo from any https URL or image dataURI: #3705, #3743
+  * Allow CSV list of platforms when running Selenium tests: #3748
+  * Fix mobile layout of unsupported_dialog and cookies_disabled: #3783, #3784, #3785
+  * Record frontend test details in a temp file when run from Selenium tests: #3780
+  * Fix "noSuchWindow" error for new Chrome Selenium driver: #3683, #3788
+  * Fix invalid CSS: #3765, #3791
+  * Ensure include.orig.js is available on the staging and production servers: #3212, #3795
+  * Refactorings and other improvements: #3751, #3683, #3750, #3758, #3759, #3788, #3774
 
 train-2013.07.31:
   * Nicely warn primary IdP users that third-party cookies must be enabled: #3520
