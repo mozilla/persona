@@ -152,6 +152,10 @@ runner.run(module, {
       .wwin(CSS['dialog'].windowName)
       .wclick(CSS['dialog'].emailPrefix + getEmailIndex(secondPrimaryEmail))
       .wclick(CSS['dialog'].signInButton)
+      // The user has not yet clicked "yes" to "is this your computer?" and
+      // the cert used when secondPrimaryEmail was added has been deleted.
+      // The user must re-auth with the IdP.
+      .wclick(CSS['testidp.org'].loginButton)
       .wclickIfExists(CSS['dialog'].notMyComputerButton)
       .wwin()
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
