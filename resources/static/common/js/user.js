@@ -39,66 +39,60 @@ BrowserID.User = (function() {
     return (_.indexOf(TRANSITION_STATES, state) > -1);
   }
 
-  // remove identities that are no longer valid
-  function cleanupIdentities(onSuccess, onFailure) {
+  // Determine if a certificate is expired.  That will be
+  // if it was issued *before* the domain key was last updated or
+  // if the certificate expires in less that 5 minutes from now.
+  function isCertExpired(serverTime, creationTime, cert) {
+    // if it expires in less than 2 minutes, it's too old to use.
+    var diff = cert.payload.exp.valueOf() - serverTime.valueOf();
+    if (diff < (60 * 2 * 1000)) {
+      return true;
+    }
+
+    // or if it was issued before the last time the domain key
+    // was updated, it's invalid
+    if (!cert.payload.iat) {
+      helpers.log('Data Format ERROR: expected cert to have iat ' +
+        'property, but found none, marking expired');
+      return true;
+    } else if (cert.payload.iat < creationTime) {
+      helpers.log('Certificate issued ' + cert.payload.iat +
+        ' is before creation time ' + creationTime + ', marking expired');
+      return true;
+    }
+
+    return false;
+  }
+
+  /*
+   * Throws if the email record is invalid.
+   * Record is invalid if:
+   * 1) cannot load pubkey
+   * 2) cannot load cert
+   * 3) cannot extract cert
+   * 4) cert is expired.
+   */
+  function checkRecordValidity(jwcrypto, record, serverTime, creationTime) {
+    jwcrypto.loadPublicKeyFromObject(record.pub);
+
+    if (!record.cert)
+      throw new Error("missing cert");
+
+    var cert = jwcrypto.extractComponents(record.cert);
+    if (isCertExpired(serverTime, creationTime, cert))
+      throw new Error("expired cert");
+  }
+
+  function removeInvalidIdentities(onSuccess, onFailure) {
     network.serverTime(function(serverTime) {
       network.domainKeyCreationTime(function(creationTime) {
-        // Determine if a certificate is expired.  That will be
-        // if it was issued *before* the domain key was last updated or
-        // if the certificate expires in less that 5 minutes from now.
-        function isExpired(cert) {
-          // if it expires in less than 2 minutes, it's too old to use.
-          var diff = cert.payload.exp.valueOf() - serverTime.valueOf();
-          if (diff < (60 * 2 * 1000)) {
-            return true;
-          }
-
-          // or if it was issued before the last time the domain key
-          // was updated, it's invalid
-          if (!cert.payload.iat) {
-            helpers.log('Data Format ERROR: expected cert to have iat ' +
-              'property, but found none, marking expired');
-            return true;
-          } else if (cert.payload.iat < creationTime) {
-            helpers.log('Certificate issued ' + cert.payload.iat +
-              ' is before creation time ' + creationTime + ', marking expired');
-            return true;
-          }
-
-          return false;
-        }
-
-        var emails = storage.getEmails(issuer);
-        var issued_identities = {};
         cryptoLoader.load(function(jwcrypto) {
-          _.each(emails, function(email_obj, email_address) {
+          var emails = storage.getEmails(issuer);
+          _.each(emails, function(record, address) {
             try {
-              email_obj.pub = jwcrypto.loadPublicKeyFromObject(email_obj.pub);
+              checkRecordValidity(jwcrypto, record, serverTime, creationTime);
             } catch (x) {
-              storage.invalidateEmail(email_address, issuer);
-              return;
-            }
-
-            // no cert? reset
-            if (!email_obj.cert) {
-              storage.invalidateEmail(email_address, issuer);
-            } else {
-              try {
-                // parse the cert
-                var cert = jwcrypto.extractComponents(
-                                emails[email_address].cert);
-
-                // check if this certificate is still valid.
-                if (isExpired(cert)) {
-                  storage.invalidateEmail(email_address, issuer);
-                }
-
-              } catch (e) {
-                // error parsing the certificate!  Maybe it's of an
-                // old/different format?  just delete it.
-                helpers.log("error parsing cert for"+ email_address +":" + e);
-                storage.invalidateEmail(email_address, issuer);
-              }
+              return storage.invalidateEmail(address, issuer);
             }
           });
           onSuccess();
@@ -987,7 +981,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     syncEmails: function(onComplete, onFailure) {
-      cleanupIdentities(function () {
+      removeInvalidIdentities(function () {
         var issued_identities = User.getStoredEmailKeypairs();
 
         network.listEmails(function(server_emails) {
