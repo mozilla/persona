@@ -21,12 +21,13 @@
 
   /* Remove background image gradients set in style.css which cause
    * horizontal lines to appear while the dialog is loading.
-   * Set the default font to Feura Sans
+   * Set the default font to Fira Sans, which used to be called
+   * Feura Sans, so support both.
    */
   body {
     height: 100%;
     background: #eff0f2 none;
-    font-family: 'Feura Sans', 'Open Sans', 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
+    font-family: 'Fira Sans', 'Feura Sans', 'Open Sans', 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
   }
 
   /**
