@@ -34,7 +34,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "backgroundColor: Error: not a valid color: g");
+      assert.equal(JSON.parse(r.body).reason, "backgroundColor: ValidatorError: Invalid hexcolor");
     }
   }
 });
@@ -84,7 +84,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "backgroundColor: Error: not a valid color: g");
+      assert.equal(JSON.parse(r.body).reason, "backgroundColor: ValidatorError: Invalid hexcolor");
     }
   }
 });
@@ -130,7 +130,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "backgroundColor: Error: not a valid color: g");
+      assert.equal(JSON.parse(r.body).reason, "backgroundColor: ValidatorError: Invalid hexcolor");
     }
   }
 });
@@ -175,7 +175,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "backgroundColor: Error: not a valid color: g");
+      assert.equal(JSON.parse(r.body).reason, "backgroundColor: ValidatorError: Invalid hexcolor");
     }
   }
 });
@@ -220,7 +220,7 @@ suite.addBatch({
     }),
     "fails": function(err, r) {
       assert.equal(r.code, 400);
-      assert.equal(JSON.parse(r.body).reason, "backgroundColor: Error: not a valid color: g");
+      assert.equal(JSON.parse(r.body).reason, "backgroundColor: ValidatorError: Invalid hexcolor");
     }
   }
 });
