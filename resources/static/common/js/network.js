@@ -221,9 +221,7 @@ BrowserID.Network = (function() {
      * @method createUser
      * @param {string} email
      * @param {string} password
-     * @param {string} origin - site user is trying to sign in to.
-     * @param {string} backgroundColor - backgroundColor to set in the email
-     * @param {boolean} allowUnverified
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
@@ -302,7 +300,7 @@ BrowserID.Network = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email
-     * @param {string} origin
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
@@ -344,7 +342,7 @@ BrowserID.Network = (function() {
      * Stage an email reverification.
      * @method requestEmailReverify
      * @param {string} email
-     * @param {string} origin - site user is trying to sign in to.
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
@@ -460,7 +458,7 @@ BrowserID.Network = (function() {
      * @method addSecondaryEmail
      * @param {string} email
      * @param {string} password
-     * @param {string} origin
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - called when complete.
      * @param {function} [onFailure] - called on xhr failure.
      */
@@ -712,7 +710,7 @@ BrowserID.Network = (function() {
      * @method requestTransitionToSecondary
      * @param {string} email
      * @param {string} password
-     * @param {string} origin - site user is trying to sign in to.
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
