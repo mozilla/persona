@@ -1,13 +1,22 @@
 {
   "name": "browserid",
   "version": "1.0.0-b2",
+  "author": {
+    "name": "Mozilla",
+    "url": "https://mozilla.org/"
+  },
   "private": true,
+  "description": "Persona is a secure, distributed, and easy to use identification system.",
+  "homepage": "https://login.persona.org",
   "repository": {
     "type": "git",
     "url": "https://github.com/mozilla/browserid.git"
   },
   "bugs": "https://github.com/mozilla/browserid/issues",
-  "license": "MPL 2.0",
+  "licenses" : [{
+    "type": "MPL 2.0",
+    "url": "https://mozilla.org/MPL/2.0/"
+  }],
   "dependencies": {
     "JSONSelect": "0.4.0",
     "async": "0.2.9",
