@@ -12,7 +12,9 @@ exports.create = function(opts, cb) {
   wcli.post(wsapi.configuration, '/wsapi/stage_user', wsapi.context, {
     email: opts.email,
     pass:  opts.password,
-    site:  opts.site
+    site:  opts.site,
+    backgroundColor: opts.backgroundColor,
+    siteLogo: opts.siteLogo
   }, function(err, r) {
     if (err) return cb("cannot stage: " + err);
     if (r.code !== 200) return cb("cannot stage: " + r.body);

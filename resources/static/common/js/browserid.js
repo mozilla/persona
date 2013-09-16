@@ -25,7 +25,11 @@
     PATH_MAX_LENGTH: 2048,
 
     // XHR requests are considered delayed after 10 seconds.
-    XHR_DELAY_MS: 10 * 1000
+    XHR_DELAY_MS: 10 * 1000,
+
+    // limit siteLogo's to 128kb. The backend does not accept data-URI
+    // siteLogos, so this is only used for the front end.
+    MAX_SITE_LOGO_SIZE: 128 * 1024
   };
 
   for (var key in constants) {

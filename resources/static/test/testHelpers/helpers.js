@@ -19,6 +19,7 @@ BrowserID.TestHelpers = (function() {
       provisioning = bid.Mocks.Provisioning,
       screens = bid.Screens,
       tooltip = bid.Tooltip,
+      RpInfo = bid.Models.RpInfo,
       registrations = [],
       calls = {},
       testOrigin = "https://login.persona.org";
@@ -102,6 +103,11 @@ BrowserID.TestHelpers = (function() {
         provisioning: provisioning
       });
       user.setOrigin(testOrigin);
+      var rpInfo = RpInfo.create({
+        origin: testOrigin,
+        allowUnverified: false
+      });
+      user.setRpInfo(rpInfo);
       moduleManager.stopAll();
       moduleManager.reset();
     },

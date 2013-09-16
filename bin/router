@@ -77,7 +77,7 @@ app.use(express.logger({
 }));
 
 // limit all content bodies to 10kb, at which point we'll forcefully
-// close down the connection.
+// close down the connection. 
 app.use(express.limit("10kb"));
 
 var statsd_config = config.get('statsd');

@@ -1,7 +1,7 @@
-<%= format(gettext('Click this confirmation link to sign in to %(site)s:'), { site: site })%>
+<%= format(gettext('Click this link to confirm access to %(site)s:'), { site: site })%>
 <%= link %>
 
-<%= format(gettext('If you did NOT attempt to sign in to %(site)s, please ignore this email.'), { site: site }) %>
+<%= gettext('If you were NOT attempting this sign-in, please ignore this email.') %>
 
 :::<%= gettext('Mozilla Persona') %>
 :::<%= gettext('Simple sign-in from the non-profit behind Firefox') %>

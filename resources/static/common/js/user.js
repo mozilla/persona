@@ -428,6 +428,14 @@ BrowserID.User = (function() {
     },
 
     /**
+     * Set the RP info
+     * @method setRpInfo
+     */
+    setRpInfo: function(rpInfo) {
+      User.rpInfo = rpInfo;
+    },
+
+    /**
      * Set the interface to use for networking.  Used for unit testing.
      * @method setNetwork
      * @param {BrowserID.Network} networkInterface - BrowserID.Network
@@ -526,8 +534,7 @@ BrowserID.User = (function() {
      */
     createSecondaryUser: function(email, password, onComplete, onFailure) {
       stageAddressVerification(email, password,
-        network.createUser.bind(network, email, password,
-            origin, allowUnverified), function(status) {
+        network.createUser.bind(network, email, password, User.rpInfo), function(status) {
               // If creating an unverified account, the user will not go
               // through the verification flow while the dialog is open and the
               // cache will not be updated accordingly. Update the cache now.
@@ -791,6 +798,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     requestPasswordReset: function(email, onComplete, onFailure) {
+      var rpInfo = User.rpInfo;
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a password reset.
         if (info.state === "unknown") {
@@ -802,7 +810,7 @@ BrowserID.User = (function() {
         }
         else {
           stageAddressVerification(email, null,
-            network.requestPasswordReset.bind(network, email, origin),
+            network.requestPasswordReset.bind(network, email, rpInfo),
             onComplete, onFailure);
         }
       }, onFailure);
@@ -850,7 +858,7 @@ BrowserID.User = (function() {
       else {
         // try to reverify this address.
         stageAddressVerification(email, null,
-          network.requestEmailReverify.bind(network, email, origin),
+          network.requestEmailReverify.bind(network, email, User.rpInfo),
           onComplete, onFailure);
       }
     },
@@ -887,6 +895,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on XHR failure.
      */
     requestTransitionToSecondary: function(email, password, onComplete, onFailure) {
+      var rpInfo = User.rpInfo;
       User.addressInfo(email, function(info) {
         // user is not known.  Can't request a transition to secondary.
         if (info.state === "unknown") {
@@ -898,7 +907,7 @@ BrowserID.User = (function() {
         }
         else {
           stageAddressVerification(email, password,
-            network.requestTransitionToSecondary.bind(network, email, password, origin),
+            network.requestTransitionToSecondary.bind(network, email, password, rpInfo),
             onComplete, onFailure);
         }
       }, onFailure);
@@ -1254,7 +1263,8 @@ BrowserID.User = (function() {
      */
     addEmail: function(email, password, onComplete, onFailure) {
       stageAddressVerification(email, password,
-        network.addSecondaryEmail.bind(network, email, password, origin), onComplete, onFailure);
+        network.addSecondaryEmail.bind(network, email, password, User.rpInfo),
+          onComplete, onFailure);
     },
 
     /**

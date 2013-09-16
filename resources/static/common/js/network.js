@@ -221,19 +221,20 @@ BrowserID.Network = (function() {
      * @method createUser
      * @param {string} email
      * @param {string} password
-     * @param {string} origin - site user is trying to sign in to.
-     * @param {boolean} allowUnverified
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    createUser: function(email, password, origin, allowUnverified,
-        onComplete, onFailure) {
+    createUser: function(email, password, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
         pass: password,
-        site : origin,
-        allowUnverified: allowUnverified
+        site : rpInfo.getOrigin(),
+        allowUnverified: rpInfo.getAllowUnverified(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
+
       stageAddressForVerification(postData, "/wsapi/stage_user", onComplete, onFailure);
     },
 
@@ -299,14 +300,16 @@ BrowserID.Network = (function() {
      * Request a password reset for the given email address.
      * @method requestPasswordReset
      * @param {string} email
-     * @param {string} origin
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestPasswordReset: function(email, origin, onComplete, onFailure) {
+    requestPasswordReset: function(email, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_reset", onComplete, onFailure);
     },
@@ -339,14 +342,16 @@ BrowserID.Network = (function() {
      * Stage an email reverification.
      * @method requestEmailReverify
      * @param {string} email
-     * @param {string} origin - site user is trying to sign in to.
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestEmailReverify: function(email, origin, onComplete, onFailure) {
+    requestEmailReverify: function(email, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_reverify", onComplete, onFailure);
     },
@@ -453,15 +458,17 @@ BrowserID.Network = (function() {
      * @method addSecondaryEmail
      * @param {string} email
      * @param {string} password
-     * @param {string} origin
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - called when complete.
      * @param {function} [onFailure] - called on xhr failure.
      */
-    addSecondaryEmail: function(email, password, origin, onComplete, onFailure) {
+    addSecondaryEmail: function(email, password, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
         pass: password,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_email", onComplete, onFailure);
     },
@@ -703,15 +710,17 @@ BrowserID.Network = (function() {
      * @method requestTransitionToSecondary
      * @param {string} email
      * @param {string} password
-     * @param {string} origin - site user is trying to sign in to.
+     * @param {object} rpInfo - info about the RP user is signing in to
      * @param {function} [onComplete] - Callback to call when complete.
      * @param {function} [onFailure] - Called on XHR failure.
      */
-    requestTransitionToSecondary: function(email, password, origin, onComplete, onFailure) {
+    requestTransitionToSecondary: function(email, password, rpInfo, onComplete, onFailure) {
       var postData = {
         email: email,
         pass: password,
-        site : origin
+        site : rpInfo.getOrigin(),
+        backgroundColor: rpInfo.getBackgroundColor(),
+        siteLogo: rpInfo.getEmailableSiteLogo()
       };
       stageAddressForVerification(postData, "/wsapi/stage_transition", onComplete, onFailure);
     },

@@ -254,7 +254,8 @@ BrowserID.State = (function() {
        */
       info = _.extend({ email: self.newUserEmail || self.addEmailEmail ||
                                self.resetPasswordEmail || self.transitionNoPassword ||
-                               self.newFxAccountEmail}, info);
+                               self.newFxAccountEmail
+                      }, info);
       if(self.newUserEmail) {
         startAction(false, "doStageUser", info);
       }
