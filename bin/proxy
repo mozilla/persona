@@ -20,7 +20,7 @@ var addy = config.has('bind_to.host') ? config.get('bind_to.host') : "127.0.0.1"
 forward.setTimeout(config.get('declaration_of_support_timeout_ms'));
 
 const allowed = /^https:\/\/[a-zA-Z0-9\.\-_]+\/\.well-known\/browserid(\?.*)?$/;
-const allowed_kpi = /^https:\/\/[a-zA-Z0-9\.\-_]+\/wsapi\/interaction_data(\?.*)?$/;
+const allowed_kpi = /^https?:\/\/[a-zA-Z0-9\.\-_:]+\/wsapi\/interaction_data(\?.*)?$/;
 
 var server = http.createServer(function (req, res) {
   var url = req.url;
