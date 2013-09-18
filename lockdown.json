@@ -31,6 +31,7 @@
     "0.2.9": "df63060fbf3d33286a76aaf6d55a2986d9ff8619"
   },
   "aws-sign": {
+    "0.2.0": "c55013856c8194ec854a0cbec90aab5a04ce3ac5",
     "0.3.0": "3d81ca69b474b1e16518728b51c24ff0bbedc6e9"
   },
   "awsbox": {
@@ -58,6 +59,7 @@
     "1.0.0": "c3ccde60e9de6807c6f1aa4ef4843af29191c828"
   },
   "boom": {
+    "0.3.8": "c8cdb041435912741628c044ecc732d1d17c09ea",
     "0.4.2": "7a636e9ded4efcefb19cef4947a3c67dfaee911b"
   },
   "browserify": {
@@ -133,6 +135,7 @@
     "0.0.6": "960495df513baf3e5c20b970268fd86ff1ac79b2"
   },
   "cookie-jar": {
+    "0.2.0": "64ecc06ac978db795e4b5290cbe48ba3781400fa",
     "0.3.0": "bc9a27d4e2b97e186cd57c9e2063cb99fa68cccc"
   },
   "cookies": {
@@ -143,6 +146,7 @@
     "0.2.8": "91946a9806e992f98d374cecd642fce9b96f5237"
   },
   "cryptiles": {
+    "0.1.3": "1a556734f06d24ba34862ae9cb9e709a3afbff1c",
     "0.2.2": "ed91ff1f17ad13d3748288594f8a48a0d26f325c"
   },
   "crypto-browserify": {
@@ -216,9 +220,11 @@
     "0.4.0": "d11e6a42e794f1e1e6200691e6c025106b684a8d"
   },
   "forever-agent": {
+    "0.2.0": "e1c25c7ad44e09c38f233876c76fcc24ff843b1f",
     "0.5.0": "0c1647a74f3af12d76a07a99490ade7c7249c8f0"
   },
   "form-data": {
+    "0.0.10": "db345a5378d86aeeb1ed5d553b869ac192d2f5ed",
     "0.1.1": "0d5f2805647b45533ba10bc8a59cf17d1efa5f12"
   },
   "fresh": {
@@ -243,12 +249,14 @@
     "0.0.4": "6d60bc6ffaf711b6afd60e426d077988014e6554"
   },
   "hawk": {
+    "0.10.2": "9b361dee95a931640e6d504e05609a8fc3ac45d2",
     "1.0.0": "b90bb169807285411da7ffcb8dd2598502d3b52d"
   },
   "heka": {
     "0.4.1": "47c1c0d2870cd57845983dfcd000c4732fdb43a3"
   },
   "hoek": {
+    "0.7.6": "60fbd904557541cd2b8795abf308a1b3770e155a",
     "0.9.1": "3d322462badf07716ea7eb85baf88079cddce505"
   },
   "htmlparser": {
@@ -283,6 +291,7 @@
     "0.9.1": "ff32ec7f09f84001f7498eeafd63c9e4fbb2dc0e"
   },
   "json-stringify-safe": {
+    "3.0.0": "9db7b0e530c7f289c5e8c8432af191c2ff75a5b3",
     "5.0.0": "4c1f228b5050837eba9d21f50c2e6e320624566e"
   },
   "jsxgettext": {
@@ -366,6 +375,7 @@
     "0.0.0": "b369bd32bdde66af59605c3b0520bc219dccc04f"
   },
   "oauth-sign": {
+    "0.2.0": "a0e6a1715daed062f322b622b7fe5afd1035b6e2",
     "0.3.0": "cb540f93bb2b22a7d5941691a288d60e8ea9386e"
   },
   "optimist": {
@@ -419,8 +429,8 @@
     "1.1.1": "75c97c5446fa1146c1d250c47ca3629fb9a2e764"
   },
   "request": {
-    "2.27.0": "dfb1a224dd3a5a9bade4337012503d710e538668",
-    "2.9.203": "6c1711a5407fb94a114219563e44145bcbf4723a"
+    "2.16.6": "872fe445ae72de266b37879d6ad7dc948fa01cad",
+    "2.27.0": "dfb1a224dd3a5a9bade4337012503d710e538668"
   },
   "resolve": {
     "0.2.8": "fdb17d4abb0ecaf6f80d67ac03cf290088f6c0d0"
@@ -448,6 +458,7 @@
     "1.1.4": "2b23f1949b369ed61d22bd6570ff0320302fc8df"
   },
   "sntp": {
+    "0.1.4": "5ef481b951a7b29affdf4afd7f26838fc1120f84",
     "0.2.4": "fb885f18b0f3aad189f824862536bceeec750900"
   },
   "source-map": {
@@ -472,6 +483,7 @@
     "0.6.3": "a053ffa1b6179b9240ea16d74bfd604bd6b6e41b"
   },
   "tunnel-agent": {
+    "0.2.0": "6853c2afb1b2109e45629e492bde35f459ea69e8",
     "0.3.0": "ad681b68f5321ad2827c4cfb1b7d5df2cfe942ee"
   },
   "ua-parser": {
