@@ -16,6 +16,7 @@ BrowserID.Modules.Actions = (function() {
       onsuccess;
 
   function startService(name, options, reported_service_name) {
+    console.log('SERVICE ' + (reported_service_name || name));
     mediator.publish("service", { name: reported_service_name || name });
 
     // Only one service outside of the main dialog allowed.

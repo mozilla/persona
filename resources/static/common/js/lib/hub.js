@@ -12,6 +12,7 @@ Hub = (function() {
       currID = 0;
 
   function on(message, callback, context) {
+    console.log('HUB ON ' + message);
     var messageListeners = listeners[message] = listeners[message] || [],
         id = currID;
 
@@ -34,6 +35,7 @@ Hub = (function() {
   }
 
   function fire(message) {
+    console.log('HUB fire ' + message);
     for(var j = 0, glistener; glistener = globalListeners[j]; ++j) {
       // global listeners get the message name as the first argument
       glistener.callback.apply(null, arguments);
