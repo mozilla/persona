@@ -26,18 +26,23 @@ function copyConfig(done) {
   temp.open({}, function(err, temp_file) {
     if (err) throw err;
 
-    var config = {
-      persona_sauce_user: getFromEnv("PERSONA_SAUCE_USER"),
-      persona_sauce_api_key: getFromEnv("PERSONA_SAUCE_APIKEY"),
-      persona_sauce_pass: getFromEnv("PERSONA_SAUCE_PASS"),
-      persona_browser: getFromEnv("PERSONA_BROWSER", defaultPlatform),
-      runners: parseInt(getFromEnv("RUNNERS", 30), 10)
-    };
+    try {
+      var config = {
+        persona_sauce_user: getFromEnv("PERSONA_SAUCE_USER"),
+        persona_sauce_api_key: getFromEnv("PERSONA_SAUCE_APIKEY"),
+        persona_sauce_pass: getFromEnv("PERSONA_SAUCE_PASS"),
+        persona_browser: getFromEnv("PERSONA_BROWSER", defaultPlatform),
+        runners: parseInt(getFromEnv("RUNNERS", 30), 10)
+      };
 
-    fs.writeFileSync(temp_file.path, JSON.stringify(config), 'utf8');
+      fs.writeFileSync(temp_file.path, JSON.stringify(config), 'utf8');
 
-    console.log("    >> Copying sauce credentials to instance");
-    scp(temp_file.path, target, done);
+      console.log("    >> Copying sauce credentials to instance");
+      scp(temp_file.path, target, done);
+    } catch(e) {
+      // suppress errors with missing sauce creds
+      done(null, 0);
+    }
   });
 }
 

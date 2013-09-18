@@ -18,11 +18,20 @@
     "0.1.22": "0fc1aaa088a0e3ef0ebe2d8831bab0dcf8845061",
     "0.2.9": "df63060fbf3d33286a76aaf6d55a2986d9ff8619"
   },
-  "aws-lib": {
-    "0.0.5": "971b8995078d83c80f2372f134c496e71b293a46"
-  },
   "awsbox": {
-    "0.4.5": "027a9998955f09f3d6b0a10d38ea37ae381b6358"
+    "0.5.1": "75ce5430661264f925fe3937b567d0f1a99a6412"
+  },
+  "awssum": {
+    "1.1.0": "e010144aa516af78eca01352aab9203b816611bb"
+  },
+  "awssum-amazon": {
+    "1.1.0": "ea9ed3f7116044563bb0b14d47b2f38a684bac47"
+  },
+  "awssum-amazon-ec2": {
+    "1.2.0": "8bb53bd273f2a034bb9bc0a6ef55f5333f1efc00"
+  },
+  "awssum-amazon-route53": {
+    "1.0.3": "85d1e6aeb22de14ed03e110cc887e482d0362aac"
   },
   "bcrypt": {
     "0.7.5": "edabf290e61761acb66047b9b43c6467a6241ce3"
@@ -60,7 +69,8 @@
   "colors": {
     "0.3.0": "c247d64d34db0ca4dc8e43f3ecd6da98d0af94e7",
     "0.5.1": "7d0023eaeb154e8ee9fce75dcb923d0ed1667774",
-    "0.6.0-1": "6dbb68ceb8bc60f2b313dcc5ce1599f06d19e67a"
+    "0.6.0-1": "6dbb68ceb8bc60f2b313dcc5ce1599f06d19e67a",
+    "0.6.2": "2423fe6678ac0c5dae8852e5d0e5be08c997abcc"
   },
   "commander": {
     "1.1.1": "50d1651868ae60eccff0a2d9f34595376bc6b041"
@@ -117,8 +127,12 @@
   "cycle": {
     "1.0.2": "269aca6f1b8d2baeefc8ccbc888b459f322c4e60"
   },
+  "data2xml": {
+    "0.8.1": "a488617e71fa624cfdc344e026a1601549525596"
+  },
   "dateformat": {
-    "1.0.2-1.2.3": "b0220c02de98617433b72851cf47de3df2cdbee9"
+    "1.0.2-1.2.3": "b0220c02de98617433b72851cf47de3df2cdbee9",
+    "1.0.4-1.2.3": "4c12b101bddbb8880c2356da6e454459a5eb8b75"
   },
   "debug": {
     "0.7.2": "056692c86670977f115de82917918b8e8b9a10f0"
@@ -155,6 +169,9 @@
   },
   "eyes": {
     "0.1.8": "62cf120234c683785d902348a800ef3e0cc20bc0"
+  },
+  "fmt": {
+    "0.4.0": "d11e6a42e794f1e1e6200691e6c025106b684a8d"
   },
   "fresh": {
     "0.1.0": "03e4b0178424e4c2d5d19a54d8814cdc97934850"
@@ -248,6 +265,9 @@
   "mysql": {
     "0.9.5": "cc95e1c31d0653974d3fb3e9266ed466cd0f96b5"
   },
+  "nice-route53": {
+    "0.3.3": "41ef887fb0161e9f3480365b78c0456b68460bf0"
+  },
   "node-font-face-generator": {
     "0.0.10": "2c0ecf128b3f6d2250d1cb4b788ae4fc1a3037c5"
   },
@@ -326,8 +346,7 @@
     "2.0.2": "2a860f3f74bd7975002f73cb0b003b218ec351e4"
   },
   "sax": {
-    "0.1.5": "d1829a6120fa01665eb4dbff6c43f29fd6d61471",
-    "0.5.4": "a3a4e1a9cf182bb547156c5232a49a1c3732ff7d"
+    "0.5.5": "b1ec13d77397248d059bcc18bb9530d8210bb5d3"
   },
   "semver": {
     "1.0.12": "4686f056e5894a9cba708adeabc2c49dada90778",
@@ -409,7 +428,8 @@
     "0.0.2": "b79669bb42ecb409f83d583cad52ca17eaa1643f"
   },
   "xml2js": {
-    "0.1.13": "438ff3b1d85a51ad659ffc2ebe83403e10c98722"
+    "0.1.13": "438ff3b1d85a51ad659ffc2ebe83403e10c98722",
+    "0.2.8": "9b81690931631ff09d1957549faf54f4f980b3c2"
   },
   "xoauth2": {
     "0.1.8": "b916ff10ecfb54320f16f24a3e975120653ab0d2"
