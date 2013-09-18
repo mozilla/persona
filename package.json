@@ -54,7 +54,7 @@
     "urlparse": "0.0.1",
     "useragent": "2.0.7",
     "validator": "1.5.1",
-    "winston": "0.6.2",
+    "winston": "0.7.2",
     "connect-fonts": "0.0.9-alpha8",
     "connect-fonts-opensans": "0.0.3-beta1",
     "connect-fonts-feurasans": "0.0.2"
