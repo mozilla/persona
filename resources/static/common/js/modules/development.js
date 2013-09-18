@@ -103,7 +103,9 @@ BrowserID.Modules.Development = (function() {
   }
 
   function forceIsThisYourComputer() {
-    storage.usersComputer.forceAsk(user.userid());
+    user.userid(function(userid) {
+      storage.usersComputer.forceAsk(userid);
+    });
   }
 
   function redirectTo() {

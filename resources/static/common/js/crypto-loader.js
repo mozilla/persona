@@ -61,7 +61,7 @@ BrowserID.CryptoLoader = (function() {
      */
     load: function(onSuccess, onFailure) {
       network.withContext(function(context) {
-        requireJWCrypto(context.random_seed, onSuccess);
+        requireJWCrypto(context.getRandomSeed(), onSuccess);
       }, onFailure);
     }
   };

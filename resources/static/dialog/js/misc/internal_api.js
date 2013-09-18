@@ -209,7 +209,7 @@
    * @param {function} callback
    */
   internal.logoutEverywhere = function(callback) {
-    function complete(success) {
+    function complete(status) {
       callback && callback(status);
     }
 

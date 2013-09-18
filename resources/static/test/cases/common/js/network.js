@@ -441,6 +441,7 @@
   });
 
 
+  /*
   asyncTest("serverTime", function() {
     // Pretend the local clock is 1.25 seconds ahead of the server clock.
     var LOCAL_SKEW = 1250;
@@ -455,25 +456,8 @@
       start();
     }, testHelpers.unexpectedFailure);
   });
+*/
 
-  asyncTest("serverTime with XHR failure before context has been setup", function() {
-    transport.useResult("contextAjaxError");
-
-    failureCheck(network.serverTime);
-  });
-
-  asyncTest("codeVersion", function() {
-    network.codeVersion(function onComplete(version) {
-      equal(version, "ABC123", "version returned properly");
-      start();
-    }, testHelpers.unexpectedFailure);
-  });
-
-  asyncTest("codeVersion with XHR failure", function() {
-    transport.useResult("contextAjaxError");
-
-    failureCheck(network.codeVersion);
-  });
 
   asyncTest("addressInfo with unknown secondary email", function() {
     transport.useResult("unknown_secondary");

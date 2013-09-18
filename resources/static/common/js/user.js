@@ -22,9 +22,8 @@ BrowserID.User = (function() {
       pollDuration = POLL_DURATION,
       stagedEmail,
       stagedPassword,
-      userid,
-      auth_status,
-      PERSONA_ORG_AUDIENCE = "https://login.persona.org";
+      PERSONA_ORG_AUDIENCE = "https://login.persona.org",
+      context;
 
   var TRANSITION_STATES = [
     "transition_to_secondary",
@@ -81,8 +80,10 @@ BrowserID.User = (function() {
   }
 
   function removeInvalidIdentities(onSuccess, onFailure) {
-    network.serverTime(function(serverTime) {
-      network.domainKeyCreationTime(function(creationTime) {
+    withContext(function(context) {
+        var serverTime = context.getServerTime();
+        var creationTime = context.getDomainKeyCreationTime();
+
         cryptoLoader.load(function(jwcrypto) {
           var issuer = User.rpInfo.getIssuer();
           var emails = storage.getEmails(issuer);
@@ -95,7 +96,6 @@ BrowserID.User = (function() {
           });
           onSuccess();
         });
-      }, onFailure);
     }, onFailure);
   }
 
@@ -132,15 +132,17 @@ BrowserID.User = (function() {
           var valid = resp.success;
           var result = invalidInfo;
 
-          if (valid) {
-            result = _.extend({ valid: valid }, info);
-            storage.setReturnTo("");
-            // If the user has successfully completed an address verification,
-            // they are authenticated to the password status.
-            auth_status = "password";
-          }
+          withContext(function(context) {
+            if (valid) {
+              result = _.extend({ valid: valid }, info);
+              storage.setReturnTo("");
+              // If the user has successfully completed an address verification,
+              // they are authenticated to the password status.
+              context.setAuthLevel("password");
+            }
 
-          complete(onComplete, result);
+            complete(onComplete, result);
+          }, onFailure);
         }, onFailure);
       } else if (onComplete) {
         onComplete(invalidInfo);
@@ -166,9 +168,11 @@ BrowserID.User = (function() {
         User.authenticate(stagedEmail, stagedPassword, function(authenticated) {
           // The address verification poll does not send back a userid.
           // Use the userid set in User.authenticate
-          resp.userid = userid;
-          resp.status = authenticated ? "complete" : "mustAuth";
-          completeVerification(resp);
+          withContext(function(context) {
+            resp.userid = context.getUserId();
+            resp.status = authenticated ? "complete" : "mustAuth";
+            completeVerification(resp);
+          }, onFailure);
         }, onFailure);
 
         stagedEmail = stagedPassword = null;
@@ -193,8 +197,10 @@ BrowserID.User = (function() {
 
           // The address verification poll does not send back a userid.
           // use the userid set in onContextChange.
-          resp.userid = userid;
-          completeVerification(resp);
+          withContext(function(context) {
+            resp.userid = context.getUserId();
+            completeVerification(resp);
+          }, onFailure);
         }, onFailure);
       }
     }
@@ -210,24 +216,26 @@ BrowserID.User = (function() {
       // they just completed a registration.
       registrationComplete = true;
 
-      // If the status is still complete, the user's auth status is
-      // definitively password.
-      if (resp.status === "complete") {
-        setAuthenticationStatus("password", resp.userid);
-      }
-
       // If there is any sort of userid and auth_status, sync the emails.
       // If the user has to enter their password and status is mustAuth,
       // the required_email module expects the emails to already be synced.
       // See issue #3178
-      if (userid && auth_status) {
-        User.syncEmails(function() {
+      withContext(function(context) {
+        // If the status is still complete, the user's auth status is
+        // definitively password.
+        if (resp.status === "complete") {
+          loggedIn("password", resp.userid);
+        }
+
+        if (context.isUserAuthenticated()) {
+          User.syncEmails(function() {
+            complete(onSuccess, resp.status);
+          }, onFailure);
+        }
+        else {
           complete(onSuccess, resp.status);
-        }, onFailure);
-      }
-      else {
-        complete(onSuccess, resp.status);
-      }
+        }
+      }, onFailure);
     }
 
     function poll() {
@@ -326,57 +334,58 @@ BrowserID.User = (function() {
   }
 
 
-  function onContextChange(msg, context) {
-    setAuthenticationStatus(context.auth_level, context.userid);
-  }
-
   function withContext(onSuccess, onFailure) {
     network.withContext(onSuccess, onFailure);
   }
 
   function clearContext() {
-    var und;
-    userid = auth_status = und;
     network.clearContext();
   }
 
-  function setAuthenticationStatus(auth_level, user_id) {
+  function onContextChange(msg, context) {
+    var authLevel = context.getAuthLevel();
     if (window.$) {
       // TODO get this out of here!
       // jQuery is not included in the communication_iframe
-      var func = !!auth_level ? 'addClass' : 'removeClass';
+      var func = !!authLevel ? 'addClass' : 'removeClass';
       $('body')[func]('authenticated');
     }
 
-    auth_status = auth_level;
-    userid = auth_level && user_id;
-
-    // Keep the network.js copy of context up to date with any changes.
-    // context should really be put into its own module so there is only
-    // a single copy of it anywhere.
-    network.setContext("auth_level", auth_level);
-    network.setContext("userid", user_id);
-
-    if (!!auth_status && userid) {
+    if (context.isUserAuthenticated()) {
       // when session context returns with an authenticated user, update
       // localStorage to indicate we've seen this user on this device
-      storage.usersComputer.setSeen(userid);
+      storage.usersComputer.setSeen(context.getUserId());
     }
     else {
       storage.clear();
     }
   }
 
+  function loggedIn(authLevel, userId, onComplete, onFailure) {
+    withContext(function(context) {
+      context.setAuthLevel(authLevel);
+      context.setUserId(userId);
+      complete(onComplete, true);
+    }, onFailure);
+  }
+
+  function loggedOut(onComplete, onFailure) {
+    withContext(function(context) {
+      storage.clear();
+
+      context.setAuthLevel(false);
+      context.setUserId(null);
+      complete(onComplete, true);
+    }, onFailure);
+  }
+
   function handleAuthenticationResponse(email, type, onComplete,
       onFailure, status) {
     var authenticated = status.success;
-    if (typeof authenticated !== 'boolean') {
-      return onFailure("unexpected server response: " + authenticated);
-    }
+    if (!authenticated) return loggedOut(complete.curry(onComplete, false), onFailure);
 
-    setAuthenticationStatus(authenticated && type, status.userid);
-    if (authenticated) {
-
+    var userid = status.userid;
+    loggedIn(type, userid, function() {
       // The back end can suppress asking the user whether this is their
       // computer. This happens on FirefoxOS devices for now and may expand
       // in the future.
@@ -384,12 +393,8 @@ BrowserID.User = (function() {
         storage.usersComputer.setConfirmed(userid);
       }
 
-      User.syncEmails(function() {
-        complete(onComplete, authenticated);
-      }, onFailure);
-    } else {
-      complete(onComplete, authenticated);
-    }
+      User.syncEmails(complete.curry(onComplete, authenticated), onFailure);
+    }, onFailure);
   }
 
   User = {
@@ -414,7 +419,7 @@ BrowserID.User = (function() {
       User.rpInfo = null;
       registrationComplete = false;
       pollDuration = POLL_DURATION;
-      stagedEmail = stagedPassword = userid = auth_status = null;
+      stagedEmail = stagedPassword = context = null;
     },
 
     resetCaches: function() {
@@ -454,8 +459,11 @@ BrowserID.User = (function() {
      *
      * @method userid
      */
-    userid: function() {
-      return userid;
+    userid: function(onComplete, onFailure) {
+      if (!onComplete) throw new Error("no longer supports sync get");
+      withContext(function(context) {
+        complete(onComplete, context.getUserId());
+      }, onFailure);
     },
 
     withContext: withContext,
@@ -686,7 +694,7 @@ BrowserID.User = (function() {
      */
     canSetPassword: function(onComplete, onFailure) {
       withContext(function(ctx) {
-        complete(onComplete, ctx.has_password);
+        complete(onComplete, ctx.hasPassword());
       }, onFailure);
     },
 
@@ -704,8 +712,14 @@ BrowserID.User = (function() {
       network.changePassword(oldpassword, newpassword, function(resp) {
         // successful change of password will upgrade a session to password
         // level auth
-        if (resp.success) setAuthenticationStatus("password", userid);
-        complete(onComplete, resp.success);
+        var success = resp.success;
+        if (!success)
+          return complete(onComplete, success);
+
+        withContext(function(context) {
+          loggedIn("password", context.getUserId(),
+              onComplete, onFailure);
+        }, onFailure);
       }, onFailure);
     },
 
@@ -872,12 +886,8 @@ BrowserID.User = (function() {
      */
     cancelUser: function(onComplete, onFailure) {
       network.cancelUser(function() {
-        setAuthenticationStatus(false);
-        if (onComplete) {
-          onComplete();
-        }
+        loggedOut(onComplete, onFailure);
       }, onFailure);
-
     },
 
     /**
@@ -888,19 +898,11 @@ BrowserID.User = (function() {
      */
     logoutUser: function(onComplete, onFailure) {
       User.checkAuthentication(function(authenticated) {
-        if (authenticated) {
-          // logout of all websites
-          storage.logoutEverywhere();
+        if (!authenticated) return complete(onComplete, authenticated);
 
-          // log out of browserid
-          network.logout(function() {
-            setAuthenticationStatus(false);
-            complete(onComplete, !!authenticated);
-          }, onFailure);
-        }
-        else {
-          complete(onComplete, authenticated);
-        }
+        network.logout(function() {
+          loggedOut(onComplete, onFailure);
+        }, onFailure);
       }, onFailure);
     },
 
@@ -916,10 +918,13 @@ BrowserID.User = (function() {
         var issued_identities = User.getStoredEmailKeypairs();
 
         network.listEmails(function(server_emails) {
-          // update our local storage map of email addresses to user ids
-          if (userid) {
-            storage.updateEmailToUserIDMapping(userid, server_emails);
-          }
+          withContext(function(context) {
+            var userid = context.getUserId();
+            // update our local storage map of email addresses to user ids
+            if (userid) {
+              storage.updateEmailToUserIDMapping(userid, server_emails);
+            }
+          });
 
           // lists of emails
           var client_emails = _.keys(issued_identities);
@@ -974,8 +979,8 @@ BrowserID.User = (function() {
     checkAuthentication: function(onComplete, onFailure) {
       network.cookiesEnabled(function(cookiesEnabled) {
         if (cookiesEnabled) {
-          withContext(function() {
-            complete(onComplete, auth_status || false);
+          withContext(function(context) {
+            complete(onComplete, context.getAuthLevel());
           }, onFailure);
         }
         else {
@@ -1284,7 +1289,8 @@ BrowserID.User = (function() {
         // we use the current time from the browserid servers
         // to avoid issues with clock drift on user's machine.
         // (issue #329)
-        network.serverTime(function(serverTime) {
+        withContext(function(context) {
+          var serverTime = context.getServerTime();
           cryptoLoader.load(function(jwcrypto) {
             var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
 
@@ -1538,14 +1544,14 @@ BrowserID.User = (function() {
      * @param {function} onFailure - called on XHR failure.
      */
     setComputerOwnershipStatus: function(userOwnsComputer, onComplete, onFailure) {
-      withContext(function() {
-        if (typeof userid !== "undefined") {
+      withContext(function(context) {
+        if (context.isUserAuthenticated()) {
           if (userOwnsComputer) {
-            storage.usersComputer.setConfirmed(userid);
+            storage.usersComputer.setConfirmed(context.getUserId());
             network.prolongSession(onComplete, onFailure);
           }
           else {
-            storage.usersComputer.setDenied(userid);
+            storage.usersComputer.setDenied(context.getUserId());
             complete(onComplete);
           }
         } else {
@@ -1559,9 +1565,9 @@ BrowserID.User = (function() {
      * @method isUsersComputer
      */
     isUsersComputer: function(onComplete, onFailure) {
-      withContext(function() {
-        if (typeof userid !== "undefined") {
-          complete(onComplete, storage.usersComputer.confirmed(userid));
+      withContext(function(context) {
+        if (context.isUserAuthenticated()) {
+          complete(onComplete, storage.usersComputer.confirmed(context.getUserId()));
         } else {
           complete(onFailure, "user is not authenticated");
         }
@@ -1573,11 +1579,11 @@ BrowserID.User = (function() {
      * @method shouldAskIfUsersComputer
      */
     shouldAskIfUsersComputer: function(onComplete, onFailure) {
-      withContext(function() {
-        if (typeof userid !== "undefined") {
+      withContext(function(context) {
+        if (context.isUserAuthenticated()) {
           // A user should never be asked if they completed an email
           // registration/validation in this dialog session.
-          var shouldAsk = storage.usersComputer.shouldAsk(userid)
+          var shouldAsk = storage.usersComputer.shouldAsk(context.getUserId())
                           && !registrationComplete;
           complete(onComplete, shouldAsk);
         } else {
