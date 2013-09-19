@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "vows": "0.6.4",
+    "vows": "git://github.com/cloudhead/vows#253ca34c",
     "wd": "git://github.com/lloyd/wd#bb612777",
     "request": "2.12.0",
     "optimist": "0.3.5",
