@@ -6,6 +6,8 @@
 $(function() {
   "use strict";
 
+  window.resizeTo(700, 440); // Gross
+
   /**
    * For the main page
    */
@@ -109,8 +111,10 @@ navigator.id.beginAuthentication(function(email) {
       });
     });
   });
+
   moduleManager.start("authenticate");
   $('#authentication_email').val(email);
+  $('button:visible').click();//Gross
 
 
   //TODO 1) Auto click next, so I don't have too
