@@ -13,6 +13,7 @@ BrowserID.resetPassword = (function() {
       pageHelpers = bid.PageHelpers,
       dom = bid.DOM,
       helpers = bid.Helpers,
+      redirect = helpers.redirect,
       complete = helpers.complete,
       validation = bid.Validation,
       tooltip = bid.Tooltip,
@@ -82,7 +83,7 @@ BrowserID.resetPassword = (function() {
                 "logged_in", self.email);
 
             countdownTimeout.call(self, function() {
-              self.doc.location = self.redirectTo;
+              redirect(self.doc, self.redirectTo);
               complete(oncomplete, verified);
             });
           });

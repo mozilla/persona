@@ -9,6 +9,7 @@ BrowserID.Modules.Development = (function() {
       dom = bid.DOM,
       renderer = bid.Renderer,
       storage = bid.Storage,
+      redirect = bid.Helpers.redirect,
       user = bid.User,
       clickCount = 0;
 
@@ -110,7 +111,7 @@ BrowserID.Modules.Development = (function() {
 
     if (href) {
       bid.module.stopAll();
-      document.location = href;
+      redirect(document, href);
     }
   }
 

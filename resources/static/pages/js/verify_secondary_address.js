@@ -13,6 +13,7 @@ BrowserID.verifySecondaryAddress = (function() {
       pageHelpers = bid.PageHelpers,
       dom = bid.DOM,
       helpers = bid.Helpers,
+      redirect = helpers.redirect,
       complete = helpers.complete,
       validation = bid.Validation,
       tooltip = bid.Tooltip,
@@ -50,7 +51,7 @@ BrowserID.verifySecondaryAddress = (function() {
           storage.site.set(URLParse(self.redirectTo).originOnly(),
               "logged_in", self.email);
 
-          self.doc.location = self.redirectTo;
+          redirect(self.doc, self.redirectTo);
           complete(oncomplete, verified);
         }
         else {
