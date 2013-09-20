@@ -63,7 +63,7 @@
     "node-statsd": "https://github.com/downloads/lloyd/node-statsd/0509f85.tgz"
   },
   "devDependencies": {
-    "vows": "0.5.13",
+    "vows": "git://github.com/cloudhead/vows#253ca34c",
     "awsbox": "0.5.4",
     "irc": "0.3.3",
     "jshint": "0.9.1",
