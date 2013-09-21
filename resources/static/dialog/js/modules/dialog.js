@@ -10,6 +10,7 @@ BrowserID.Modules.Dialog = (function() {
       user = bid.User,
       errors = bid.Errors,
       storage = bid.Storage,
+      redirect = bid.Helpers.redirect,
       sc;
 
   function startActions(onsuccess, onerror) {
@@ -156,7 +157,7 @@ BrowserID.Modules.Dialog = (function() {
      * address bar.
      */
     storage.rpRequest.clear();
-    win.location = returnTo;
+    redirect(win, returnTo);
   }
 
   function publishKpis(rpAPI) {

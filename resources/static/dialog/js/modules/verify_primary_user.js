@@ -10,6 +10,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       errors = bid.Errors,
       helpers = bid.Helpers,
       dialogHelpers = helpers.Dialog,
+      redirect = helpers.redirect,
       complete = helpers.complete,
       storage = bid.Storage,
       CANCEL_SELECTOR = ".cancel",
@@ -33,7 +34,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     });
 
     var url = helpers.toURL(self.auth_url, { email: self.email });
-    self.window.document.location = url;
+    redirect(self.window.document, url);
     complete(callback);
   }
 

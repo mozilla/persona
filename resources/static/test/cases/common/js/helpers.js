@@ -194,4 +194,13 @@
     equal(helpers.isArray(""), false);
     equal(helpers.isArray(arguments), false);
   });
+
+  test("redirect", function() {
+    var win = {};
+    helpers.redirect(win, "http://example.com");
+    equal(win.location, "http://example.com");
+
+    helpers.redirect(win, "http://example.com?don%2527t");
+    equal(win.location, 'http://example.com?don%27t');
+  });
 }());

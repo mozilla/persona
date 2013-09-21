@@ -101,6 +101,10 @@
     return String(email).replace(emailRe, "");
   }
 
+  function redirect(win, returnTo) {
+    win.location = decodeURI(returnTo);
+  }
+
   _.extend(helpers, {
     isObject: function(arg) {
       return Object.prototype.toString.apply(arg) === "[object Object]";
@@ -173,7 +177,17 @@
      */
     log: log,
 
-    getDomainFromEmail: getDomainFromEmail
+    getDomainFromEmail: getDomainFromEmail,
+
+    /**
+     * Since we always encode returnTo, we need to decode it before
+     * redirecting the page. Using this helper makes sure we always
+     * decode first.
+     * @method redirect
+     * @param {window} win
+     * @param {string} returnTo
+     */
+    redirect: redirect
   });
 
 
