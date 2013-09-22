@@ -22,7 +22,7 @@
     "0.2.0": "c55013856c8194ec854a0cbec90aab5a04ce3ac5"
   },
   "awsbox": {
-    "0.5.4": "ac88be60ddb0bdfe923cd8b02697c92d81eb692f"
+    "0.6.0": "c57a8eb66f240ce4c6c9b62f1e9dc3a7c979a22a"
   },
   "awssum": {
     "1.1.0": "e010144aa516af78eca01352aab9203b816611bb"
@@ -31,7 +31,7 @@
     "1.1.0": "ea9ed3f7116044563bb0b14d47b2f38a684bac47"
   },
   "awssum-amazon-ec2": {
-    "1.2.0": "8bb53bd273f2a034bb9bc0a6ef55f5333f1efc00"
+    "1.3.2": "fb29a8dffaf6647440b93c64a1868317b4cc856c"
   },
   "awssum-amazon-route53": {
     "1.0.3": "85d1e6aeb22de14ed03e110cc887e482d0362aac"
