@@ -158,6 +158,14 @@ BrowserID.Storage = (function() {
     }
   }
 
+  function storageCheckSet() {
+    storage.storageCheck = "true";
+  }
+
+  function storageCheckGet() {
+    return storage.storageCheck;
+  }
+
   function setReturnTo(returnToURL) {
     storage.returnTo = JSON.stringify({
       at: new Date().toString(),
@@ -603,6 +611,20 @@ BrowserID.Storage = (function() {
      * @method invalidateEmail
      */
     invalidateEmail: invalidateEmail,
+
+    /**
+     * The storageCheck namespace is where simple interaction is
+     * that allows us to feature check if communication iframe is
+     * able to read values set by dialog.
+     */
+    storageCheck: {
+      /** write a test value to local storage, to be invoked from
+       *  dialog */
+      set: storageCheckSet,
+      /** read test value to determine if local storage is sandboxed,
+       *  to be invoked from communication iframe */
+      get: storageCheckGet
+    },
 
     /**
      * The site namespace is where to store any information that relates to
