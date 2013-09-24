@@ -95,6 +95,5 @@ BrowserID.BrowserSupport = (function() {
      */
     isIOS: isIOS
   };
-
 }());
 
