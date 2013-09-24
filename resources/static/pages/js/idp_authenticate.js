@@ -110,8 +110,10 @@ $(function() {
         });
       });
 
-      moduleManager.start("authenticate");
-      $('#authentication_email').val(email);
+      moduleManager.start("authenticate", {
+        email: email
+      });
+      //$('#authentication_email').val(email);
       $('button:visible').click();//Gross
 
     });
