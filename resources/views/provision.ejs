@@ -3,40 +3,21 @@
 <head>
   <meta charset="utf-8">
   <title>Persona Provisioning</title>
-<!-- script src="/common/js/browserid.js"></script -->
 <script src="/common/js/lib/jquery-1.7.1.min.js"></script>
-<!-- script src="/common/js/lib/tinyscore.js"></script>
-<script src="/common/js/helpers.js"></script>
-<script src="/common/js/lib/module.js"></script>
-<script src="common/js/modules/xhr.js"></script>
-<script src="/common/js/network.js"></script -->
 <script>
-if (! navigator.id) {
-  navigator.id = { beginProvisioning: function(cb) {
-    cb('foo@bar.com', 3600);
-    }
-  };
-}
-console.log('hey');
 navigator.id.beginProvisioning(function(email, duration) {
   $.get(email);
-  console.log(email, duration);
   $.getJSON('/wsapi/session_context', function(session, status, xhr) {
     $.get(JSON.stringify(session));
     if (session.authenticated) {
       $.getJSON('/wsapi/list_emails', function(data, status, xhr) {
-        console.log('list_emails', data);
         if (data.emails.indexOf(email) === -1) {
-    $.get('/nodice');
-          console.log(email, ' not in ', data.emails.join(', '));
+          if (console && 'function' === typeof console.log)
+            console.log(email, ' not in ', data.emails.join(', '));
           var msg = "user is not authenticated as target user";
           navigator.id.raiseProvisioningFailure(msg);
         } else {
-    $.get('/wegood');
-          console.log('Woo hoo you all clear kid');
-
           navigator.id.genKeyPair(function(publicKey) {
-$.get('/genkeypar_callback_' + typeof publicKey + '_' + JSON.stringify(publicKey));
             var params = {
               email: email,
               pubkey: JSON.stringify(publicKey),
@@ -44,7 +25,6 @@ $.get('/genkeypar_callback_' + typeof publicKey + '_' + JSON.stringify(publicKey
               allowUnverified: false,
               csrf: session.csrf_token
             };
-$.get(JSON.stringify(params));
 
             $.ajax('/wsapi/cert_key', {
               type: 'POST',
@@ -52,11 +32,13 @@ $.get(JSON.stringify(params));
               data: JSON.stringify(params),
               dataType: 'text',
               error: function(xhr, status, err) {
-                console.error('Unable to certifiy key');
-                console.error(err);
+                // TODO: Handle errors
+                if (console && 'function' === typeof console.log) {
+                  console.error('Unable to certifiy key');
+                  console.error(err);
+                }
               },
               success: function(certificate, status, xhr) {
-                console.log('certificate=', certificate);
                 navigator.id.registerCertificate(certificate);
               }
             });
@@ -68,9 +50,7 @@ $.get(JSON.stringify(params));
       navigator.id.raiseProvisioningFailure(msg);
     }
   });
-  
 });
-
 </script>
 </head>
 </html>
