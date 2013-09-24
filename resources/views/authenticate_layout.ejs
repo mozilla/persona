@@ -70,54 +70,7 @@
 
 
       <% if (useJavascript !== false) { %>
-
-<!-- TODO: reuse dialog.js definition in lib/static or define a slimmed down one? -->
-<script src="/common/js/browserid.js"></script>
-<script src="/common/js/lib/jquery-1.7.1.min.js"></script>
-<script src="/common/js/lib/tinyscore.js"></script>
-<script src="/common/js/lib/micrajax.js"></script>
-<script src="/common/js/javascript-extensions.js"></script>
-<script src="/common/js/lib/hub.js"></script> 
-<script src="/common/js/lib/dom-jquery.js"></script>
-<script src="/common/js/templates.js"></script>
-<script src="/common/js/renderer.js"></script>
-<script src="/common/js/lib/module.js"></script> 
-<script src="/common/js/class.js"></script> 
-<script src="/common/js/tooltip.js"></script>
-<script src="/common/js/mediator.js"></script>
-<script src="/common/js/validation.js"></script>
-<script src="/common/js/helpers.js"></script>
-<script src="/common/js/gettext.js"></script>
-<script src="/common/js/browser-support.js"></script>
-<script src="common/js/enable_cookies_url.js"></script>
-<script src="/common/js/error-messages.js"></script>
-<script src="/common/js/storage.js"></script>
-<script src="/common/js/xhr_transport.js"></script>
-<script src="/common/js/modules/module.js"></script>
-<script src="/common/js/modules/xhr.js"></script>
-<script src="/common/js/network.js"></script>
-<script src="/common/js/crypto-loader.js"></script>
-<script src="/common/js/screens.js"></script>
-<script src="/common/js/modules/dom_module.js"></script>
-<script src="/common/js/modules/page_module.js"></script>
-<script src="/common/js/modules/xhr_delay.js"></script>
-<script src="/common/js/modules/xhr_disable_form.js"></script>
-<script src="/common/js/modules/cookie_check.js"></script>
-<script src="/authentication_api.js"></script>
-<script src="/common/js/user.js"></script>
-<script src="/common/js/modules/extended-info.js"></script>
-
-<script src="/dialog/js/misc/helpers.js"></script>
-
-<script src="/dialog/js/modules/authenticate.js"></script>
-<script src="/dialog/js/modules/check_registration.js"></script>
-<script src="/dialog/js/modules/dialog.js"></script>
-<script src="/dialog/js/modules/add_email.js"></script>
-<script src="/dialog/js/modules/set_password.js"></script>
-<script src="/dialog/js/modules/inline_tospp.js"></script>
-<script src="/dialog/js/modules/complete_sign_in.js"></script>
-
-<script src="/pages/js/idp_authenticate.js"></script>
+        <%- cachify_js(util.format('/production/%s/idp_authenticate.js', locale)) %>
       <% } %>
 	</body>
 </html>
