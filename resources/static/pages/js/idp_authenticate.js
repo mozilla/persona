@@ -84,14 +84,17 @@ $(function() {
 
                 moduleManager.start("check_registration", info);
                 user.waitForUserValidation(info.email, function(msg) {
-                  if ('complete' === msg) {
+                  if ('complete' === msg &&
+                      email === info.email) {
                     navigator.id.completeAuthentication();
-                  }
+                  } else {
+		    // TODO Handle error ?
+		  }
                 },
-                                           function(a, b, c) {
-                                             // TODO: Handle
-                                             console.log('ERROR', a, b, c);
-                                           });
+                function(a, b, c) {
+                  // TODO: Handle
+                  console.log('ERROR', a, b, c);
+                });
                 
                 mediator.subscribe("user_confirmed", function(a, b, c) {
                   // TODO: use or remove
