@@ -12,26 +12,25 @@ $(function() {
    * For the main page
    */
   var bid = BrowserID,
-      helpers = bid.Helpers,
-      user = bid.User,
-      dom = bid.DOM,
-      network = bid.Network,
-      path = document.location.pathname || "/",
-      mediator = bid.Mediator,
-      dialogHelpers = bid.Helpers.Dialog,
-      moduleManager = bid.module,
-      modules = bid.Modules,
-      CookieCheck = modules.CookieCheck,
-      XHRDelay = modules.XHRDelay,
-      XHRDisableForm = modules.XHRDisableForm,
-      Development = modules.Development,
-      ANIMATION_TIME = 500,
-      checkCookiePaths = [ "/add_email_address", "/confirm", "/verify_email_address" ];
+  helpers = bid.Helpers,
+  user = bid.User,
+  dom = bid.DOM,
+  network = bid.Network,
+  path = document.location.pathname || "/",
+  mediator = bid.Mediator,
+  dialogHelpers = bid.Helpers.Dialog,
+  moduleManager = bid.module,
+  modules = bid.Modules,
+  CookieCheck = modules.CookieCheck,
+  XHRDelay = modules.XHRDelay,
+  XHRDisableForm = modules.XHRDisableForm,
+  Development = modules.Development,
+  ANIMATION_TIME = 500,
+  checkCookiePaths = [ "/add_email_address", "/confirm", "/verify_email_address" ];
 
   network.init();
   user.init();
 
-  // Does the IdP care about checking cookies?
   moduleManager.register("cookie_check", modules.CookieCheck);
   moduleManager.start("cookie_check", {
     ready: function(status) {
@@ -61,66 +60,56 @@ $(function() {
     // instead just show the error message.
     if (!status) return;
 
-navigator.id.beginAuthentication(function(email) {
-//$('#authentication_form').addClass('returning');
-//$('.isMobile').removeClass('isMobile');
-//$('#authentication_form').show();
-  mediator.subscribe("authentication_success", function(msg, info) {
-    // Are we ensured that we authed as email?
-    navigator.id.completeAuthentication();
-  });
-  mediator.subscribe("new_user", function(msg, info) {
-    var email = info.email;
-    // Are we ensured that we authed as email?
-    moduleManager.start("set_password", info);
-    mediator.subscribe("password_set", function(msg, info) {
-      dialogHelpers.createUser.call({
-	getErrorDialog: function(a, b, c) {
-	  console.log('getErrorDialog called', a, b, c);
-	},
-	publish: function(msg, info) {
-	  if ('user_staged') {
-
-	    info.siteName = 'TODO';
-            info.verifier = "waitForUserValidation";
-	    info.verificationMessage = "user_confirmed";
-
-	    moduleManager.start("check_registration", info);
-            user.waitForUserValidation(info.email, function(msg) {
-	      if ('complete' === msg) {
-                // user_confirmed doesn't appear to do anything
-		//mediator.publish('user_confirmed', info);
-                // email_valid_and_ready doesn't appear to do anything
-		//mediator.publish('email_valid_and_ready', info);
-		//mediator.publish('generate_assertion', info);
-                navigator.id.completeAuthentication();
-	      }
-	    },
-            function(a, b, c) {
-		 console.log('ERROR', a, b, c);
-	    });
-            
-
-            mediator.subscribe("user_confirmed", function(a, b, c) {
-	      console.log('user_confirmed', a, b, c);
-	    });
-	  }
-	}
-      }, email, info.password, function(a, b, c) {
-	console.log(a, b, c);
+    navigator.id.beginAuthentication(function(email) {
+      mediator.subscribe("authentication_success", function(msg, info) {
+        // TODO: Are we sure that we authed as email?
+        navigator.id.completeAuthentication();
       });
+
+      mediator.subscribe("new_user", function(msg, info) {
+        var email = info.email;
+        // TODO: Are we sure that we authed as email?
+        moduleManager.start("set_password", info);
+        mediator.subscribe("password_set", function(msg, info) {
+          dialogHelpers.createUser.call({
+            getErrorDialog: function(a, b, c) {
+              console.log('getErrorDialog called', a, b, c);
+            },
+            publish: function(msg, info) {
+              if ('user_staged') {
+
+                info.siteName = 'TODO';
+                info.verifier = "waitForUserValidation";
+                info.verificationMessage = "user_confirmed";
+
+                moduleManager.start("check_registration", info);
+                user.waitForUserValidation(info.email, function(msg) {
+                  if ('complete' === msg) {
+                    navigator.id.completeAuthentication();
+                  }
+                },
+                                           function(a, b, c) {
+                                             // TODO: Handle
+                                             console.log('ERROR', a, b, c);
+                                           });
+                
+                mediator.subscribe("user_confirmed", function(a, b, c) {
+                  // TODO: use or remove
+                  console.log('user_confirmed', a, b, c);
+                });
+              }
+            }
+          }, email, info.password, function(a, b, c) {
+            // TODO handle
+            console.log(a, b, c);
+          });
+        });
+      });
+
+      moduleManager.start("authenticate");
+      $('#authentication_email').val(email);
+      $('button:visible').click();//Gross
+
     });
-  });
-
-  moduleManager.start("authenticate");
-  $('#authentication_email').val(email);
-  $('button:visible').click();//Gross
-
-
-  //TODO 1) Auto click next, so I don't have too
-  // 2) Listen for authenicated or something? blank screen
-
-});
-
   }
 });

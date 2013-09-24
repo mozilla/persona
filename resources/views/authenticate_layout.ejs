@@ -71,14 +71,7 @@
 
       <% if (useJavascript !== false) { %>
 
-<!-- 
-I'm having trouble re-using our modules...
-The following are added to quite errors, not that we want them
-* hub
-* lib/module
-* mediator
-* modules/module
--->
+<!-- TODO: reuse dialog.js definition in lib/static or define a slimmed down one? -->
 <script src="/common/js/browserid.js"></script>
 <script src="/common/js/lib/jquery-1.7.1.min.js"></script>
 <script src="/common/js/lib/tinyscore.js"></script>
@@ -87,11 +80,6 @@ The following are added to quite errors, not that we want them
 <script src="/common/js/lib/hub.js"></script> 
 <script src="/common/js/lib/dom-jquery.js"></script>
 <script src="/common/js/templates.js"></script>
-<!-- 
-<script src=""></script>
-<script src=""></script>
-<script src=""></script>
--->
 <script src="/common/js/renderer.js"></script>
 <script src="/common/js/lib/module.js"></script> 
 <script src="/common/js/class.js"></script> 
@@ -128,11 +116,7 @@ The following are added to quite errors, not that we want them
 <script src="/dialog/js/modules/set_password.js"></script>
 <script src="/dialog/js/modules/inline_tospp.js"></script>
 <script src="/dialog/js/modules/complete_sign_in.js"></script>
-<!-- 
-<script src=""></script>
-<script src=""></script>
-<script src=""></script>
--->
+
 <script src="/pages/js/idp_authenticate.js"></script>
       <% } %>
 	</body>
