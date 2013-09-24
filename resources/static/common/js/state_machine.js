@@ -32,7 +32,6 @@ BrowserID.StateMachine = (function() {
     },
 
     subscribe: function(message, callback) {
-      console.log('STATE SUB', message);
       subscriptions.push(mediator.subscribe(message, function(msg, info, rehydrate) {
         if(rehydrate) {
           var cmd = history.getCurrent();

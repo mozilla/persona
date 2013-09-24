@@ -73,7 +73,8 @@ $(function() {
         mediator.subscribe("password_set", function(msg, info) {
           dialogHelpers.createUser.call({
             getErrorDialog: function(a, b, c) {
-              console.log('getErrorDialog called', a, b, c);
+              // TODO: Use or remove
+              //console.log('getErrorDialog called', a, b, c);
             },
             publish: function(msg, info) {
               if ('user_staged') {
@@ -88,23 +89,23 @@ $(function() {
                       email === info.email) {
                     navigator.id.completeAuthentication();
                   } else {
-		    // TODO Handle error ?
-		  }
+                    // TODO Handle error ?
+                  }
                 },
                 function(a, b, c) {
                   // TODO: Handle
-                  console.log('ERROR', a, b, c);
+                  //console.log('ERROR', a, b, c);
                 });
                 
                 mediator.subscribe("user_confirmed", function(a, b, c) {
                   // TODO: use or remove
-                  console.log('user_confirmed', a, b, c);
+                  //console.log('user_confirmed', a, b, c);
                 });
               }
             }
           }, email, info.password, function(a, b, c) {
             // TODO handle
-            console.log(a, b, c);
+            //console.log(a, b, c);
           });
         });
       });
