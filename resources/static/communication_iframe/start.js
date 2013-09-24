@@ -62,25 +62,41 @@
         return oncomplete && oncomplete();
       }
 
-      // this will re-certify the user if neccesary
-      user.getSilentAssertion(loggedInUser, function(email, assertion) {
-        if (loggedInUser === email) {
-          chan.notify({ method: 'match' });
-        } else if (email) {
-          // only send login events when the assertion is defined - when
-          // the 'loggedInUser' is already logged in, it's false - that is
-          // when the site already has the user logged in and does not want
-          // the resources or cost required to generate an assertion
-          if (assertion) chan.notify({ method: 'login', params: assertion });
-          loggedInUser = email;
-        } else if (loggedInUser !== null) {
-          // only send logout events when loggedInUser is not null, which is an
-          // indicator that the site thinks the user is logged out
-          chan.notify({ method: 'logout' });
-          loggedInUser = null;
-        }
-        oncomplete && oncomplete();
-      }, onError);
+      // iOS7 has new privacy settings which prevent the communication iframe
+      // from working.  We can retain *some* semantics, but not all.  We cannot
+      // read local storage, so we cannot generate assertions.  We do have access to
+      // cookies, however, so we can log users out.
+      if (!storage.storageCheck.get()) {
+        user.checkAuthentication(function(authenticated) {
+          if ((loggedInUser === undefined || loggedInUser) && !authenticated) {
+            chan.notify({ method: 'logout' });
+            loggedInUser = null;
+          } else if (loggedInUser === null && !authenticated) {
+            chan.notify({ method: 'match' });
+          }
+          oncomplete && oncomplete();
+        });
+      } else {
+        // this will re-certify the user if neccesary
+        user.getSilentAssertion(loggedInUser, function(email, assertion) {
+          if (loggedInUser === email) {
+            chan.notify({ method: 'match' });
+          } else if (email) {
+            // only send login events when the assertion is defined - when
+            // the 'loggedInUser' is already logged in, it's false - that is
+            // when the site already has the user logged in and does not want
+            // the resources or cost required to generate an assertion
+            if (assertion) chan.notify({ method: 'login', params: assertion });
+            loggedInUser = email;
+          } else if (loggedInUser !== null) {
+            // only send logout events when loggedInUser is not null, which is an
+            // indicator that the site thinks the user is logged out
+            chan.notify({ method: 'logout' });
+            loggedInUser = null;
+          }
+          oncomplete && oncomplete();
+        }, onError);
+      }
     }, onError);
   }
 
