@@ -49,7 +49,7 @@ start_stop.addStartupBatches(suite);
 suite.addBatch({
   "address_info for an unknown address": {
     topic: wsapi.get('/wsapi/address_info', {
-      email: TEST_EMAIL
+      email: "asdf@example.domain"
     }),
     "returns unknown": function(e, r) {
       assert.isNull(e);
@@ -339,7 +339,7 @@ suite.addBatch({
           assert.isNull(e);
           var r = JSON.parse(r.body);
           assert.equal(r.state, "offline");
-          assert.equal(r.type, "secondary");
+          assert.equal(r.type, "primary"); // its an offline primary, so type should be primary
         }
       }
     }

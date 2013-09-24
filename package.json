@@ -43,6 +43,7 @@
     "node-statsd": "0.0.7",
     "optimist": "0.6.0",
     "postprocess": "0.2.4",
+    "q": "0.9.7",
     "rimraf": "2.2.2",
     "semver": "2.1.0",
     "temp": "0.6.0",

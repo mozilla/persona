@@ -18,6 +18,7 @@ validate = require('../lib/validate.js'),
 logger = require('../lib/logging/logging.js').logger,
 heartbeat = require('../lib/heartbeat'),
 shutdown = require('../lib/shutdown'),
+primary = require('../lib/primary'),
 computecluster = require('compute-cluster'),
 urlparse = require('urlparse'),
 toobusy = require('../lib/busy_middleware.js'),
@@ -80,12 +81,13 @@ try {
 }
 
 
-
 // and our single function
 app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ephemeral': 'boolean', 'unverified': { type: 'boolean', required: false }, 'forceIssuer': {type: 'hostname', required: false}}), function(req, resp) {
   var startTime = new Date();
   var forceIssuer = req.params.forceIssuer;
   var opts = {};
+  // forceIssuer means that HOSTNAME can sign the certificate, even if there 
+  // is primary support
   if (!! forceIssuer) {
     if (config.get('forcible_issuers').indexOf(forceIssuer) === -1) {
       logger.error("Invalid issuer [" + forceIssuer + "]");
@@ -93,6 +95,7 @@ app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ep
     }
     opts.forceIssuer = forceIssuer;
   }
+
   cc.enqueue(_.extend(opts, {
     pubkey: req.params.pubkey,
     email: req.params.email,    
