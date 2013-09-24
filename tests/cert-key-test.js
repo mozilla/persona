@@ -7,6 +7,7 @@
 require('./lib/test_env.js');
 
 const assert = require('assert'),
+path = require('path'),
 vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
@@ -21,11 +22,18 @@ var suite = vows.describe('cert-emails');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
-start_stop.addStartupBatches(suite);
+const TEST_DOMAIN_PATH =
+  path.join(__dirname, '..', 'example', 'primary', '.well-known', 'browserid');
+
+process.env['SHIMMED_PRIMARIES'] =
+  'example.domain|http://127.0.0.1:10005|' + TEST_DOMAIN_PATH +
+  ',real.primary|http://127.0.0.1:10005|' + TEST_DOMAIN_PATH;
 
 const PRIMARY_DOMAIN = 'example.domain',
       PRIMARY_EMAIL = 'testuser@' + PRIMARY_DOMAIN,
       PRIMARY_ORIGIN = 'http://127.0.0.1:10002';
+
+start_stop.addStartupBatches(suite);
 
 // create a new secondary account
 suite.addBatch({
@@ -203,6 +211,22 @@ suite.addBatch({
           assert.isTrue(resp.success);
         }
       }
+    }
+  }
+});
+
+suite.addBatch({
+  "certifying the key for an email that has primary support": {
+    topic: function() {
+      wsapi.post(cert_key_url, {
+        email: PRIMARY_EMAIL,
+        pubkey: primaryUser._keyPair.publicKey.serialize(),
+        ephemeral: false
+      }).call(this);
+    },
+    "fails": function(err, r) {
+      assert.ifError(err);
+      assert.equal(r.code, 400);
     }
   }
 });
