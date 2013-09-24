@@ -10,7 +10,12 @@
       modules = bid.Modules,
       user = bid.User,
       network = bid.Network,
-      mediator = bid.Mediator;
+      mediator = bid.Mediator,
+      storage = bid.Storage;
+
+  // issue #3905, set a bit in localStorage, we will use this to determine
+  // if we can read local storage from the comm iframe
+  storage.storageCheck.set();
 
   network.init();
   user.init();
