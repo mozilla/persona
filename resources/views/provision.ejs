@@ -3,19 +3,27 @@
 <head>
   <meta charset="utf-8">
   <title>Persona Provisioning</title>
-<script src="/common/js/lib/jquery-1.7.1.min.js"></script>
+<script src="/common/js/lib/micrajax.js"></script>
 <script>
+function getJSON(uri, success, failure) {
+  Micrajax.ajax({
+    url: uri,
+    success: success,
+    error: failure
+  });
+}
+
+function fail() {
+  var msg = "user is not authenticated as target user";
+  navigator.id.raiseProvisioningFailure(msg);
+}
+
 navigator.id.beginProvisioning(function(email, duration) {
-  $.get(email);
-  $.getJSON('/wsapi/session_context', function(session, status, xhr) {
-    $.get(JSON.stringify(session));
+  getJSON('/wsapi/session_context', function(session, text, xhr) {
     if (session.authenticated) {
-      $.getJSON('/wsapi/list_emails', function(data, status, xhr) {
+      getJSON('/wsapi/list_emails', function(data, text, xhr) {
         if (data.emails.indexOf(email) === -1) {
-          if (console && 'function' === typeof console.log)
-            console.log(email, ' not in ', data.emails.join(', '));
-          var msg = "user is not authenticated as target user";
-          navigator.id.raiseProvisioningFailure(msg);
+          fail();
         } else {
           navigator.id.genKeyPair(function(publicKey) {
             var params = {
@@ -25,31 +33,32 @@ navigator.id.beginProvisioning(function(email, duration) {
               allowUnverified: false,
               csrf: session.csrf_token
             };
-
-            $.ajax('/wsapi/cert_key', {
+            Micrajax.ajax({
+              url: '/wsapi/cert_key',
               type: 'POST',
-              contentType: 'application/json; charset=UTF-8',
+              contentType: 'application/json',
               data: JSON.stringify(params),
               dataType: 'text',
+              success: function(certificate, status, xhr) {
+                navigator.id.registerCertificate(certificate);
+              },
               error: function(xhr, status, err) {
                 // TODO: Handle errors
                 if (console && 'function' === typeof console.log) {
                   console.error('Unable to certifiy key');
                   console.error(err);
                 }
-              },
-              success: function(certificate, status, xhr) {
-                navigator.id.registerCertificate(certificate);
               }
             });
-          });
+          });      
         }
-      });
+      }, function(xhr, status, respText) {
+        fail();
+      }); // getJSON
     } else {
-      var msg = "user is not authenticated as target user";
-      navigator.id.raiseProvisioningFailure(msg);
+      fail();
     }
-  });
+  }, fail);
 });
 </script>
 </head>

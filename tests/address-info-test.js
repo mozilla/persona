@@ -23,7 +23,7 @@ secondary = require('./lib/secondary.js'),
 util = require('util'),
 path = require('path');
 
-var suite = vows.describe('password-length');
+var suite = vows.describe('address-info');
 
 const TEST_DOMAIN = "example.domain",
       TEST_EMAIL = "test@" + TEST_DOMAIN,
