@@ -44,6 +44,7 @@
     "mkdirp": "0.3.0",
     "optimist": "0.2.8",
     "postprocess": "0.2.4",
+    "q": "0.9.7",
     "rimraf": "2.0.2",
     "semver": "1.0.12",
     "temp": "0.4.0",
