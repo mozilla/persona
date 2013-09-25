@@ -12,6 +12,8 @@ vows = require('vows'),
 start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 config = require('../lib/configuration.js'),
+secrets = require('../lib/secrets'),
+primary = require('./lib/primary'),
 jwcrypto = require('jwcrypto'),
 http = require('http'),
 querystring = require('querystring'),
@@ -943,6 +945,92 @@ suite.addBatch({
   }
 });
 
+// now verify that assertions from the fallback do not verify for a domain
+// that has primary support
+function make_domain_authority_tests(new_style) {
+  var title = ("a cert signed by fallback for domain with primary support - "
+               + (new_style ? "new style" : "old style"));
+  var tests = {
+    topic: function() {
+      // we'll re-use the newClientKeypair, but must create a certificate
+      // signed by the private key of the fallback
+      var expiration = new Date(new Date().getTime() + (2 * 60 * 1000));
+      jwcrypto.cert.sign(
+        {
+          publicKey: newClientKeypair.publicKey,
+          principal: {email: "attacker@real.primary"}
+        },
+        {
+          issuedAt: new Date(),
+          issuer: "127.0.0.1",
+          expiresAt: expiration
+        }, {}, secrets.loadSecretKey(), this.callback);
+    },
+    "yields a good looking certificate": function (err, cert) {
+      assert.isNull(err);
+      assert.isString(cert);
+    },
+    "and generation of assertion": {
+      topic: function(err, cert) {
+        var expiration = new Date(new Date().getTime() + (2 * 60 * 1000));
+        var self = this;
+        jwcrypto.assertion.sign(
+          {}, {
+            audience: TEST_ORIGIN,
+            expiresAt: expiration
+          },
+          newClientKeypair.secretKey, function(err, assertion) {
+            if (err) return self.callback(err);
+            var b = jwcrypto.cert.bundle([cert],
+                                         assertion,
+                                         new_style); // XXX IGNORED
+            self.callback(null, b);
+          });
+      },
+      "works": function(e, assertion) {
+        assert.isString(assertion);
+        assert.equal(assertion.length > 0, true);
+      },
+      "and causes the verifier": {
+        topic: function(err, assertion) {
+          wsapi.post('/verify', {
+            audience: TEST_ORIGIN,
+            assertion: assertion
+          }).call(this);
+        },
+        "to return an error": function (err, r) {
+          var resp = JSON.parse(r.body);
+          assert.strictEqual(resp.status, 'failure');
+          assert(/may not speak/.test(resp.reason));
+        }
+      },
+      "and with forceIssuer": {
+        topic: function(err, assertion) {
+          wsapi.post('/verify', {
+            audience: TEST_ORIGIN,
+            assertion: assertion,
+            experimental_forceIssuer: '127.0.0.1'
+          }).call(this);
+        },
+        "verifies": function (err, r) {
+          var resp = JSON.parse(r.body);
+          assert.strictEqual(resp.status, 'okay');
+        }
+      }
+    }
+  };
+
+  var overall_test = {};
+  overall_test[title] = tests;
+  return overall_test;
+};
+
+suite.addBatch(make_domain_authority_tests(false));
+suite.addBatch(make_domain_authority_tests(true));
+
+
+
+
 // now verify that assertions from a primary who does have browserid support
 // but has no authority to speak for an email address will fail
 suite.addBatch({
@@ -1039,7 +1127,6 @@ suite.addBatch({
     }
   }
 });
-
 
 // PROXY IDPS
 suite.addBatch({
