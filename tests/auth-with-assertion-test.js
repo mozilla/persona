@@ -15,6 +15,7 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
+secrets = require('../lib/secrets'),
 http = require('http'),
 querystring = require('querystring'),
 path = require('path'),
@@ -82,7 +83,7 @@ suite.addBatch({
 // `lastUsedAs`
 suite.addBatch({
   "setting lastUsedAs to secondary": {
-    topic: function(err, certs_and_assertion) {
+    topic: function() {
       db.updateEmailLastUsedAs(TEST_EMAIL, 'secondary', this.callback);
     },
     "works": function (err, lastUsedAs) {
@@ -147,7 +148,7 @@ suite.addBatch({
                 {},
                 {audience: TEST_ORIGIN, expiresAt: expirationDate},
                 innerKeypair.secretKey, function(err, signedObject) {
-                  if (err) return cb(err);
+                  if (err) return self.callback(err);
 
                   var fullAssertion = jwcrypto.cert.bundle(
                     [primaryUser._cert, innerCert], signedObject);
@@ -213,6 +214,79 @@ suite.addBatch({
           var resp = JSON.parse(r.body);
           assert.isObject(resp);
           assert.isTrue(resp.success);
+        }
+      }
+    }
+  }
+});
+
+// now verify that assertions from the fallback do not auth for a domain
+// that has primary support
+var newClientKeypair;
+suite.addBatch({
+  "set up user key": {
+    topic: function() {
+      jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, this.callback);
+    },
+    "works": function(err, kp) {
+      assert.isNull(err);
+      assert.isObject(kp);
+      newClientKeypair = kp;
+    }
+  }
+});
+suite.addBatch({
+  "a cert signed by fallback for domain with primary support": {
+    topic: function() {
+      // we'll re-use the newClientKeypair, but must create a certificate
+      // signed by the private key of the fallback
+      var expiration = new Date(new Date().getTime() + (2 * 60 * 1000));
+      jwcrypto.cert.sign(
+        {
+          publicKey: newClientKeypair.publicKey,
+          principal: {email: "attacker@real.primary"}
+        },
+        {
+          issuedAt: new Date(),
+          issuer: "127.0.0.1",
+          expiresAt: expiration
+        }, {}, secrets.loadSecretKey(), this.callback);
+    },
+    "yields a good looking certificate": function (err, cert) {
+      assert.isNull(err);
+      assert.isString(cert);
+    },
+    "and generation of assertion": {
+      topic: function(err, cert) {
+        var expiration = new Date(new Date().getTime() + (2 * 60 * 1000));
+        var self = this;
+        jwcrypto.assertion.sign(
+          {}, {
+            audience: TEST_ORIGIN,
+            expiresAt: expiration
+          },
+          newClientKeypair.secretKey, function(err, assertion) {
+            if (err) return self.callback(err);
+            var b = jwcrypto.cert.bundle([cert], assertion);
+            self.callback(null, b);
+          });
+      },
+      "works": function(e, assertion) {
+        assert.isString(assertion);
+        assert.equal(assertion.length > 0, true);
+      },
+      "and causes auth_with_assertion": {
+        topic: function(err, assertion) {
+          wsapi.post('/wsapi/auth_with_assertion', {
+            assertion: assertion,
+            ephemeral: true
+          }).call(this);
+        },
+        "to return an error": function (err, r) {
+          var resp = JSON.parse(r.body);
+          assert.ifError(err);
+          console.dir(resp);
+          assert.strictEqual(resp.success, false);
         }
       }
     }
