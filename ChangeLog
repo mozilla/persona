@@ -1,5 +1,18 @@
 current train:
 
+train-2013.09.25:
+  * RP Branded verification emails - if a site declares siteLogo and backgroundColor, verification emails will be styled with those instead of Persona branding: #3857
+	* Fix iOS7 users being logged out on RP page refresh: #3914
+	* Fix certs being requested from the fallback IdP for addresses that are suppored by primary IdPs: #3625
+	* Always decode the returnTo URL before redirecting users: #3906
+	* Use Fira Sans as the default font for FirefoxOS: #3885
+	* Update awsbox to use Route53 and node 0.10.x by default: #3901, #3908
+	* Update vows to fix Selenium on node 0.10.x: #3900
+	* Update winston to work with node 0.10.x: #3893
+	* Update package.json with license, author, homepage and description: #3881
+	* Update Ubuntu setup instructions: #3910
+	* Code cleanup & refactoring: #3880
+
 train-2013.09.11:
   * Add support for experimental_emailHint - pre-fill email input box or pre-select an email address when dialog opens: #3843
   * Fix backgroundColor color clash with text color: #3837
