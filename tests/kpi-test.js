@@ -12,7 +12,7 @@ const config = require('../lib/configuration');
 const kpi_data = require('../lib/kpi_data');
 const HttpMock = require('./lib/http-mock');
 const logger = require('../lib/logging/logging').logger;
-
+const KpiTransport = require('../lib/logging/transports/metrics-kpi');
 
 require('./lib/test_env');
 
@@ -126,6 +126,52 @@ suite.addBatch({
       "when the batch is full": function(request) {
         assert.ok(request.data);
       }
+    },
+    "reset kpi_send_metrics": function() {
+      config.set('kpi_send_metrics', this.origSendMetricsValue);
+    }
+  }
+});
+
+function noOp() {}
+
+suite.addBatch({
+  "staging and verification events": {
+    topic: function() {
+      this.origSendMetricsValue = config.get('kpi_send_metrics');
+      this.expectedEvents = [
+        'stage_email.success',
+        'stage_reset.success',
+        'stage_reverify.success',
+        'stage_transition.success',
+        'stage_user.success',
+        'complete_email_confirmation.success',
+        'complete_reset.success',
+        'complete_transition.success',
+        'complete_user_creation.success'
+      ];
+      config.set('kpi_send_metrics', true);
+
+      var kpiTransport = new KpiTransport();
+
+      this.expectedEvents.forEach(function(event) {
+        kpiTransport.log('info', event, null, noOp);
+      });
+
+      return kpiTransport.getQueue();
+    },
+    "are added to the KPI queue": function(queue) {
+      var expectedEvents = this.expectedEvents;
+
+      // The test here is a bit backwards. Take the original set of events to
+      // test and remove the events that have been added to the queue. Hope
+      // that none remain.
+      queue.forEach(function(kpi) {
+        var eventName = kpi.event_name;
+        var index = expectedEvents.indexOf(eventName);
+        expectedEvents.splice(index, 1);
+      });
+      assert.equal(expectedEvents.length, 0);
     },
     "reset kpi_send_metrics": function() {
       config.set('kpi_send_metrics', this.origSendMetricsValue);
