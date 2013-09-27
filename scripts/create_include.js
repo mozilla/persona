@@ -31,10 +31,16 @@ module.exports = function(done) {
     output += '\n(function() {\n';
     // define undefined in case the RP has accidentally redefined undefined.
     output += '\tvar undefined;\n';
+    // if native support exists, use it and abort all further evaluation.
+    output += '\tif (navigator.mozId) { navigator.id = navigator.mozId; }\n';
+    output += '\telse { (function() {\n';
+    output += '\tvar undefined;\n';
     output += fs.readFileSync(path.join(dir, '_jschannel.js'));
     output += fs.readFileSync(path.join(winchan_dir, 'winchan.js'));
     output += fs.readFileSync(path.join(dir, '_include.js'));
-    output += '}());\n';
+    output += '\t}());\n'; // end inner function
+    output += '\t}\n'; // end else
+    output += '}());\n'; // end outer function
 
     fs.writeFileSync(target, output);
   } catch(e) {
