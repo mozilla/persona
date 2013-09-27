@@ -71,6 +71,15 @@ $(function() {
         // TODO: Are we sure that we authed as email?
         moduleManager.start("set_password", info);
         mediator.subscribe("password_set", function(msg, info) {
+
+		  console.log('AOOKKKKKK');
+// TODO merge broke us - user.setRPInfo must now be called like in 
+// resources/static/dialog/js/modules/dialog.js line 130, 286
+//      params.origin = user.getOrigin();
+	    var rpInfo = bid.Models.RpInfo.create({origin: 'http://192.168.186.138:10001'});
+                  user.setRpInfo(rpInfo);
+
+
           dialogHelpers.createUser.call({
             getErrorDialog: function(a, b, c) {
               // TODO: Use or remove
