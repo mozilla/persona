@@ -555,7 +555,11 @@
         api_called = "getVerifiedEmail";
         navigator.id.get(callback);
       },
-      // required for forwards compatibility with native implementations
+      // _shimmed was originally required in April 2011 (79d3119db036725c5b51a305758a7816fdc8920a)
+      // so we could deal with firefox behavior - which was in certain reload scenarios to caching
+      // properties on navigator.id.  The effect would be upon reload-via back/forward,
+      // navigator.id would be populated with the previous sessions stale object, and thus
+      // the shim would not be properly inserted.
       _shimmed: true
     };
   }
