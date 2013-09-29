@@ -67,7 +67,7 @@ function addTests(port, path) {
         });
       },
       "fails": function (err) {
-        assert.ok(/socket hang up/.test(err.toString()));
+	assert.ok(/Error: (socket hang up|read ECONNRESET)/.test(err.toString()));
       }
     }
   });
