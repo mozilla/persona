@@ -78,11 +78,9 @@ BrowserID.Storage = (function() {
       emailToUserID: {},
       emails: {},
       interaction_data: {},
-      main_site: {},
       managePage: {},
       returnTo: null,
       siteInfo: {},
-      stagedOnBehalfOf: null,
       usersComputer: {}
     }, function(defaultVal, key) {
       if (!storage[key]) {
