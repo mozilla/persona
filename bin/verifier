@@ -14,7 +14,6 @@ url = require('url'),
 fs = require('fs'),
 express = require('express'),
 computecluster = require('compute-cluster'),
-metrics = require('../lib/logging/metrics'),
 heartbeat = require('../lib/heartbeat'),
 logger = require('../lib/logging/logging').logger,
 config = require('../lib/configuration'),
@@ -96,7 +95,7 @@ function doVerification(req, resp, next) {
       if (want_ct.indexOf(ct) == -1) throw "wrong content type";
     } catch (e) {
       reason = "Content-Type expected to be one of: " + want_ct.join(", ");
-      metrics.report('verify', {
+      logger.info('verify', {
         result: 'failure',
         reason: reason,
         rp: audience
@@ -104,7 +103,7 @@ function doVerification(req, resp, next) {
       return resp.json({ status: "failure", reason: reason}, 415);
     }
     reason = "need assertion and audience";
-    metrics.report('verify', {
+    logger.info('verify', {
       result: 'failure',
       reason: reason,
       rp: audience
@@ -129,7 +128,7 @@ function doVerification(req, resp, next) {
     if (err) {
       statsd.increment("assertion_failure");
       resp.json({"status":"failure", reason: err});  //Could be 500 or 200 OK if invalid cert
-      metrics.report('verify', {
+      logger.info('verify', {
         result: 'failure',
         reason: err,
         rp: audience
@@ -141,7 +140,7 @@ function doVerification(req, resp, next) {
         expires : new Date(r.success.expires).valueOf()
       }));
 
-      metrics.report('verify', {
+      logger.info('verify', {
         result: 'success',
         rp: r.success.audience
       });

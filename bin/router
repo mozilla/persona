@@ -150,12 +150,10 @@ wsapi.routeSetup(app, {
   write_url: dbwriter_url
 });
 
+app.use(metrics.metricsMiddleware);
+
 //catch-all
 app.use(function(req, res, next) {
-
-  // log metrics
-  if (req.url === '/sign_in') metrics.userEntry(req);
-
   forward(
     static_url+req.url, req, res,
     function(err) {
