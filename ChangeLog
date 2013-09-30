@@ -10,6 +10,7 @@ train-2013.08.28
   * Visual tweaks: #3636, #3814, #3813, #3765
   * Copy tweaks: #3823, #3833
   * (hotfix 2013.09.04) fix provisioning #3625, #912001
+  * (hotfix 2013.09.29) mitigate change in iOS7 privacy behavior #3905
 
 train-2013.08.15
 	* Relax restrictions on siteLogo - allow siteLogo from any https URL or image dataURI: #3705, #3743
