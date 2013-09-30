@@ -9,9 +9,10 @@ const vows = require('vows');
 const start_stop = require('./lib/start-stop');
 const wsapi = require('./lib/wsapi');
 const config = require('../lib/configuration');
-const metrics = require('../lib/logging/metrics');
 const kpi_data = require('../lib/kpi_data');
 const HttpMock = require('./lib/http-mock');
+const logger = require('../lib/logging/logging').logger;
+
 
 require('./lib/test_env');
 
@@ -110,7 +111,7 @@ suite.addBatch({
 
       var batchSize = config.get('kpi_metrics_batch_size');
       for (var i = 0; i < batchSize - 1; ++i) {
-        metrics.report('sample.metric', 'value' + i);
+        logger.info('signin', {value: i});
       }
       return this.httpMock.getRequest() || "no_request_made";
     },
@@ -119,7 +120,7 @@ suite.addBatch({
     },
     "are sent": {
       topic: function() {
-        metrics.report('sample.metric', 'value.batchSize');
+        logger.info('verify', { value: 'causes user to verify' });
         return this.httpMock.getRequest() || "no_request_made";
       },
       "when the batch is full": function(request) {

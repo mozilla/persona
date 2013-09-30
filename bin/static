@@ -32,7 +32,7 @@ views = require('../lib/static/views.js'),
 toobusy = require('../lib/busy_middleware.js'),
 addP3PHeader = require('../lib/p3p.js'),
 shutdown = require('../lib/shutdown.js'),
-statsd = require("../lib/logging/statsd");
+statsd = require("../lib/logging/middleware/statsd");
 
 var app = express.createServer();
 

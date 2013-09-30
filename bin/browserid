@@ -28,7 +28,7 @@ primary = require('../lib/primary'),
 addP3PHeader = require('../lib/p3p.js'),
 forward = require('../lib/http_forward.js'),
 toobusy = require('../lib/busy_middleware.js'),
-statsd = require('../lib/logging/statsd.js');
+statsd = require('../lib/logging/middleware/statsd.js');
 
 var app = express.createServer();
 

@@ -20,7 +20,7 @@ config = require('../lib/configuration'),
 shutdown = require('../lib/shutdown'),
 booleanQuery = require('../lib/boolean-query'),
 toobusy = require('../lib/busy_middleware.js'),
-statsd = require("../lib/logging/statsd");
+statsd = require("../lib/logging/middleware/statsd");
 
 logger.info("verifier server starting up");
 

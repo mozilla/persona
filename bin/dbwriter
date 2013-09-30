@@ -23,7 +23,7 @@ cachify = require('connect-cachify'),
 assets = require('../lib/static_resources').all,
 primary = require('../lib/primary'),
 toobusy = require('../lib/busy_middleware.js'),
-statsd = require('../lib/logging/statsd.js');
+statsd = require('../lib/logging/middleware/statsd.js');
 
 // dbwriter needs cachify to properly render emails with cachified URLs,
 // but it serves no cachified content, so it's not necc to register it as

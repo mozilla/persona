@@ -22,7 +22,7 @@ computecluster = require('compute-cluster'),
 urlparse = require('urlparse'),
 toobusy = require('../lib/busy_middleware.js'),
 certKey = require('../lib/wsapi/cert_key.js'),
-statsd = require('../lib/logging/statsd.js');
+statsd = require('../lib/logging/middleware/statsd.js');
 
 logger.info("keysigner starting up");
 
