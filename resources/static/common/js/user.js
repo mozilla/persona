@@ -5,8 +5,7 @@
 BrowserID.User = (function() {
   "use strict";
 
-  var origin,
-      bid = BrowserID,
+  var bid = BrowserID,
       network = bid.Network,
       storage = bid.Storage,
       helpers = bid.Helpers,
@@ -25,8 +24,6 @@ BrowserID.User = (function() {
       stagedPassword,
       userid,
       auth_status,
-      issuer = "default",
-      allowUnverified = false,
       PERSONA_ORG_AUDIENCE = "https://login.persona.org";
 
   var TRANSITION_STATES = [
@@ -87,6 +84,7 @@ BrowserID.User = (function() {
     network.serverTime(function(serverTime) {
       network.domainKeyCreationTime(function(creationTime) {
         cryptoLoader.load(function(jwcrypto) {
+          var issuer = User.rpInfo.getIssuer();
           var emails = storage.getEmails(issuer);
           _.each(emails, function(record, address) {
             try {
@@ -119,7 +117,7 @@ BrowserID.User = (function() {
       // Used on the main site when the user verifies - once
       // verification is complete, the user is redirected back to the
       // RP and logged in.
-      var site = User.getReturnTo();
+      var site = User.rpInfo.getReturnTo();
       if (staged && site) storage.setReturnTo(site);
       complete(onComplete, status);
     }, onFailure);
@@ -277,6 +275,7 @@ BrowserID.User = (function() {
    */
   function persistEmailKeypair(email, keypair, cert, onComplete, onFailure) {
     // XXX This needs to be looked at to make sure caching does not bite us.
+    var issuer = User.rpInfo.getIssuer();
     User.addressInfo(email, function(info) {
       var now = new Date();
       var email_obj = storage.getEmail(email, issuer) || {
@@ -319,7 +318,8 @@ BrowserID.User = (function() {
    * @method certifyEmailKeypair
    */
   function certifyEmailKeypair(email, keypair, onComplete, onFailure) {
-    network.certKey(email, keypair.publicKey, issuer, allowUnverified,
+    var rpInfo = User.rpInfo;
+    network.certKey(email, keypair.publicKey, rpInfo.getIssuer(), rpInfo.getAllowUnverified(),
         function(cert) {
       persistEmailKeypair(email, keypair, cert, onComplete, onFailure);
     }, onFailure);
@@ -406,20 +406,15 @@ BrowserID.User = (function() {
         pollDuration = config.pollDuration;
       }
       // END TESTING API
-
-      if (config.issuer) {
-        issuer = config.issuer;
-      }
     },
 
     reset: function() {
       provisioning = BrowserID.Provisioning;
       User.resetCaches();
+      User.rpInfo = null;
       registrationComplete = false;
       pollDuration = POLL_DURATION;
       stagedEmail = stagedPassword = userid = auth_status = null;
-      issuer = "default";
-      allowUnverified = false;
     },
 
     resetCaches: function() {
@@ -445,69 +440,12 @@ BrowserID.User = (function() {
       network = networkInterface;
     },
 
-    /**
-     * setOrigin
-     * @method setOrigin
-     * @param {string} origin
-     */
-    setOrigin: function(originArg) {
-      origin = originArg;
-    },
-
-    /**
-     * Get the origin of the current host being signed in to.
-     * @method getOrigin
-     * @return {string} origin
-     */
-    getOrigin: function() {
-      return origin;
-    },
-
     setOriginEmail: function(email) {
-      storage.site.set(origin, "email", email);
+      storage.site.set(User.rpInfo.getOrigin(), "email", email);
     },
 
     getOriginEmail: function() {
-      return storage.site.get(origin, "email");
-    },
-
-    /**
-     * Get the hostname for the set origin
-     * @method getHostname
-     * @returns {string}
-     */
-    getHostname: function() {
-      return origin.replace(/^.*:\/\//, "").replace(/:\d*$/, "");
-    },
-
-    setReturnTo: function(returnTo) {
-      this.returnTo = returnTo;
-    },
-
-    getReturnTo: function() {
-      return this.returnTo;
-    },
-
-    setIssuer: function(forcedIssuer) {
-      issuer = forcedIssuer;
-    },
-
-    getIssuer: function() {
-      return issuer;
-    },
-
-    isDefaultIssuer: function() {
-      return issuer === "default";
-    },
-
-    /**
-     * Set whether the network should pass allowUnverified=true in
-     * its requests.
-     * @method setAllowUnverified
-     * @param {boolean} [allow] - True or false, to allow.
-     */
-    setAllowUnverified: function(allow) {
-      allowUnverified = allow;
+      return storage.site.get(User.rpInfo.getOrigin(), "email");
     },
 
     /**
@@ -638,8 +576,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - called on failure
      */
     primaryUserAuthenticationInfo: function(email, info, onComplete, onFailure) {
-      var idInfo = storage.getEmail(email, issuer),
-          self=this;
+      var idInfo = storage.getEmail(email, User.rpInfo.getIssuer());
 
       primaryAuthCache = primaryAuthCache || {};
 
@@ -836,7 +773,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure]
      */
     requestEmailReverify: function(email, onComplete, onFailure) {
-      if (!storage.getEmail(email, issuer)) {
+      if (!storage.getEmail(email, User.rpInfo.getIssuer())) {
         // user does not own this address.
         complete(onComplete, { success: false, reason: "invalid_email" });
       }
@@ -991,7 +928,8 @@ BrowserID.User = (function() {
           var emails_to_remove_pair = [_.difference(client_emails, server_emails)];
           var emails_to_update_pair = [_.intersection(client_emails, server_emails)];
 
-          if (!User.isDefaultIssuer()) {
+          var issuer = User.rpInfo.getIssuer();
+          if (!User.rpInfo.isDefaultIssuer()) {
             var force_issuer_identities = storage.getEmails(issuer);
             var force_issuer_emails = _.keys(force_issuer_identities);
             emails_to_add_pair.push(_.difference(server_emails, force_issuer_emails));
@@ -1088,7 +1026,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     authenticate: function(email, password, onComplete, onFailure) {
-      network.authenticate(email, password, allowUnverified,
+      network.authenticate(email, password, User.rpInfo.getAllowUnverified(),
           handleAuthenticationResponse.curry(email, "password", onComplete,
               onFailure), onFailure);
     },
@@ -1152,7 +1090,7 @@ BrowserID.User = (function() {
         return complete(addressCache[email]);
       }
 
-      network.addressInfo(email, issuer, function(info) {
+      network.addressInfo(email, User.rpInfo.getIssuer(), function(info) {
         // update the email with the normalized email if it is available.
         // The normalized email is stored in the cache.
         var normalizedEmail = info.normalizedEmail || email;
@@ -1293,6 +1231,7 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     removeEmail: function(email, onComplete, onFailure) {
+      var issuer = User.rpInfo.getIssuer();
       if (storage.getEmail(email, issuer)) {
         network.removeEmail(email, function() {
           storage.removeEmail(email, issuer);
@@ -1336,9 +1275,9 @@ BrowserID.User = (function() {
      * @param {function} [onFailure] - Called on error.
      */
     getAssertion: function(email, audience, onComplete, onFailure) {
-      var storedID = storage.getEmail(email, issuer),
-          assertion,
-          self=this;
+      var issuer = User.rpInfo.getIssuer(),
+          storedID = storage.getEmail(email, issuer),
+          assertion;
 
       function createAssertion(idInfo) {
         // we use the current time from the browserid servers
@@ -1394,7 +1333,7 @@ BrowserID.User = (function() {
         }
         else {
           User.addressInfo(email, function(info) {
-            if (info.type === "primary" && User.isDefaultIssuer()) {
+            if (info.type === "primary" && User.rpInfo.isDefaultIssuer()) {
               // first we have to get the address info, then attempt
               // a provision, then if the user is provisioned, go and get an
               // assertion.
@@ -1428,7 +1367,7 @@ BrowserID.User = (function() {
      * @return {object} identities.
      */
     getStoredEmailKeypairs: function() {
-      return storage.getEmails(issuer);
+      return storage.getEmails(User.rpInfo.getIssuer());
     },
 
     /**
@@ -1461,7 +1400,7 @@ BrowserID.User = (function() {
      * otw.
      */
     getStoredEmailKeypair: function(email) {
-      return storage.getEmail(email, issuer);
+      return storage.getEmail(email, User.rpInfo.getIssuer());
     },
 
     /**
@@ -1530,8 +1469,9 @@ BrowserID.User = (function() {
        * In any transition state, the user has to see some messaging and
        * possibly verify their email address. No assertion should be generated.
        */
+      var rpInfo = User.rpInfo;
       User.checkAuthenticationAndSync(function(authenticated) {
-        var loggedInEmail = storage.site.get(origin, "logged_in");
+        var loggedInEmail = storage.site.get(rpInfo.getOrigin(), "logged_in");
         // User is not signed in to Persona or not signed into the site.
         if (!(authenticated && loggedInEmail))
           return complete(onComplete, null, null);
@@ -1555,7 +1495,7 @@ BrowserID.User = (function() {
           // generated.
           // If there has been an issuer change, this will check with the new
           // issuer to make sure the user is authenticated there.
-          User.getAssertion(loggedInEmail, origin,
+          User.getAssertion(loggedInEmail, rpInfo.getOrigin(),
               function(assertion) {
             complete(onComplete, assertion ? loggedInEmail : null, assertion);
           }, onFailure);
@@ -1571,9 +1511,10 @@ BrowserID.User = (function() {
      * @param {function} onFailure - called on XHR failure.
      */
     logout: function(onComplete, onFailure) {
+      var rpInfo = User.rpInfo;
       User.checkAuthentication(function(authenticated) {
         if (authenticated) {
-          storage.site.remove(origin, "logged_in");
+          storage.site.remove(rpInfo.getOrigin(), "logged_in");
         }
 
         if (onComplete) {
@@ -1652,14 +1593,5 @@ BrowserID.User = (function() {
     }
   };
 
-  // Set origin to default to the current domain.  Other contexts that use user.js,
-  // like dialogs or iframes, will call setOrigin themselves to update this to
-  // the origin of the of the RP.  On login.persona.org, it will remain the origin of
-  // login.persona.org
-  var currentOrigin = window.location.protocol + '//' + window.location.hostname;
-  if (window.location.port) {
-    currentOrigin += ':' + window.location.port;
-  }
-  User.setOrigin(currentOrigin);
   return User;
 }());

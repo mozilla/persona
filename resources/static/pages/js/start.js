@@ -70,6 +70,12 @@ $(function() {
   network.init();
   user.init();
 
+  // When on the main site, the RP is login.persona.org
+  var rpInfo = bid.Models.RpInfo.create({
+    origin: "https://login.persona.org"
+  });
+  user.setRpInfo(rpInfo);
+
   $(".display_always,.display_auth,.display_nonauth").hide();
 
   $(window).bind('resize', function() {

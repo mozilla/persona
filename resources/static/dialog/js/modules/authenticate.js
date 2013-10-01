@@ -76,12 +76,14 @@ BrowserID.Modules.Authenticate = (function() {
   }
 
   function isNewPersonaAccount(info) {
+    /*jshint validthis: true*/
     return (info.state === "unknown" && info.type === "secondary"
-                && user.isDefaultIssuer());
+                && this.rpInfo.isDefaultIssuer());
   }
 
   function isNewFxAccount(info) {
-    return (info.state === "unknown" && !user.isDefaultIssuer());
+    /*jshint validthis: true*/
+    return (info.state === "unknown" && !this.rpInfo.isDefaultIssuer());
   }
 
   function chooseInitialState(info) {
@@ -132,10 +134,10 @@ BrowserID.Modules.Authenticate = (function() {
       if (hasPassword.call(self, info)) {
         enterPasswordState.call(self);
       }
-      else if (isNewPersonaAccount(info)) {
+      else if (isNewPersonaAccount.call(self, info)) {
         createPersonaAccount.call(self);
       }
-      else if (isNewFxAccount(info)) {
+      else if (isNewFxAccount.call(self, info)) {
         createFxAccount.call(self);
       }
       else {
@@ -232,7 +234,7 @@ BrowserID.Modules.Authenticate = (function() {
 
     // If we are signing in to the Persona main site, do not show
     // the Persona intro that says "<site> uses Persona to sign you in!"
-    if (user.getOrigin() === PERSONA_URL) {
+    if (self.rpInfo.getOrigin() === PERSONA_URL) {
       dom.hide(PERSONA_INTRO_SELECTOR);
     }
 
@@ -321,11 +323,13 @@ BrowserID.Modules.Authenticate = (function() {
 
       var self=this;
 
-      self.emailSpecified = options.email || "";
+      self.checkRequired(options, "rpInfo");
+      var rpInfo = self.rpInfo = options.rpInfo;
+
+      lastEmail = self.emailSpecified = options.email || rpInfo.getEmailHint() || "";
       self.emailMutable = "email_mutable" in options
                               ? options.email_mutable : true;
 
-      lastEmail = options.email || "";
 
       dom.removeClass(BODY_SELECTOR, EMAIL_IMMUTABLE_CLASS);
       dom.removeAttr(EMAIL_SELECTOR, "disabled");
@@ -353,7 +357,7 @@ BrowserID.Modules.Authenticate = (function() {
 
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);
-      dom.setInner(RP_NAME_SELECTOR, options.siteName);
+      dom.setInner(RP_NAME_SELECTOR, rpInfo.getSiteName());
       dom.setInner(EMAIL_SELECTOR, lastEmail);
 
       currentHint = null;
@@ -370,7 +374,7 @@ BrowserID.Modules.Authenticate = (function() {
       // account automatically have an account created with no further
       // interaction.  To make sure they see the TOS/PP agreement, show it
       // here.
-      if (options.siteTOSPP) {
+      if (rpInfo.getPrivacyPolicy() && rpInfo.getTermsOfService()) {
         dialogHelpers.showRPTosPP.call(self);
       }
 

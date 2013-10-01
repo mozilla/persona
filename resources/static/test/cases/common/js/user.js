@@ -11,6 +11,7 @@
       storage = bid.Storage,
       network = bid.Network,
       mediator = bid.Mediator,
+      RpInfo = bid.Models.RpInfo,
       xhr = bid.Mocks.xhr,
       testHelpers = bid.TestHelpers,
       testOrigin = testHelpers.testOrigin,
@@ -98,12 +99,15 @@
         function() {
       storage.addEmail(TEST_EMAIL);
 
-      var returnTo = "http://samplerp.org";
-      lib.setReturnTo(returnTo);
+      var rpInfo = RpInfo.create({
+        origin: "http://samplerp.org/sign_in",
+        returnTo: "http://samplerp.org/return"
+      });
+      lib.setRpInfo(rpInfo);
 
       var onComplete = function(status) {
         ok(status.success, "address staged");
-        equal(storage.getReturnTo(), returnTo, "RP URL is stored for "
+        equal(storage.getReturnTo(), "http://samplerp.org/return", "RP URL is stored for "
             + "verification");
         start();
       };
@@ -440,38 +444,28 @@
   }
 
 
-  test("setOrigin, getOrigin", function() {
-    lib.setOrigin(testOrigin);
-    equal(lib.getOrigin(), testOrigin);
-  });
-
-  test("setOrigin, getHostname", function() {
-    var origin = "http://persona.org";
-    lib.setOrigin(origin);
-
-    var hostname = lib.getHostname();
-    equal(hostname, "persona.org", "getHostname returns only the hostname");
-  });
-
-  test("setReturnTo, getReturnTo", function() {
-    var returnTo = "http://samplerp.org";
-    lib.setReturnTo(returnTo);
-    equal(lib.getReturnTo(), returnTo, "get/setReturnTo work as expected");
-  });
-
   test("setOriginEmail/getOriginEmail", function() {
     storage.addEmail("testuser@testuser.com");
     storage.addEmail("testuser2@testuser.com");
 
-    lib.setOrigin("http://testdomain.org");
+    var rpInfo = RpInfo.create({
+      origin: "http://testdomain.org"
+    });
+    lib.setRpInfo(rpInfo);
 
     lib.setOriginEmail("testuser@testuser.com");
     equal(lib.getOriginEmail(), "testuser@testuser.com", "correct email");
 
-    lib.setOrigin("http://othertestdomain.org");
+    rpInfo = RpInfo.create({
+      origin: "http://othertestdomain.org"
+    });
+    lib.setRpInfo(rpInfo);
     lib.setOriginEmail("testuser2@testuser.com");
 
-    lib.setOrigin("http://testdomain.org");
+    rpInfo = RpInfo.create({
+      origin: "http://testdomain.org"
+    });
+    lib.setRpInfo(rpInfo);
     equal(lib.getOriginEmail(), "testuser@testuser.com", "correct email");
   });
 
@@ -1028,7 +1022,7 @@
 
   asyncTest("getAssertion with known email that has key", function() {
     lib.syncEmailKeypair(TEST_EMAIL, function() {
-      lib.getAssertion(TEST_EMAIL, lib.getOrigin(), function onSuccess(assertion) {
+      lib.getAssertion(TEST_EMAIL, lib.rpInfo.getOrigin(), function onSuccess(assertion) {
         testAssertion(assertion, start);
         equal(storage.site.get(testOrigin, "email"), TEST_EMAIL, "email address was persisted");
         // issuer is used when getting a silent assertion.
@@ -1040,7 +1034,7 @@
 
   asyncTest("getAssertion with known secondary email that does not have a key", function() {
     storage.addEmail(TEST_EMAIL, { });
-    lib.getAssertion(TEST_EMAIL, lib.getOrigin(), function onSuccess(assertion) {
+    lib.getAssertion(TEST_EMAIL, lib.rpInfo.getOrigin(), function onSuccess(assertion) {
       testAssertion(assertion, start);
       equal(storage.site.get(testOrigin, "email"), TEST_EMAIL, "email address was persisted");
     }, testHelpers.unexpectedXHRFailure);
@@ -1054,7 +1048,7 @@
 
     lib.getAssertion(
       "registered@testuser.com",
-      lib.getOrigin(),
+      lib.rpInfo.getOrigin(),
       function(assertion) {
         testAssertion(assertion, start);
         equal(storage.site.get(testOrigin, "email"), "registered@testuser.com", "email address was persisted");
@@ -1069,7 +1063,7 @@
 
     lib.getAssertion(
       "registered@testuser.com",
-      lib.getOrigin(),
+      lib.rpInfo.getOrigin(),
       function(assertion) {
         equal(assertion, null, "user must authenticate with IdP, no assertion");
         start();
@@ -1079,7 +1073,7 @@
 
   asyncTest("getAssertion with unknown email", function() {
     lib.syncEmailKeypair(TEST_EMAIL, function() {
-      lib.getAssertion("testuser2@testuser.com", lib.getOrigin(), function onSuccess(assertion) {
+      lib.getAssertion("testuser2@testuser.com", lib.rpInfo.getOrigin(), function onSuccess(assertion) {
         equal(null, assertion, "email was unknown, we do not have an assertion");
         equal(storage.site.get(testOrigin, "email"), undefined, "email address was not set");
         start();
@@ -1089,7 +1083,7 @@
 
   asyncTest("getAssertion with XHR failure", function() {
     storage.addEmail(TEST_EMAIL, {});
-    failureCheck(lib.getAssertion, TEST_EMAIL, lib.getOrigin());
+    failureCheck(lib.getAssertion, TEST_EMAIL, lib.rpInfo.getOrigin());
   });
 
   asyncTest("getAssertion with confirmed session - cert is retained after getAssertion", function() {
@@ -1140,7 +1134,7 @@
     xhr.setContextInfo("auth_level", "password");
 
     lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
-      storage.site.set(lib.getOrigin(), "logged_in", LOGGED_IN_EMAIL);
+      storage.site.set(lib.rpInfo.getOrigin(), "logged_in", LOGGED_IN_EMAIL);
 
       lib.getSilentAssertion(LOGGED_IN_EMAIL, function(email, assertion) {
         equal(email, LOGGED_IN_EMAIL, "correct email");
@@ -1153,7 +1147,7 @@
   function testTransitionAddressSilentAssertion() {
     xhr.setContextInfo("auth_level", "password");
     storage.addEmail(TEST_EMAIL, {});
-    storage.site.set(lib.getOrigin(), "logged_in", TEST_EMAIL);
+    storage.site.set(lib.rpInfo.getOrigin(), "logged_in", TEST_EMAIL);
 
     lib.getSilentAssertion("logged_in@testuser.com",
         function(email, assertion) {
@@ -1194,7 +1188,7 @@
     var REQUESTED_EMAIL = "requested@testuser.com";
 
     lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
-      storage.site.set(lib.getOrigin(), "logged_in", LOGGED_IN_EMAIL);
+      storage.site.set(lib.rpInfo.getOrigin(), "logged_in", LOGGED_IN_EMAIL);
       lib.getSilentAssertion(REQUESTED_EMAIL, function(email, assertion) {
         equal(email, LOGGED_IN_EMAIL, "correct email");
         testAssertion(assertion, start);
@@ -1494,21 +1488,14 @@
   });
 
 
-  test("getIssuer/isDefaultIssuer with default issuer", function() {
-    equal(lib.getIssuer(), "default");
-    equal(lib.isDefaultIssuer(), true);
-  });
-
-  test("setIssuer/getIssuer/isDefaultIssuer with updated issuer", function() {
-    var issuer = "fxos.personatest.org";
-    lib.setIssuer(issuer);
-    equal(lib.getIssuer(), issuer);
-    equal(lib.isDefaultIssuer(), false);
-  });
-
   asyncTest("createSecondaryUser with allowUnverified " +
                 " should update address cache", function() {
-    lib.setAllowUnverified(true);
+    var rpInfo = RpInfo.create({
+      origin: "http://testuser.com",
+      allowUnverified: true
+    });
+    lib.setRpInfo(rpInfo);
+
     // This is an initial call to addressInfo to prime the cache.
     lib.addressInfo(TEST_EMAIL, function(addressInfo) {
       xhr.useResult("unverified");

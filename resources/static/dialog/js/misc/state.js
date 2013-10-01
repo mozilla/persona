@@ -79,7 +79,7 @@ BrowserID.State = (function() {
       // screen.
       var actionInfo = {
         email: info.email,
-        siteName: self.siteName
+        rpInfo: self.rpInfo
       };
 
       self.stagedEmail = info.email;
@@ -126,26 +126,14 @@ BrowserID.State = (function() {
      * to primary.
      */
     handleState("start", function(msg, info) {
-      self.hostname = info.hostname;
-      self.siteName = info.siteName || info.hostname;
-      self.privacyPolicy = info.privacyPolicy;
-      self.termsOfService = info.termsOfService;
-      self.siteTOSPP = !!(info.privacyPolicy && info.termsOfService);
-      self.emailHint = info.emailHint;
-
-      if (info.forceIssuer) {
-        user.setIssuer(info.forceIssuer);
-      }
-
-      self.allowUnverified = info.allowUnverified;
-      user.setAllowUnverified(info.allowUnverified);
+      self.rpInfo = info.rpInfo;
 
       /**
        * Only show the favicon on mobile devices if we are not signing in to
        * FirefoxOS marketplace. Checking isDefaultIssuer is an ugly hack,
        * but we use it in several places.
        */
-      info.mobileFavicon = user.isDefaultIssuer();
+      info.mobileFavicon = self.rpInfo.isDefaultIssuer();
       startAction(false, "doRPInfo", info);
 
       if (info.email && info.type === "primary") {
@@ -182,12 +170,9 @@ BrowserID.State = (function() {
       // authenticate a user who is signed in with primary credentials and must
       // sign in to the fallback IdP. If the user must upgrade their
       // credentials, an email address is passed in the info object and should
-      // override the emailHint.
-      info = _.extend({
-        siteName: self.siteName,
-        siteTOSPP: self.siteTOSPP,
-        email: self.emailHint
-      }, info);
+      // override the emailHint from rpInfo.
+      var rpInfo = self.rpInfo;
+      info = _.extend({ rpInfo: rpInfo }, info);
 
       startAction("doAuthenticate", info);
       complete(info.complete);
@@ -214,7 +199,7 @@ BrowserID.State = (function() {
       // transitionNoPassword. If not using the default issuer, then this is
       // a FirefoxOS account. The second branch should not be used unless
       // Marketplace decides it is going to support primaries.
-      if (user.isDefaultIssuer()) {
+      if (self.rpInfo.isDefaultIssuer()) {
         self.transitionNoPassword = info.email;
         info.transition_no_password = true;
       }
@@ -326,7 +311,7 @@ BrowserID.State = (function() {
       _.extend(info, {
         add: !!self.addPrimaryUser,
         email: self.email,
-        siteName: self.siteName,
+        rpInfo: self.rpInfo,
         idpName: info.idpName || URLParse(info.auth_url).host
       });
 
@@ -386,14 +371,8 @@ BrowserID.State = (function() {
     });
 
     handleState("pick_email", function() {
-      var originEmail = user.getOriginEmail();
       startAction("doPickEmail", {
-        emailHint: self.emailHint,
-        origin: self.hostname,
-        privacyPolicy: !originEmail && self.privacyPolicy,
-        termsOfService: !originEmail && self.termsOfService,
-        siteName: self.siteName,
-        hostname: self.hostname
+        rpInfo: self.rpInfo
       });
     });
 
@@ -465,7 +444,7 @@ BrowserID.State = (function() {
         else if ("transition_no_password" === addressInfo.state) {
           redirectToState("transition_no_password", addressInfo);
         }
-        else if ("unverified" === addressInfo.state && !self.allowUnverified) {
+        else if ("unverified" === addressInfo.state && !self.rpInfo.getAllowUnverified()) {
           // user selected an unverified secondary email, kick them over to the
           // verify screen.
           redirectToState("stage_reverify_email", addressInfo);
@@ -542,6 +521,7 @@ BrowserID.State = (function() {
     });
 
     handleState("generate_assertion", function(msg, info) {
+      info.rpInfo = self.rpInfo;
       startAction("doGenerateAssertion", info);
     });
 
@@ -559,7 +539,6 @@ BrowserID.State = (function() {
     handleState("assertion_generated", function(msg, info) {
       if (info.assertion !== null) {
         self.success = true;
-        storage.site.set(user.getOrigin(), "logged_in", self.email);
 
         mediator.publish("kpi_data", { orphaned: false });
         startAction("doCompleteSignIn", {
@@ -627,7 +606,10 @@ BrowserID.State = (function() {
 
   }
 
+  var und;
+
   var State = BrowserID.StateMachine.extend({
+    rpInfo: und,
     start: function(options) {
       var self=this;
 

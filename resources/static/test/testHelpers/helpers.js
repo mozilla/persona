@@ -102,7 +102,6 @@ BrowserID.TestHelpers = (function() {
       user.init({
         provisioning: provisioning
       });
-      user.setOrigin(testOrigin);
       var rpInfo = RpInfo.create({
         origin: testOrigin,
         allowUnverified: false

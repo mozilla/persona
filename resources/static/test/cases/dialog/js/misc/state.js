@@ -8,6 +8,7 @@
       mediator = bid.Mediator,
       State = bid.State,
       user = bid.User,
+      RpInfo = bid.Models.RpInfo,
       moduleManager = bid.module,
       machine,
       actions,
@@ -86,14 +87,19 @@
   function testVerifyStagedAddress(stagedMessage, stagedAction, confirmationMessage, mustAuth) {
     // start with a site name to ensure the site name is passed to the
     // verifyScreenAction.
-    mediator.publish("start", { siteName: "Unit Test Site" });
+    var rpInfo = RpInfo.create({
+      origin: "https://testuser.com",
+      siteName: "Unit Test Site"
+    });
+    user.setRpInfo(rpInfo);
+    mediator.publish("start", { rpInfo: rpInfo });
     mediator.publish(stagedMessage, {
       email: TEST_EMAIL
     });
 
     testActionStarted(stagedAction, {
       email: TEST_EMAIL,
-      siteName: "Unit Test Site"
+      rpInfo: rpInfo
     });
 
     // At this point the user should be displayed the "go confirm your address"
@@ -141,6 +147,13 @@
     setup: function() {
       testHelpers.setup();
       createMachine();
+
+      // trigger the start message before every test to initialize rpInfo. If
+      // the test needs its own rpInfo, it will re-call start with the
+      // parameters for the test.
+      mediator.publish("start", {
+        rpInfo: RpInfo.create({ origin: "https://testuser.com" })
+      });
     },
 
     teardown: function() {
@@ -292,21 +305,16 @@
     equal(actions.info.doAuthenticate.email, TEST_EMAIL, "authenticate called with the correct email");
   });
 
-  test("start - RPInfo always started, issuer set, inline_tosspp not started", function() {
+  test("start - RPInfo always started, inline_tosspp not started", function() {
     try {
       mediator.publish("start", {
-        termsOfService: "https://browserid.org/TOS.html",
-        privacyPolicy: "https://browserid.org/priv.html",
-        forceIssuer: "fxos_issuer"
+        rpInfo: RpInfo.create({ origin: "https://testuser.com" }),
       });
     } catch(e) {
       ok(false, "exception not expected");
     }
 
-    ok(actions.info.doRPInfo.termsOfService, "doRPInfo called with termsOfService set");
-    ok(actions.info.doRPInfo.privacyPolicy, "doRPInfo called with privacyPolicy set");
-
-    equal(user.getIssuer(), "fxos_issuer");
+    ok(actions.info.doRPInfo.rpInfo, "doRPInfo called with rpInfo set");
   });
 
   asyncTest("primary_user with already provisioned primary user - redirect to primary_user_ready", function() {
@@ -333,7 +341,6 @@
   });
 
   test("primary_user_unauthenticated before verification - call doVerifyPrimaryUser", function() {
-    mediator.publish("start");
     mediator.publish("primary_user_unauthenticated");
     ok(actions.called.doVerifyPrimaryUser, "doVerifyPrimaryUser called");
   });
@@ -341,6 +348,7 @@
   asyncTest("primary_user_unauthenticated after user cancelled " +
         "verification of new user - call doAuthenticate", function() {
     mediator.publish("start", {
+      rpInfo: RpInfo.create({ origin: "https://testuser.com" }),
       email: TEST_EMAIL,
       type: "primary",
       add: false,
@@ -358,6 +366,7 @@
       "verification of additional email to current user - " +
       "call doPickEmail and doAddEmail", function() {
     mediator.publish("start", {
+      rpInfo: RpInfo.create({ origin: "https://testuser.com" }),
       email: TEST_EMAIL,
       type: "primary",
       add: true,
@@ -375,6 +384,7 @@
   asyncTest("primary_user_unauthenticated, no user cancel - " +
       " - call doPrimaryUserNotProvisioned", function() {
     mediator.publish("start", {
+      rpInfo: RpInfo.create({ origin: "https://testuser.com" }),
       email: TEST_EMAIL,
       type: "primary",
       cancelled: false
@@ -394,7 +404,6 @@
 
   test("primary_user - call doProvisionPrimaryUser", function() {
     mediator.publish("primary_user", { email: TEST_EMAIL, assertion: "assertion" });
-
     ok(actions.called.doProvisionPrimaryUser, "doProvisionPrimaryUser called");
   });
 
@@ -499,42 +508,22 @@
     ok(actions.called.doNotMe, "doNotMe has been called");
   });
 
-  test("authenticate - call doAuthenticate with the correct options", function() {
-    mediator.publish("start", { privacyPolicy: "priv.html", termsOfService: "tos.html" });
+  test("authenticate - call doAuthenticate with rpInfo", function() {
+    var rpInfo = RpInfo.create({
+                    origin: "https://testuser.com",
+                    emailHint: "testuser@testuser.com",
+                    privacyPolicy: "priv.html",
+                    termsOfService: "tos.html" })
+    mediator.publish("start", { rpInfo: rpInfo });
+
     mediator.publish("authenticate", { email: TEST_EMAIL });
-
-    testActionStarted("doAuthenticate", { email: TEST_EMAIL, siteTOSPP: true });
+    testActionStarted("doAuthenticate", { email: TEST_EMAIL, rpInfo: rpInfo });
   });
-
-  test("authenticate passes along emailHint option if email not specified in message", function() {
-    mediator.publish("start", {
-      emailHint: "testuser@testuser.com"
-    });
-
-    mediator.publish("authenticate");
-
-    testActionStarted("doAuthenticate", {
-      email: "testuser@testuser.com"
-    });
-  });
-
-  test("authenticate passes specified email from message even if there is an email hint", function() {
-    mediator.publish("start", {
-      emailHint: "testuser@testuser.com"
-    });
-
-    mediator.publish("authenticate", {
-      email: "mustauth@testuser.com"
-    });
-
-    testActionStarted("doAuthenticate", {
-      email: "mustauth@testuser.com"
-    });
-  });
-
 
   test("start with no special parameters - go straight to checking auth", function() {
-    mediator.publish("start");
+    mediator.publish("start", {
+      rpInfo: RpInfo.create({ origin: "https://testuser.com" })
+    });
 
     equal(actions.called.doCheckAuth, true, "checking auth on start");
   });
@@ -546,7 +535,12 @@
       start();
     });
 
-    mediator.publish("start", { email: TEST_EMAIL, type: "primary", add: true });
+    mediator.publish("start", {
+      rpInfo: RpInfo.create({ origin: "https://testuser.com" }),
+      email: TEST_EMAIL,
+      type: "primary",
+      add: true
+    });
   });
 
   test("cancel", function() {
@@ -561,7 +555,6 @@
 
     xhr.setContextInfo("auth_level", "assertion");
 
-    mediator.publish("start");
     mediator.publish("email_chosen", {
       email: TEST_EMAIL,
       complete: function() {
@@ -709,7 +702,12 @@
   asyncTest("email_chosen with address in transition_to_primary state - " +
                 " call doVerifyPrimaryUser with correct info", function() {
 
-    mediator.publish("start", { siteName: "Unit Test Site" });
+    var rpInfo = RpInfo.create({
+      origin: "https://testuser.com",
+      siteName: "Unit Test Site"
+    });
+    user.setRpInfo(rpInfo);
+    mediator.publish("start", { rpInfo: rpInfo });
 
     xhr.useResult("primaryTransition");
     mediator.publish("email_chosen", {
@@ -718,7 +716,7 @@
       complete: function() {
         testActionStarted("doVerifyPrimaryUser", {
           email: TEST_EMAIL,
-          siteName: "Unit Test Site"
+          rpInfo: rpInfo
         });
         start();
       }
@@ -741,21 +739,15 @@
   });
 
   test("null assertion generated - preserve original options in doPickEmail", function() {
-    var hostname = "http://example.com",
-        pp = "http://example.com/priv.html",
-        tos = "http://example.com/tos.html";
-
+    var rpInfo = RpInfo.create({ origin: "http://example.com" });
     mediator.publish("start", {
-      hostname: hostname,
-      privacyPolicy: pp,
-      termsOfService: tos
+      rpInfo: rpInfo
     });
+
     mediator.publish("assertion_generated", { assertion: null });
 
     testActionStarted("doPickEmail", {
-      origin: hostname,
-      termsOfService: tos,
-      privacyPolicy: pp
+      rpInfo: rpInfo
     });
   });
 
@@ -779,56 +771,16 @@
   });
 
 
-  test("pick_email passes along TOS/PP options if no email " +
-      "is selected for domain", function() {
-    var tos = "https://browserid.org/TOS.html";
-    var pp = "https://browserid.org/priv.html";
-
+  test("pick_email passes along rpInfo", function() {
+    var rpInfo = RpInfo.create({ origin: "https://testuser.com" });
     mediator.publish("start", {
-      termsOfService: tos,
-      privacyPolicy: pp
+      rpInfo: rpInfo
     });
 
     mediator.publish("pick_email");
 
     testActionStarted("doPickEmail", {
-      termsOfService: tos,
-      privacyPolicy: pp
-    });
-  });
-
-  test("pick_email does not pass along TOS/PP options if email " +
-      "is selected for domain", function() {
-    var tos = "https://browserid.org/TOS.html";
-    var pp = "https://browserid.org/priv.html";
-
-    mediator.publish("start", {
-      termsOfService: tos,
-      privacyPolicy: pp
-    });
-
-    user.setOrigin("browserid.org");
-    storage.addEmail("testuser@testuser.com");
-    user.setOriginEmail("testuser@testuser.com");
-
-    mediator.publish("pick_email");
-
-    testActionStarted("doPickEmail", {
-      termsOfService: false,
-      privacyPolicy: false
-    });
-  });
-
-  test("pick_email passes along emailHint options if available", function() {
-
-    mediator.publish("start", {
-      emailHint: "testuser@testuser.com"
-    });
-
-    mediator.publish("pick_email");
-
-    testActionStarted("doPickEmail", {
-      emailHint: "testuser@testuser.com"
+      rpInfo: rpInfo
     });
   });
 

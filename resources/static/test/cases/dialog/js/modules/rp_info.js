@@ -43,9 +43,13 @@
 
 
   function createController(options) {
-    options = _.extend({ hostname: RP_HOSTNAME }, options);
+    // this is kind of gross, but to avoid updating all the tests, use options
+    // as the input to RpInfo.create, only the relevant fields will be used.
+    options = _.extend({ origin: RP_HOSTNAME }, options);
+    var rpInfo = bid.Models.RpInfo.create(options);
+    options.rpInfo = rpInfo;
 
-    controller = bid.Modules.RPInfo.create();
+    controller = bid.Modules.RPInfo.create(options);
     controller.start(options || {});
   }
 

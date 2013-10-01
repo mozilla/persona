@@ -372,7 +372,7 @@
     {
       returnTo: HTTPS_TEST_DOMAIN + "/return.html"
     }, HTTPS_TEST_DOMAIN, function() {
-      equal(user.getReturnTo(), HTTPS_TEST_DOMAIN + "/return.html");
+      equal(user.rpInfo.getReturnTo(), HTTPS_TEST_DOMAIN + "/return.html");
     });
   });
 

@@ -43,7 +43,12 @@
   }
 
   function createController(options) {
-    options = options || {};
+    options = _.extend({
+      origin: "http://testuser.com"
+    }, options);
+    var rpInfo = bid.Models.RpInfo.create(options);
+    options.rpInfo = rpInfo;
+
     controller = bid.Modules.Authenticate.create();
     controller.start(options);
   }
@@ -192,6 +197,19 @@
     });
   });
 
+  asyncTest("email hint declared in rpInfo - pre-fill email field", function() {
+    controller.destroy();
+    $(EMAIL_SELECTOR).val("");
+    createController({
+      emailHint: "testuser@testuser.com",
+      ready: function() {
+        equal($(EMAIL_SELECTOR).val(), "testuser@testuser.com", "email prefilled");
+        testElementHasClass("body", "start");
+        start();
+      }
+    });
+  });
+
   function testUserUnregistered() {
     register("new_user", function(msg, info, rehydrate) {
       ok(info.email, "new_user triggered with info.email");
@@ -212,13 +230,15 @@
   });
 
   asyncTest("checkEmail with unknown email & forced issuer", function() {
-    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
-
     testHelpers.expectedMessage("new_fxaccount", {
       email: "unregistered@testuser.com"
     });
 
-    user.setIssuer("fxos_issuer");
+    createController({
+      forceIssuer: "fxos_issuer"
+    });
+
+    $(EMAIL_SELECTOR).val("unregistered@testuser.com");
     xhr.useResult("unknown_secondary");
     controller.checkEmail(null, start);
   });

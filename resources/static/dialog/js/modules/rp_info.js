@@ -53,6 +53,10 @@ BrowserID.Modules.RPInfo = (function() {
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
+      var self = this;
+
+      self.checkRequired(options, 'rpInfo');
+      var rpInfo = options.rpInfo;
 
       /**
        * Very important security info - it is assumed all parameters are
@@ -64,20 +68,21 @@ BrowserID.Modules.RPInfo = (function() {
        * bottom for the main site, and then in dialog.js->get for the dialog.
        */
       var templateData = {
-        hostname: options.hostname,
-        siteName: options.siteName,
-        siteLogo: options.siteLogo,
-        privacyPolicy: options.privacyPolicy,
-        termsOfService: options.termsOfService
+        hostname: rpInfo.getHostname(),
+        siteName: rpInfo.getSiteName(),
+        siteLogo: rpInfo.getSiteLogo(),
+        privacyPolicy: rpInfo.getPrivacyPolicy(),
+        termsOfService: rpInfo.getTermsOfService()
       };
 
       renderer.render(".rpInfo", "rp_info", templateData);
-      if (options.backgroundColor) {
-        dom.setStyle(RP_BACKGROUND_SELECTOR, 'background-color', '#' + options.backgroundColor);
+      var backgroundColor = rpInfo.getBackgroundColor();
+      if (backgroundColor) {
+        dom.setStyle(RP_BACKGROUND_SELECTOR, 'background-color', '#' + backgroundColor);
 
         dom.removeClass(RP_FOREGROUND_SELECTOR, 'dark');
         dom.removeClass(RP_FOREGROUND_SELECTOR, 'light');
-        dom.addClass(RP_FOREGROUND_SELECTOR, foregroundColorClass(options.backgroundColor));
+        dom.addClass(RP_FOREGROUND_SELECTOR, foregroundColorClass(backgroundColor));
       }
 
       /**
@@ -93,7 +98,7 @@ BrowserID.Modules.RPInfo = (function() {
       dom[options.mobileFavicon ? "addClass" : "removeClass"]
           (BODY_SELECTOR, FAVICON_CLASS);
 
-      sc.start.call(this, options);
+      sc.start.call(self, options);
     }
 
     // BEGIN TESTING API

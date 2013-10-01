@@ -13,7 +13,13 @@
       user = bid.User;
 
   function createController(config) {
-    config = config || {};
+    config = _.extend({
+      origin: "http://testuser.com"
+    }, config);
+
+    var rpInfo = bid.Models.RpInfo.create(config);
+    config.rpInfo = rpInfo;
+
     controller = bid.Modules.GenerateAssertion.create();
     controller.start(config);
   }

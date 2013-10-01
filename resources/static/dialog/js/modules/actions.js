@@ -35,7 +35,7 @@ BrowserID.Modules.Actions = (function() {
     var controller = startService("check_registration", {
       verifier: verifier,
       verificationMessage: message,
-      siteName: options.siteName,
+      rpInfo: options.rpInfo,
       email: options.email
     });
     controller.startCheck();

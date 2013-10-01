@@ -24,6 +24,7 @@ BrowserID.Network = (function() {
 
     options.data = options.data || {};
     options.data.csrf = context.csrf_token;
+
     xhr.post(options);
   }
 

@@ -13,14 +13,18 @@
       testHelpers = bid.TestHelpers,
       register = testHelpers.register;
 
-  function createController(verifier, message, required) {
+  function createController(verifier, message ) {
     controller = bid.Modules.CheckRegistration.create();
+    var rpInfo = bid.Models.RpInfo.create({
+      origin: "http://testuser.com",
+      siteName: "Unit Test Site"
+    });
+
     controller.start({
       email: "registered@testuser.com",
       verifier: verifier,
       verificationMessage: message,
-      required: required,
-      siteName: "Unit Test Site"
+      rpInfo: rpInfo
     });
   }
 
@@ -118,22 +122,11 @@
     });
   });
 
-  asyncTest("back for normal account creation/email addition - raise cancel_state", function() {
+  asyncTest("back for account creation/email addition - raise cancel_state", function() {
     createController("waitForUserValidation", "user_verified");
     controller.startCheck(function() {
       register("cancel_state", function() {
         ok(true, "cancel_state is triggered");
-        start();
-      });
-      controller.back();
-    });
-  });
-
-  asyncTest("back for required email - raise cancel", function() {
-    createController("waitForUserValidation", "user_verified", true);
-    controller.startCheck(function() {
-      register("cancel", function() {
-        ok(true, "cancel is triggered");
         start();
       });
       controller.back();

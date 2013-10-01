@@ -55,6 +55,13 @@
 
 
   function createController(options) {
+    options = _.extend({
+      origin: "https://testuser.com"
+    }, options);
+
+    var rpInfo = bid.Models.RpInfo.create(options);
+    options.rpInfo = rpInfo;
+
     controller = bid.Modules.PickEmail.create();
     controller.start(options || {});
   }

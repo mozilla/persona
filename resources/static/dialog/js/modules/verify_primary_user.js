@@ -66,7 +66,7 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
     self.renderForm("verify_primary_user", {
       email: self.email,
       auth_url: options.auth_url,
-      siteName: self.siteName,
+      siteName: self.rpInfo.getSiteName(),
       idpName: self.idpName
     });
 
@@ -82,8 +82,9 @@ BrowserID.Modules.VerifyPrimaryUser = (function() {
       var self = this;
       options = options || {};
 
+      self.checkRequired(options, "email", "rpInfo");
       self.importFrom(options,
-          "window", "add", "email", "siteName", "idpName");
+          "window", "add", "email", "rpInfo", "idpName");
 
       if (!self.window) self.window = window;
 

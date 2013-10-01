@@ -18,8 +18,12 @@
       modules = bid.Modules;
 
   function createController(options) {
+    options = _.extend({ origin: "https://testuser.com" }, options);
+    var rpInfo = bid.Models.RpInfo.create(options);
+    options.rpInfo = rpInfo;
+
     controller = modules.VerifyPrimaryUser.create();
-    controller.start(options || {});
+    controller.start(options);
   }
 
   function testRedirectToIdP(options, done) {

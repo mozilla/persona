@@ -162,7 +162,7 @@
     user.checkAuthenticationAndSync(function(authenticated) {
       // User must be authenticated to get an assertion.
       if(authenticated) {
-        user.getAssertion(email, user.getOrigin(), function(assertion) {
+        user.getAssertion(email, origin, function(assertion) {
           complete(assertion || null);
         }, complete.curry(null));
       }
@@ -173,14 +173,18 @@
   }
 
   function setOrigin(origin) {
-    user.setOrigin(origin);
     // B2G and marketplace use special issuers that disable primaries. Go see
     // if the current domain uses a special issuer, if it does, set the issuer
     // in user.js.
-    var issuer = storage.site.get(user.getOrigin(), "issuer");
-    if (issuer) {
-      user.setIssuer(issuer);
-    }
+    var options = {
+      origin: origin
+    };
+
+    var issuer = storage.site.get(origin, "issuer");
+    if (issuer) options.forceIssuer = issuer;
+
+    var rpInfo = bid.Models.RpInfo.create(options);
+    user.setRpInfo(rpInfo);
   }
 
 
