@@ -8,7 +8,6 @@ const assert = require('assert');
 const vows = require('vows');
 const start_stop = require('./lib/start-stop');
 const config = require('../lib/configuration');
-const statsd = require('../lib/logging/statsd');
 const StatsdTransport = require('../lib/logging/transports/statsd');
 const StatsdMock = require('./lib/statsd-mock');
 const HttpMock = require('./lib/http-mock');
