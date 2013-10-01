@@ -310,6 +310,11 @@
       // back compat support for loggedInEmail
       checkRenamed(options, "loggedInEmail", "loggedInUser");
       loggedInUser = options.loggedInUser;
+      if(typeof loggedInUser !== 'undefined' &&
+	 typeof loggedInUser !== 'string' &&
+	 typeof loggedInUser !== 'object')
+	      throw new Error("loggedInUser is not a valid type");
+
 
       _open_hidden_iframe();
     }
