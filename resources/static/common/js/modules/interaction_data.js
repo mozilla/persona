@@ -147,8 +147,8 @@ BrowserID.Modules.InteractionData = (function() {
     var self = this;
 
     model.publishCurrent(function(status) {
-      user.withContext(function(context) {
-        beginSampling.call(self, context);
+      user.withContext(function(userContext, networkContext) {
+        beginSampling.call(self, networkContext);
 
         var msg = status ? "interaction_data_send_complete"
                          : "interaction_data_send_error";
@@ -159,11 +159,11 @@ BrowserID.Modules.InteractionData = (function() {
     });
   }
 
-  function beginSampling(context) {
+  function beginSampling(networkContext) {
     /*jshint validthis: true */
     var self = this,
-        dataSampleRate = context.data_sample_rate,
-        serverTime = context.server_time;
+        dataSampleRate = networkContext.data_sample_rate,
+        serverTime = networkContext.server_time;
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage

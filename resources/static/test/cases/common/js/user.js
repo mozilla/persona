@@ -62,8 +62,8 @@
     ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
 
     // this should be based on server time, not local time.
-    lib.withContext(function(context) {
-      var time = context.getServerTime();
+    lib.withContext(function(userContext, networkContext) {
+      var time = networkContext.getServerTime();
       var nowPlus2Mins = time.getTime() + (2 * 60 * 1000);
 
       // expiration date must be within 5 seconds of 2 minutes from now - see

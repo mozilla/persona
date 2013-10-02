@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-BrowserID.Models.SessionContext = (function() {
+BrowserID.Models.NetworkContext = (function() {
   "use strict";
   /**
    * This model represents Session Context. It contains basic info
-   * about the user as well as info needed to communicate with the backend.
+   * needed to communicate with the backend.
    */
 
   var bid = BrowserID,
@@ -14,11 +14,6 @@ BrowserID.Models.SessionContext = (function() {
       sc;
 
   var Module = bid.Modules.Module.extend({
-    // user context - perhaps this should be somewhere else, like a user model?
-    userid: und,
-    auth_level: und,
-    has_password: und,
-    // network context
     csrf_token: und,
     local_time: und,
     domain_key_creation_time: und,
@@ -36,10 +31,6 @@ BrowserID.Models.SessionContext = (function() {
 
     setContext: function(context) {
       this.importFrom(context,
-        'userid',
-        'auth_level',
-        'has_password',
-
         'csrf_token',
         'server_time',
         'domain_key_creation_time',
@@ -53,30 +44,6 @@ BrowserID.Models.SessionContext = (function() {
       if (context.forceCookiesEnabled) {
         this.cookies = context.forceCookiesEnabled;
       }
-    },
-
-    getUserId: function() {
-      return this.userid;
-    },
-
-    setUserId: function(userId) {
-      this.userid = userId;
-    },
-
-    setAuthLevel: function(authLevel) {
-      this.auth_level = authLevel;
-    },
-
-    getAuthLevel: function() {
-      return this.auth_level || false;
-    },
-
-    isUserAuthenticated: function() {
-      return !!this.auth_level;
-    },
-
-    hasPassword: function() {
-      return !!this.has_password;
     },
 
     getCsrfToken: function() {

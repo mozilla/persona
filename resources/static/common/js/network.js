@@ -11,7 +11,7 @@ BrowserID.Network = (function() {
       context,
       mediator = bid.Mediator,
       XHR = bid.Modules.XHR,
-      SessionContext = bid.Models.SessionContext,
+      NetworkContext = bid.Models.NetworkContext,
       xhr,
       // XXX get this out of here!
       storage = bid.Storage;
@@ -60,9 +60,9 @@ BrowserID.Network = (function() {
   }
 
   function setContext(newContext) {
-    context = SessionContext.create(newContext);
+    context = NetworkContext.create(newContext);
 
-    mediator.publish("context_info", context);
+    mediator.publish("context_info", newContext);
   }
 
   function clearContext() {

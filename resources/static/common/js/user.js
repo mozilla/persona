@@ -11,6 +11,7 @@ BrowserID.User = (function() {
       helpers = bid.Helpers,
       mediator = bid.Mediator,
       cryptoLoader = bid.CryptoLoader,
+      UserContext = bid.Models.UserContext,
       User,
       pollTimeout,
       provisioning = bid.Provisioning,
@@ -80,9 +81,9 @@ BrowserID.User = (function() {
   }
 
   function removeInvalidIdentities(onSuccess, onFailure) {
-    withContext(function(context) {
-        var serverTime = context.getServerTime();
-        var creationTime = context.getDomainKeyCreationTime();
+    withContext(function(userContext, networkContext) {
+        var serverTime = networkContext.getServerTime();
+        var creationTime = networkContext.getDomainKeyCreationTime();
 
         cryptoLoader.load(function(jwcrypto) {
           var issuer = User.rpInfo.getIssuer();
@@ -335,14 +336,18 @@ BrowserID.User = (function() {
 
 
   function withContext(onSuccess, onFailure) {
-    network.withContext(onSuccess, onFailure);
+    network.withContext(function(networkContext) {
+      // the context object will have been updated in onContextChange.
+      onSuccess(context, networkContext);
+    }, onFailure);
   }
 
   function clearContext() {
     network.clearContext();
   }
 
-  function onContextChange(msg, context) {
+  function onContextChange(msg, newContext) {
+    context = UserContext.create(newContext);
     var authLevel = context.getAuthLevel();
     if (window.$) {
       // TODO get this out of here!
@@ -1289,8 +1294,8 @@ BrowserID.User = (function() {
         // we use the current time from the browserid servers
         // to avoid issues with clock drift on user's machine.
         // (issue #329)
-        withContext(function(context) {
-          var serverTime = context.getServerTime();
+        withContext(function(userContext, networkContext) {
+          var serverTime = networkContext.getServerTime();
           cryptoLoader.load(function(jwcrypto) {
             var sk = jwcrypto.loadSecretKeyFromObject(idInfo.priv);
 
