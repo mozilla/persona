@@ -22,7 +22,7 @@
     "0.2.0": "c55013856c8194ec854a0cbec90aab5a04ce3ac5"
   },
   "awsbox": {
-    "0.6.0": "c57a8eb66f240ce4c6c9b62f1e9dc3a7c979a22a"
+    "0.6.2": "4d35b870f8b3dfc80611df0c7d5431aed595204f"
   },
   "awssum": {
     "1.1.0": "e010144aa516af78eca01352aab9203b816611bb"
@@ -326,7 +326,8 @@
     "1.6.1": "bfed4506642d81278738e891c557e80694c1e0c9"
   },
   "normalize-package-data": {
-    "0.1.7": "f216a318a868214892e89ad80a944cddc1a79615"
+    "0.1.7": "f216a318a868214892e89ad80a944cddc1a79615",
+    "0.2.6": "830bda1412f7ccae09b903fc080edbcdbb0947c0"
   },
   "npmlog": {
     "0.0.4": "a12a7418606b7e0183a2851d97a8729b9a0f3837"
@@ -373,7 +374,8 @@
     "0.0.1": "2d9b9086ae33ae42793210f519701169edabd2e2"
   },
   "read-package-json": {
-    "0.4.1": "a0e917cce8333444889543de9db2b1a4606baaa2"
+    "0.4.1": "a0e917cce8333444889543de9db2b1a4606baaa2",
+    "1.1.3": "a361ab3da88f6f78998df223ad8186a4b7e1f391"
   },
   "readdirp": {
     "0.2.5": "c4c276e52977ae25db5191fe51d008550f15d9bb"
@@ -395,7 +397,8 @@
   },
   "semver": {
     "1.0.12": "4686f056e5894a9cba708adeabc2c49dada90778",
-    "1.0.14": "cac5e2d55a6fbf958cb220ae844045071c78f676"
+    "1.0.14": "cac5e2d55a6fbf958cb220ae844045071c78f676",
+    "2.1.0": "356294a90690b698774d62cf35d7c91f983e728a"
   },
   "send": {
     "0.1.0": "cfb08ebd3cec9b7fc1a37d9ff9e875a971cf4640"
