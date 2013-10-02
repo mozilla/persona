@@ -250,7 +250,6 @@ BrowserID.Modules.Dialog = (function() {
         // any time we successfully return an assertion from the dialog, we shall clear the
         // logged in user bit.
         storage.site.set(params.origin, "logged_in", null);
-        debugger;
         _success.apply(null, arguments);
       };
 
