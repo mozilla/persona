@@ -245,6 +245,15 @@ BrowserID.Modules.Dialog = (function() {
     },
 
     get: function(originURL, paramsFromRP, success, error) {
+      var _success = success;
+      success = function() {
+        // any time we successfully return an assertion from the dialog, we shall clear the
+        // logged in user bit.
+        storage.site.set(params.origin, "logged_in", null);
+        debugger;
+        _success.apply(null, arguments);
+      };
+
       var self=this;
 
       if (self.startExternalDependencies) {

@@ -148,29 +148,7 @@
     var WINDOW_NAME = "__persona_dialog";
     var w;
 
-    // table of registered observers
-    var observers = {
-      login: null,
-      logout: null,
-      match: null,
-      ready: null
-    };
-
-    var loggedInUser;
-
     var compatMode = undefined;
-    function checkCompat(requiredMode) {
-      if (requiredMode === true) {
-        // this deprecation warning should be re-enabled when the .watch and .request APIs become final.
-        // try { console.log("this site uses deprecated APIs (see documentation for navigator.id.request())"); } catch(e) { }
-      }
-
-      if (compatMode === undefined) compatMode = requiredMode;
-      else if (compatMode != requiredMode) {
-        throw new Error("you cannot combine the navigator.id.watch() API with navigator.id.getVerifiedEmail() or navigator.id.get()" +
-              "this site should instead use navigator.id.request() and navigator.id.watch()");
-      }
-    }
 
     var commChan,
         waitingForDOM = false,
@@ -197,7 +175,7 @@
 
 
     // this is for calls that are non-interactive
-    function _open_hidden_iframe() {
+    function _open_hidden_iframe(options) {
       // If this is an unsupported browser, do not even attempt to add the
       // IFRAME as doing so will cause an exception to be thrown in IE6 and IE7
       // from within the communication_iframe.
@@ -223,39 +201,21 @@
             window: iframe.contentWindow,
             origin: ipServer,
             scope: "mozid_ni",
-            onReady: function() {
-              // once the channel is set up, we'll fire a loaded message.  this is the
-              // cutoff point where we'll say if 'setLoggedInUser' was not called before
-              // this point, then it wont be called (XXX: optimize and improve me)
-              commChan.call({
-                method: 'loaded',
-                success: function(){
-                  // NOTE: Do not modify without reading GH-2017
-                  if (observers.ready) observers.ready();
-                }, error: function() {
-                }
-              });
+            onReady: function(rv) {
+              console.log("iframe is ready");
             }
           });
 
-          commChan.bind('logout', function(trans, params) {
-            if (observers.logout) observers.logout();
+          console.log("queue up watch", options);
+          commChan.call({
+            method: 'watch',
+            params: JSON.stringify(options),
+            success: function(assertion) {
+              if (assertion && observers.login) {
+                observers.login(assertion);
+              }
+            }
           });
-
-          commChan.bind('login', function(trans, params) {
-            if (observers.login) observers.login(params);
-          });
-
-          commChan.bind('match', function(trans, params) {
-            if (observers.match) observers.match();
-          });
-
-          if (defined(loggedInUser)) {
-            commChan.notify({
-              method: 'loggedInUser',
-              params: loggedInUser
-            });
-          }
         }
       } catch(e) {
         // channel building failed!  let's ignore the error and allow higher
@@ -294,6 +254,13 @@
       }
     }
 
+    var observers = {
+      login: null,
+      logout: null,
+      match: null,
+      ready: null
+    };
+
     function internalWatch(options) {
       if (typeof options !== 'object') return;
 
@@ -306,7 +273,6 @@
       }
 
       if (!options.onlogin) throw new Error("'onlogin' is a required argument to navigator.id.watch()");
-      if (!options.onlogout) throw new Error("'onlogout' is a required argument to navigator.id.watch()");
 
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
@@ -314,22 +280,7 @@
       // NOTE: Do not modify without reading GH-2017
       observers.ready = options.onready || null;
 
-      // back compat support for loggedInEmail
-      checkRenamed(options, "loggedInEmail", "loggedInUser");
-      loggedInUser = options.loggedInUser;
-
-      _open_hidden_iframe();
-    }
-
-    var api_called;
-    function getRPAPI() {
-      var rp_api = api_called;
-      if (rp_api === "request") {
-        if (observers.ready) rp_api = "watch_with_onready";
-        else rp_api = "watch_without_onready";
-      }
-
-      return rp_api;
+      _open_hidden_iframe(options);
     }
 
     function internalRequest(options) {
@@ -345,7 +296,6 @@
         warn("privacyPolicy ignored unless termsOfService also defined");
       }
 
-      options.rp_api = getRPAPI();
       var couldDoRedirectIfNeeded = (!needsPopupFix || api_called === 'request');
 
       // reset the api_called in case the site implementor changes which api
@@ -375,7 +325,7 @@
           return REQUIRES_WATCH;
         }
       }
-      
+
       if (!isSupported()) {
         var reason = noSupportReason();
         var url = "unsupported_dialog";
@@ -392,10 +342,6 @@
           windowOpenOpts);
         return;
       }
-
-      // notify the iframe that the dialog is running so we
-      // don't do duplicative work
-      if (commChan) commChan.notify({ method: 'dialog_running' });
 
       function doPopupFix() {
         if (commChan) {
@@ -425,30 +371,6 @@
           params: options
         }
       }, function(err, r) {
-        // unpause the iframe to detect future changes in login state
-        if (commChan) {
-          // update the loggedInUser in the case that an assertion was generated, as
-          // this will prevent the comm iframe from thinking that state has changed
-          // and generating a new assertion.  IF, however, this request is not a success,
-          // then we do not change the loggedInUser - and we will let the comm frame determine
-          // if generating a logout event is the right thing to do
-          if (!err && r && r.email) {
-            commChan.notify({ method: 'loggedInUser', params: r.email });
-          }
-          // prevent the authentication status check if an assertion is
-          // generated in the dialog or the dialog returned with an error.
-          // This prevents .onmatch from being fired for:
-          // 1. assertion already generated in the dialog
-          // 2. user is signed in to the site, opens the dialog, then cancels
-          // the dialog without generating an assertion.
-          // See #3170 & #3701
-          var checkAuthStatus = !(err || r && r.assertion);
-          commChan.notify({
-            method: 'dialog_complete',
-            params: checkAuthStatus
-          });
-        }
-
         // clear the window handle
         w = undefined;
         if (!err && r && r.assertion) {
@@ -480,8 +402,6 @@
           throw new Error("navigator.id.watch must be called before navigator.id.request");
 
         options = options || {};
-        checkCompat(false);
-        api_called = "request";
         // returnTo is used for post-email-verification redirect
         if (!options.returnTo) options.returnTo = document.location.pathname;
         return internalRequest(options);
@@ -489,71 +409,7 @@
       watch: function(options) {
         if (this != navigator.id)
           throw new Error("all navigator.id calls must be made on the navigator.id object");
-        checkCompat(false);
         internalWatch(options);
-      },
-      // logout from the current website
-      // The callback parameter is DEPRECATED, instead you should use the
-      // the .onlogout observer of the .watch() api.
-      logout: function(callback) {
-        if (this != navigator.id)
-          throw new Error("all navigator.id calls must be made on the navigator.id object");
-        // allocate iframe if it is not allocated
-        _open_hidden_iframe();
-        // send logout message if the commChan exists
-        if (commChan) commChan.notify({ method: 'logout' });
-        if (typeof callback === 'function') {
-          warn('navigator.id.logout callback argument has been deprecated.');
-          setTimeout(callback, 0);
-        }
-      },
-      // get an assertion
-      get: function(callback, passedOptions) {
-        var opts = {};
-        passedOptions = passedOptions || {};
-        opts.privacyPolicy =  passedOptions.privacyPolicy || undefined;
-        opts.termsOfService = passedOptions.termsOfService || undefined;
-        opts.privacyURL = passedOptions.privacyURL || undefined;
-        opts.tosURL = passedOptions.tosURL || undefined;
-        opts.siteName = passedOptions.siteName || undefined;
-        opts.siteLogo = passedOptions.siteLogo || undefined;
-        opts.backgroundColor = passedOptions.backgroundColor || undefined;
-        opts.experimental_emailHint = passedOptions.experimental_emailHint || undefined;
-        // api_called could have been set to getVerifiedEmail already
-        api_called = api_called || "get";
-        if (checkDeprecated(passedOptions, "silent")) {
-          // Silent has been deprecated, do nothing.  Placing the check here
-          // prevents the callback from being called twice, once with null and
-          // once after internalWatch has been called.  See issue #1532
-          if (callback) setTimeout(function() { callback(null); }, 0);
-          return;
-        }
-
-        checkCompat(true);
-        internalWatch({
-          onlogin: function(assertion) {
-            if (callback) {
-              callback(assertion);
-              callback = null;
-            }
-          },
-          onlogout: function() {}
-        });
-        opts.oncancel = function() {
-          if (callback) {
-            callback(null);
-            callback = null;
-          }
-          observers.login = observers.logout = observers.match = observers.ready = null;
-        };
-        internalRequest(opts);
-      },
-      // backwards compatibility with old API
-      getVerifiedEmail: function(callback) {
-        warn("navigator.id.getVerifiedEmail has been deprecated");
-        checkCompat(true);
-        api_called = "getVerifiedEmail";
-        navigator.id.get(callback);
       },
       // _shimmed was originally required in April 2011 (79d3119db036725c5b51a305758a7816fdc8920a)
       // so we could deal with firefox behavior - which was in certain reload scenarios to caching

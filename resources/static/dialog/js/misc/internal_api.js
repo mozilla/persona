@@ -229,6 +229,7 @@
 
 
   function internalWatch(callback, options) {
+    alert("internal watch");
     var remoteOrigin = options.origin;
     var loggedInUser = options.loggedInUser;
     setOrigin(remoteOrigin);
