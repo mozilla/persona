@@ -53,7 +53,7 @@ app.use(express.logger({
   }
 }));
 
-statsd.setupMiddleware(app);
+app.use(statsd());
 
 // parse POST bodies
 app.use(express.bodyParser());

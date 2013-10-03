@@ -50,8 +50,7 @@ app.use(express.logger({
 // close down the connection.
 app.use(express.limit("10kb"));
 
-statsd.setupMiddleware(app);
-
+app.use(statsd());
 app.use(express.bodyParser());
 app.use(booleanQuery);
 

@@ -67,7 +67,7 @@ app.use(express.logger({
   }
 }));
 
-statsd.setupMiddleware(app);
+app.use(statsd());
 
 // Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {

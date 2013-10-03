@@ -71,7 +71,7 @@ app.use(i18n.abide({
 
 i18n_check();
 
-statsd.setupMiddleware(app);
+app.use(statsd());
 
 // Add P3P headers to please IE8
 app.use(addP3PHeader);

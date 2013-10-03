@@ -76,7 +76,7 @@ app.use(i18n.abide({
 
 i18n_check();
 
-statsd.setupMiddleware(app);
+app.use(statsd());
 
 // #3 - Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {
