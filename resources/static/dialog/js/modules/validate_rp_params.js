@@ -120,6 +120,21 @@ BrowserID.Modules.ValidateRpParams = (function() {
             "experimental_emailHint");
       }
 
+      // additional features available only to internal/native consumers
+      if (isInternalRPAPI(params)) {
+        // userAssertedClaims allows a user agent to include additional
+        // claims in the generated assertion. Note that these claims are
+        // asserted by the user, not the IdP, so RP must not use them for
+        // positive access grants. They may be used for negative access
+        // grants or additional attributes that need to be authenticated,
+        // such as key exchange.
+        if (paramsFromRP.experimental_userAssertedClaims) {
+          params.userAssertedClaims = validateUserAssertedClaims(
+              paramsFromRP.experimental_userAssertedClaims,
+              "experimental_userAssertedClaims");
+        }
+      }
+
       if (hash.indexOf("#AUTH_RETURN") === 0) {
         var primaryParams = storage.idpVerification.get();
         if (!primaryParams)
@@ -288,6 +303,10 @@ BrowserID.Modules.ValidateRpParams = (function() {
     return rpAPI;
   }
 
+  function isInternalRPAPI(params) {
+    return (params.rpAPI === "internal");
+  }
+
   function validateStartTime(startTime) {
     var parsedTime = parseInt(startTime, 10);
     if (typeof parsedTime !== "number" || isNaN(parsedTime)) {
@@ -311,6 +330,14 @@ BrowserID.Modules.ValidateRpParams = (function() {
     }
 
     return email;
+  }
+
+  function validateUserAssertedClaims(claims, name) {
+    if (typeof claims !== "object") {
+      throw new Error("invalid value for " + name + ": " + claims);
+    }
+
+    return claims;
   }
 
   return Module;
