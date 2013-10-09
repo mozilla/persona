@@ -61,7 +61,9 @@ var TimingMessagesToTest = {
   "bcrypt.compare_time": "browserid.vows.bcrypt.compare_time",
   "query_time": "browserid.vows.query_time",
   "certification_time": "browserid.vows.certification_time",
-  "assertion_verification_time": "browserid.vows.assertion_verification_time"
+  "assertion_verification_time": "browserid.vows.assertion_verification_time",
+  "elapsed_time.fetch_well_known": "browserid.vows.fetch_well_known",
+  "elapsed_time.deep_fetch_well_known": "browserid.vows.deep_fetch_well_known"
 };
 
 for (var logMessage in TimingMessagesToTest) {
