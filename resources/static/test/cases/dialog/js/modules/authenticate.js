@@ -34,7 +34,8 @@
       PASSWORD_LABEL = "#authentication_form .label.password_state",
       IDP_SELECTOR = "#authentication_form .authentication_idp_name",
       AUTHENTICATION_CLASS = "authentication",
-      CONTINUE_BUTTON_SELECTOR = ".continue";
+      CONTINUE_BUTTON_SELECTOR = ".continue",
+      RP_NAME_SELECTOR = ".start_rp_name";
 
 
   function reset() {
@@ -205,6 +206,30 @@
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "testuser@testuser.com", "email prefilled");
         testElementHasClass("body", "start");
+        start();
+      }
+    });
+  });
+
+  asyncTest("siteName declared in rpInfo - use siteName", function() {
+    controller.destroy();
+    $(RP_NAME_SELECTOR).val("");
+    createController({
+      siteName: "my awesome site",
+      ready: function() {
+        equal($(RP_NAME_SELECTOR).text(), "my awesome site");
+        start();
+      }
+    });
+  });
+
+  asyncTest("siteName not declared in rpInfo - use hostname", function() {
+    controller.destroy();
+    $(RP_NAME_SELECTOR).val("");
+    createController({
+      origin: "https://testrp.com",
+      ready: function() {
+        equal($(RP_NAME_SELECTOR).text(), "testrp.com");
         start();
       }
     });

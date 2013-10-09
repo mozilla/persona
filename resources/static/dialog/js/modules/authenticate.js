@@ -24,7 +24,7 @@ BrowserID.Modules.Authenticate = (function() {
       EMAIL_SELECTOR = "#authentication_email",
       PASSWORD_SELECTOR = "#authentication_password",
       FORGOT_PASSWORD_SELECTOR = ".forgotPassword",
-      RP_NAME_SELECTOR = "#start_rp_name",
+      RP_NAME_SELECTOR = ".start_rp_name",
       BODY_SELECTOR = "body",
       AUTHENTICATION_CLASS = "authentication",
       CONTINUE_BUTTON_SELECTOR = ".continue",
@@ -357,7 +357,8 @@ BrowserID.Modules.Authenticate = (function() {
 
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);
-      dom.setInner(RP_NAME_SELECTOR, rpInfo.getSiteName());
+      dom.setInner(RP_NAME_SELECTOR,
+          rpInfo.getSiteName() || rpInfo.getHostname());
       dom.setInner(EMAIL_SELECTOR, lastEmail);
 
       currentHint = null;
