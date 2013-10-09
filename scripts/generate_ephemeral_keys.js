@@ -11,6 +11,8 @@ var VAR = path.join(__dirname, '../var');
 var CERT = path.join(VAR, 'root.cert');
 
 function exec(file, args, next) {
+  // remove path prefix, to prevent spaces in paths causing problems on win32
+  file = file.substring(process.cwd().length + 1);
   child_process.exec([file, args].join(' '), function(err, stdout, stderr) {
     if (err) throw err;
     if (stderr) console.error(stderr);
