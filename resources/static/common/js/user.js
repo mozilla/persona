@@ -1472,7 +1472,11 @@ BrowserID.User = (function() {
        */
       var rpInfo = User.rpInfo;
       User.checkAuthenticationAndSync(function(authenticated) {
-        var loggedInEmail = storage.site.get(rpInfo.getOrigin(), "logged_in");
+        var origin = rpInfo.getOrigin();
+        var loggedInEmail = storage.site.get(origin, "logged_in");
+        if (!loggedInEmail) {
+          loggedInEmail = storage.site.get(origin, "one_time");
+        }
         // User is not signed in to Persona or not signed into the site.
         if (!(authenticated && loggedInEmail))
           return complete(onComplete, null, null);
@@ -1496,8 +1500,10 @@ BrowserID.User = (function() {
           // generated.
           // If there has been an issuer change, this will check with the new
           // issuer to make sure the user is authenticated there.
-          User.getAssertion(loggedInEmail, rpInfo.getOrigin(),
-              function(assertion) {
+          User.getAssertion(loggedInEmail, origin, function(assertion) {
+            if (assertion) {
+              storage.site.remove(origin, "one_time");
+            }
             complete(onComplete, assertion ? loggedInEmail : null, assertion);
           }, onFailure);
         });

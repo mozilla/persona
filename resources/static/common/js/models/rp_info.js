@@ -33,6 +33,7 @@ BrowserID.Models.RpInfo = (function() {
     issuer: 'default',
     emailHint: und,
     userAssertedClaims: und,
+    rpAPI: und,
 
     init: function(options) {
       var self = this;
@@ -48,6 +49,7 @@ BrowserID.Models.RpInfo = (function() {
         'termsOfService',
         'allowUnverified',
         'returnTo',
+        'rpAPI',
         'emailHint',
         'userAssertedClaims'
         );
@@ -106,6 +108,10 @@ BrowserID.Models.RpInfo = (function() {
 
     isDefaultIssuer: function() {
       return this.issuer === "default";
+    },
+
+    getRpAPI: function() {
+      return this.rpAPI;
     },
 
     getEmailHint: function() {

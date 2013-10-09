@@ -12,9 +12,11 @@
       xhr = bid.Mocks.xhr,
       user = bid.User;
 
+  var ORIGIN = "http://testuser.com";
+
   function createController(config) {
     config = _.extend({
-      origin: "http://testuser.com"
+      origin: ORIGIN
     }, config);
 
     var rpInfo = bid.Models.RpInfo.create(config);
@@ -54,6 +56,67 @@
     });
   });
 
+  asyncTest("generated assertion should set logged_in on site", function() {
+    var EMAIL = "testuser@testuser.com";
+    user.syncEmailKeypair(EMAIL, function() {
+      var assertion;
+      mediator.subscribe("assertion_generated", function(msg, info) {
+        assertion = info.assertion;
+      });
+
+      createController({
+        email: EMAIL,
+        ready: function() {
+          ok(assertion, "assertion generated");
+          equal(storage.site.get(ORIGIN, "logged_in"), EMAIL);
+          start();
+        }
+      });
+    });
+  });
+
+  asyncTest("generated assertion when rpAPI is 'stateless' should set one_time on site", function() {
+    var EMAIL = "testuser@testuser.com";
+    user.syncEmailKeypair(EMAIL, function() {
+      var assertion;
+      mediator.subscribe("assertion_generated", function(msg, info) {
+        assertion = info.assertion;
+      });
+
+      createController({
+        email: EMAIL,
+        rpAPI: "stateless",
+        ready: function() {
+          ok(assertion, "assertion generated");
+          equal(storage.site.get(ORIGIN, "one_time"), EMAIL, "one_time bit set");
+          equal(storage.site.get(ORIGIN, "logged_in"), undefined, "logged in not set");
+          start();
+        }
+      });
+    });
+  });
+
+  asyncTest("generated assertion when rpAPI is 'stateless' should remove `logged_in` on site", function() {
+    var EMAIL = "testuser@testuser.com";
+    user.syncEmailKeypair(EMAIL, function() {
+      var assertion;
+      mediator.subscribe("assertion_generated", function(msg, info) {
+        assertion = info.assertion;
+      });
+
+      storage.site.set(ORIGIN, "logged_in", EMAIL);
+
+      createController({
+        email: EMAIL,
+        rpAPI: "stateless",
+        ready: function() {
+          ok(assertion, "assertion generated");
+          equal(storage.site.get(ORIGIN, "logged_in"), undefined, "logged in not set");
+          start();
+        }
+      });
+    });
+  });
   asyncTest("start with error when generating assertion - " +
       "no assertion generated", function() {
     xhr.useResult("ajaxError");

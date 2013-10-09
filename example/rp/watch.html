@@ -51,12 +51,12 @@ pre {
 <body>
 <div class="title">
   <h1>Persona Test Relying Party</h1>
-  <h2>Stateless "Goldilocks"</h2>
+  <h2>navigator.id.watch</h2>
 </div>
 
 <div class="intro">
   This is a RP for testing, it allows you to drive the
-  <tt>Stateless "Goldilocks"</tt> calls manually to locally test Persona.  Looking to test <a href="/watch.html">navigator.id.watch</a> or <a href="/get.html">navigator.id.get</a>?
+  <tt>navigator.id.watch() &amp; navigator.id.request()</tt> calls manually to locally test Persona.  Looking to test <a href="/index.html">stateless "goldilocks"</a> or <a href="/get.html">navigator.id.get</a>?
 </div>
 
 <div class="specify">
@@ -98,6 +98,7 @@ pre {
     </li>
   </ul>
     <button class="assertion">Get an assertion</button>
+    <button class="logout">logout</button>
 </div>
 
 <div class="session">
@@ -112,6 +113,21 @@ pre {
 
 <div class="loginEvents">
   <h2>logins</h2>
+  <pre> ... </pre>
+</div>
+
+<div class="logoutEvents">
+  <h2>logouts</h2>
+  <pre> ... </pre>
+</div>
+
+<div class="matchEvents">
+  <h2>matches</h2>
+  <pre> ... </pre>
+</div>
+
+<div class="readiness">
+  <h2>readiness</h2>
   <pre> ... </pre>
 </div>
 
@@ -162,6 +178,12 @@ function checkAssertion(assertion) {
 };
 
 navigator.id.watch({
+  loggedInUser: (storage.loggedInUser === 'null') ? null : storage.loggedInUser,
+  onready: function () {
+    loggit("onready");
+    var txt = serial++ + ' navigator.id ready at ' + (new Date).toString();
+    $(".readiness > pre").text(txt);
+  },
   onlogin: function (assertion) {
     loggit("onlogin");
     var txt = serial++ + ' got assertion at ' + (new Date).toString();
@@ -170,6 +192,16 @@ navigator.id.watch({
     checkAssertion(assertion);
 
     $(".specify button.assertion").removeAttr('disabled');
+  },
+  onlogout: function () {
+    loggit("onlogout");
+    var txt = serial++ + ' logout callback invoked at ' + (new Date).toString();
+    $(".logoutEvents > pre").text(txt);
+  },
+  onmatch: function() {
+    loggit("onmatch")
+    var txt = serial++ + ' match callback invoked at ' + (new Date).toString();
+    $(".matchEvents > pre").text(txt);
   }
 });
 
@@ -196,6 +228,14 @@ $(document).ready(function() {
       }
     });
   });
+
+  $(".specify button.logout").click(function() { navigator.id.logout() });
+
+  $(".session button.update_session").click(function() {
+    storage.loggedInUser = $.trim($('#loggedInUser').val());
+    $(".session input").fadeOut(100).fadeIn(350);
+  });
+  $('#loggedInUser').val(storage.loggedInUser ? storage.loggedInUser : "");
 });
 
 </script>

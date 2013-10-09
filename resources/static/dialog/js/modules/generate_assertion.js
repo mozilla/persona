@@ -26,13 +26,19 @@ BrowserID.Modules.GenerateAssertion = (function() {
       self.checkRequired(options, "email", "rpInfo");
 
       var email = options.email,
-          origin = options.rpInfo.getOrigin();
+          origin = options.rpInfo.getOrigin(),
+          isOneTime = options.rpInfo.getRpAPI() === "stateless";
 
       user.getAssertion(email, origin, function(assertion) {
         assertion = assertion || null;
 
         if (assertion) {
-          storage.site.set(origin, "logged_in", email);
+          if (isOneTime) {
+            storage.site.set(origin, "one_time", email);
+            storage.site.remove(origin, "logged_in");
+          } else {
+            storage.site.set(origin, "logged_in", email);
+          }
         }
 
         self.publish("assertion_generated", {
