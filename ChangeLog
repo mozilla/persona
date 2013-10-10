@@ -1,4 +1,13 @@
-current train:
+train-2013.10.09:
+  * Get Persona working on IE11: #3593
+  * Remove obsolete localstorage fields: #3855
+  * Refactoring and visual tweaks: #3940, #3712
+  * Bump awsbox version to 0.6.2: #3942
+  * Don't bother parsing include.js if native support exists: #3924
+  * Email tweaks: #3957
+  * Improve documentation: #3923, #3963
+  * Fix a win32 paths-with-spaces bug: #3962
+  * Fix an intermittent broken test on linux+ node > 0.10.16: #3912
 
 train-2013.09.25:
   * RP Branded verification emails - if a site declares siteLogo and backgroundColor, verification emails will be styled with those instead of Persona branding: #3857
