@@ -13,7 +13,9 @@
   "express_log_format": "dev_bid",
   "email_to_console": true,
   "env": "local",
-  "kpi_backend_sample_rate": 1.0,
+  "kpi": {
+    "backend_sample_rate": 1.0
+  },
 
   // increase to tolerate slower server responses; useful for testing
   "maximum_event_loop_lag": 100,
