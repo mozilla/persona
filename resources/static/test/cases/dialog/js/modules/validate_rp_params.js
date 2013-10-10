@@ -16,7 +16,8 @@
 
   function WinMock() {
     this.location = {
-      hash: "#1234"
+      hash: "#1234",
+      search: ""
     };
 
     this.opener = {
