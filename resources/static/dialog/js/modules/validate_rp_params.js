@@ -333,7 +333,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
   }
 
   function validateUserAssertedClaims(claims, name) {
-    if (typeof claims !== "object") {
+    if (Object.prototype.toString.apply(claims) === "[object Object]") {
       throw new Error("invalid value for " + name + ": " + claims);
     }
 
