@@ -14,14 +14,13 @@ url = require('url'),
 fs = require('fs'),
 express = require('express'),
 computecluster = require('compute-cluster'),
-metrics = require('../lib/metrics'),
 heartbeat = require('../lib/heartbeat'),
-logger = require('../lib/logging').logger,
+logger = require('../lib/logging/logging').logger,
 config = require('../lib/configuration'),
 shutdown = require('../lib/shutdown'),
-statsd = require('../lib/statsd'),
 booleanQuery = require('../lib/boolean-query'),
-toobusy = require('../lib/busy_middleware.js');
+toobusy = require('../lib/busy_middleware.js'),
+statsd = require("../lib/logging/middleware/statsd");
 
 logger.info("verifier server starting up");
 
@@ -51,16 +50,7 @@ app.use(express.logger({
 // close down the connection.
 app.use(express.limit("10kb"));
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  var logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.verifier."
-  }));
-}
-
+app.use(statsd());
 app.use(express.bodyParser());
 app.use(booleanQuery);
 
@@ -104,7 +94,7 @@ function doVerification(req, resp, next) {
       if (want_ct.indexOf(ct) == -1) throw "wrong content type";
     } catch (e) {
       reason = "Content-Type expected to be one of: " + want_ct.join(", ");
-      metrics.report('verify', {
+      logger.info('verify', {
         result: 'failure',
         reason: reason,
         rp: audience
@@ -112,7 +102,7 @@ function doVerification(req, resp, next) {
       return resp.json({ status: "failure", reason: reason}, 415);
     }
     reason = "need assertion and audience";
-    metrics.report('verify', {
+    logger.info('verify', {
       result: 'failure',
       reason: reason,
       rp: audience
@@ -128,16 +118,16 @@ function doVerification(req, resp, next) {
     allowUnverified: !!allowUnverified
   }, function (err, r) {
     var reqTime = new Date - startTime;
-    statsd.timing('assertion_verification_time', reqTime);
+    logger.info('assertion_verification_time', reqTime);
 
     // consider "application" errors to be the same as harder errors
     if (!err && r && r.error) err = r.error;
     else if (!r || !r.success) err = "no response returned from child process";
 
     if (err) {
-      statsd.increment("assertion_failure");
+      logger.info("assertion_failure");
       resp.json({"status":"failure", reason: err});  //Could be 500 or 200 OK if invalid cert
-      metrics.report('verify', {
+      logger.info('verify', {
         result: 'failure',
         reason: err,
         rp: audience
@@ -149,7 +139,7 @@ function doVerification(req, resp, next) {
         expires : new Date(r.success.expires).valueOf()
       }));
 
-      metrics.report('verify', {
+      logger.info('verify', {
         result: 'success',
         rp: r.success.audience
       });

@@ -17,12 +17,13 @@ wsapi = require('../lib/wsapi.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
-logger = require('../lib/logging.js').logger,
+logger = require('../lib/logging/logging.js').logger,
 shutdown = require('../lib/shutdown'),
 cachify = require('connect-cachify'),
 assets = require('../lib/static_resources').all,
 primary = require('../lib/primary'),
-toobusy = require('../lib/busy_middleware.js');
+toobusy = require('../lib/busy_middleware.js'),
+statsd = require('../lib/logging/middleware/statsd.js');
 
 // dbwriter needs cachify to properly render emails with cachified URLs,
 // but it serves no cachified content, so it's not necc to register it as
@@ -66,15 +67,7 @@ app.use(express.logger({
   }
 }));
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  var logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.dbwriter."
-  }));
-}
+app.use(statsd());
 
 // Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {

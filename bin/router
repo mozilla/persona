@@ -15,15 +15,16 @@ urlparse = require('urlparse'),
 express = require('express');
 
 const
-metrics = require('../lib/metrics.js'),
+metrics = require('../lib/logging/middleware/metrics.js'),
 wsapi = require('../lib/wsapi.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
-logger = require('../lib/logging.js').logger,
+logger = require('../lib/logging/logging.js').logger,
 forward = require('../lib/http_forward').forward,
 addP3PHeader = require('../lib/p3p.js'),
-shutdown = require('../lib/shutdown'),
-toobusy = require('../lib/busy_middleware.js');
+shutdown = require('../lib/shutdown.js'),
+toobusy = require('../lib/busy_middleware.js'),
+statsd = require('../lib/logging/middleware/statsd.js');
 
 var app = express.createServer();
 
@@ -80,15 +81,7 @@ app.use(express.logger({
 // close down the connection. 
 app.use(express.limit("10kb"));
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  var logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.router."
-  }));
-}
+app.use(statsd());
 
 // Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {
@@ -157,12 +150,10 @@ wsapi.routeSetup(app, {
   write_url: dbwriter_url
 });
 
+app.use(metrics);
+
 //catch-all
 app.use(function(req, res, next) {
-
-  // log metrics
-  if (req.url === '/sign_in') metrics.userEntry(req);
-
   forward(
     static_url+req.url, req, res,
     function(err) {

@@ -22,12 +22,13 @@ httputils = require('../lib/httputils.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
-logger = require('../lib/logging.js').logger,
+logger = require('../lib/logging/logging.js').logger,
 shutdown = require('../lib/shutdown'),
 primary = require('../lib/primary'),
 addP3PHeader = require('../lib/p3p.js'),
 forward = require('../lib/http_forward.js'),
-toobusy = require('../lib/busy_middleware.js');
+toobusy = require('../lib/busy_middleware.js'),
+statsd = require('../lib/logging/middleware/statsd.js');
 
 var app = express.createServer();
 
@@ -75,15 +76,7 @@ app.use(i18n.abide({
 
 i18n_check();
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  var logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.webhead."
-  }));
-}
+app.use(statsd());
 
 // #3 - Add Strict-Transport-Security headers if we're serving over SSL
 if (config.get('scheme') == 'https') {

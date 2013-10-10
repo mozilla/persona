@@ -10,7 +10,7 @@ const assert = require('assert'),
     dgram = require('dgram'),
     http = require('http'),
     cef = require('cef'),
-    cef_logger = require('../lib/cef_logger');
+    cef_logger = require('../lib/logging/cef_logger');
 
 var mock_http_req = cef.extensionsFromHTTPRequest({
   url: '/pie',

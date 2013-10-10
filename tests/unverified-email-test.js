@@ -19,7 +19,7 @@ config = require('../lib/configuration.js'),
 jwcrypto = require('jwcrypto'),
 http = require('http'),
 querystring = require('querystring'),
-logger = require('../lib/logging.js').logger,
+logger = require('../lib/logging/logging.js').logger,
 path = require('path');
 
 var suite = vows.describe('unverified-email-test');

@@ -11,20 +11,18 @@ require('../lib/baseExceptions').addExceptionHandler();
 const
 path = require('path'),
 express = require('express'),
-statsd = require('../lib/statsd');
-
-const
 _ = require('underscore'),
 config = require('../lib/configuration.js'),
 httputils = require('../lib/httputils.js'),
 validate = require('../lib/validate.js'),
-logger = require('../lib/logging.js').logger,
+logger = require('../lib/logging/logging.js').logger,
 heartbeat = require('../lib/heartbeat'),
 shutdown = require('../lib/shutdown'),
 computecluster = require('compute-cluster'),
 urlparse = require('urlparse'),
-toobusy = require('../lib/busy_middleware.js');
-certKey = require('../lib/wsapi/cert_key.js');
+toobusy = require('../lib/busy_middleware.js'),
+certKey = require('../lib/wsapi/cert_key.js'),
+statsd = require('../lib/logging/middleware/statsd.js');
 
 logger.info("keysigner starting up");
 
@@ -55,15 +53,7 @@ app.use(express.logger({
   }
 }));
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  var logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.keysigner."
-  }));
-}
+app.use(statsd());
 
 // parse POST bodies
 app.use(express.bodyParser());
@@ -111,7 +101,7 @@ app.post('/wsapi/cert_key', validate({ 'email': 'email', 'pubkey': 'pubkey', 'ep
     hostname: HOSTNAME
   }), function (err, r) {
     var reqTime = new Date - startTime;
-    statsd.timing('certification_time', reqTime);
+    logger.info('certification_time', reqTime);
 
     // consider "application" errors to be the same as harder errors
     if (!err && r && r.error) err = r.error;

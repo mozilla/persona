@@ -27,11 +27,12 @@ httputils = require('../lib/httputils.js'),
 db = require('../lib/db.js'),
 config = require('../lib/configuration.js'),
 heartbeat = require('../lib/heartbeat.js'),
-logger = require('../lib/logging.js').logger,
+logger = require('../lib/logging/logging.js').logger,
 views = require('../lib/static/views.js'),
 toobusy = require('../lib/busy_middleware.js'),
 addP3PHeader = require('../lib/p3p.js'),
-shutdown = require('../lib/shutdown.js');
+shutdown = require('../lib/shutdown.js'),
+statsd = require("../lib/logging/middleware/statsd");
 
 var app = express.createServer();
 
@@ -70,15 +71,7 @@ app.use(i18n.abide({
 
 i18n_check();
 
-var statsd_config = config.get('statsd');
-if (statsd_config && statsd_config.enabled) {
-  logger_statsd = require("connect-logger-statsd");
-  app.use(logger_statsd({
-    host: statsd_config.hostname || "localhost",
-    port: statsd_config.port || 8125,
-    prefix: statsd_config.prefix || "browserid.static."
-  }));
-}
+app.use(statsd());
 
 // Add P3P headers to please IE8
 app.use(addP3PHeader);
