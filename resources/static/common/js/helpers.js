@@ -122,11 +122,11 @@
       return Object.prototype.toString.apply(arg) === "[object Array]";
     },
 
-    is_Null: function(arg) {
+    isNull: function(arg) {
       return arg === null;
     },
 
-    is_Undefined: function(arg) {
+    isUndefined: function(arg) {
       return (typeof arg === 'undefined');
     },
 
