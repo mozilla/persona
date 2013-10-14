@@ -39,9 +39,10 @@
     "i18n-abide": "0.0.8",
     "lockdown": "0.0.4",
     "jwcrypto": "0.4.3",
+    "mkdirp": "0.3.0",
     "mysql": "0.9.5",
     "nodemailer": "0.3.21",
-    "mkdirp": "0.3.0",
+    "node-statsd": "0.0.7",
     "optimist": "0.2.8",
     "postprocess": "0.2.4",
     "rimraf": "2.0.2",
@@ -58,9 +59,6 @@
     "connect-fonts": "0.0.9-alpha8",
     "connect-fonts-opensans": "0.0.3-beta1",
     "connect-fonts-feurasans": "0.0.2"
-  },
-  "optionalDependencies": {
-    "node-statsd": "https://github.com/downloads/lloyd/node-statsd/0509f85.tgz"
   },
   "devDependencies": {
     "vows": "git://github.com/cloudhead/vows#253ca34c",
