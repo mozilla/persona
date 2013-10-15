@@ -133,5 +133,22 @@
     });
   });
 
+  test("if no siteName is specified in rpInfo, use the hostname", function() {
+    controller = bid.Modules.CheckRegistration.create();
+    var rpInfo = bid.Models.RpInfo.create({
+      origin: "http://testrp.com"
+    });
+
+    controller.start({
+      email: "registered@testuser.com",
+      verifier: "waitForUserValidation",
+      verificationMessage: "user_verified",
+      rpInfo: rpInfo
+    });
+
+    notEqual($(".js-check-registration--site-name").html().indexOf("testrp.com"), -1);
+
+  });
+
 }());
 

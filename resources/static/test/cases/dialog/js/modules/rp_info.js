@@ -53,11 +53,12 @@
     controller.start(options || {});
   }
 
-  test("neither siteName nor logo specified - show rp_hostname only", function() {
+  test("neither siteName nor logo specified - " +
+          "show rp_name only with the hostname", function() {
     createController();
-    equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");
-    ok(!$("#rp_name").html(), "rp_name empty");
     ok(!$("#rp_logo").attr("src"), "rp logo not shown");
+    equal($("#rp_name").html(), RP_HOSTNAME, "rp_name filled in");
+    equal($("#rp_hostname").length, 0, "rp_hostname empty");
   });
 
   test("siteName only specified - show specified siteName and rp_hostname", function() {
@@ -65,9 +66,9 @@
       siteName: RP_NAME,
     });
 
-    equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");
-    equal($("#rp_name").html(), RP_NAME, "rp_name filled in");
     ok(!$("#rp_logo").attr("src"), "rp logo not shown");
+    equal($("#rp_name").html(), RP_NAME, "rp_name filled in");
+    equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");
   });
 
   test("siteLogos are allowed", function() {
@@ -80,8 +81,6 @@
     });
 
     equal($("#rp_logo").attr("src"), RP_HTTPS_LOGO, "rp logo shown");
-    equal($("#rp_hostname").html(), RP_HOSTNAME, "rp_hostname filled in");
-    ok(!$("#rp_name").html(), "rp_name empty");
   });
 
   test("both siteName and siteLogo specified - show siteName, siteLogo and rp_hostname", function() {

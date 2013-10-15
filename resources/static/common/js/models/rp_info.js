@@ -68,7 +68,7 @@ BrowserID.Models.RpInfo = (function() {
     },
 
     getSiteName: function() {
-      return this.siteName;
+      return this.siteName || this.getHostname();
     },
 
     getSiteLogo: function() {

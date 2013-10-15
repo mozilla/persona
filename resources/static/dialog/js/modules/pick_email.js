@@ -146,8 +146,7 @@ BrowserID.Modules.PickEmail = (function() {
         preselectedEmail: getPreselectedEmail(rpInfo),
         privacyPolicy: rpInfo.getPrivacyPolicy(),
         termsOfService: rpInfo.getTermsOfService(),
-        siteName: rpInfo.getSiteName(),
-        hostname: rpInfo.getHostname()
+        siteName: rpInfo.getSiteName()
       });
 
       var originEmail = user.getOriginEmail();
