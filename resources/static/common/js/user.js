@@ -1277,6 +1277,7 @@ BrowserID.User = (function() {
     getAssertion: function(email, audience, onComplete, onFailure) {
       var issuer = User.rpInfo.getIssuer(),
           storedID = storage.getEmail(email, issuer),
+          userAssertedClaims = User.rpInfo.getUserAssertedClaims() || {},
           assertion;
 
       function createAssertion(idInfo) {
@@ -1295,7 +1296,7 @@ BrowserID.User = (function() {
             // raise "script has become unresponsive" errors.
             setTimeout(function() {
               jwcrypto.assertion.sign(
-                {}, {audience: audience, expiresAt: expirationDate},
+                userAssertedClaims, {audience: audience, expiresAt: expirationDate},
                 sk,
                 function(err, signedAssertion) {
                   assertion = jwcrypto.cert.bundle([idInfo.cert], signedAssertion);

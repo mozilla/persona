@@ -497,5 +497,34 @@
     }, "invalid email for experimental_emailHint: testuser.testuser.com");
   });
 
+  asyncTest("non-object userAssertedClaims - not allowed", function() {
+    testExpectValidationFailure({
+      rp_api: "internal",
+      experimental_userAssertedClaims: "experimental_userAssertedClaims must be an object"
+    });
+  });
+
+  asyncTest("userAssertedClaims are only checked with the internal api", function() {
+    testExpectValidationSuccess({
+      rp_api: "watch_without_onready",
+      experimental_userAssertedClaims: {
+        the_claim: "even though this is an invalid claim, no error is thrown"
+      }
+    }, {});
+  });
+
+  asyncTest("valid userAssertedClaims - allowed", function() {
+    testExpectValidationSuccess({
+      rp_api: "internal",
+      experimental_userAssertedClaims: {
+        the_claim: "experimental_userAssertedClaims must be an object"
+      }
+    }, {
+      userAssertedClaims: {
+        the_claim: "experimental_userAssertedClaims must be an object"
+      }
+    });
+  });
+
 
 }());
