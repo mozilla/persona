@@ -357,8 +357,7 @@ BrowserID.Modules.Authenticate = (function() {
 
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);
-      dom.setInner(RP_NAME_SELECTOR,
-          rpInfo.getSiteName() || rpInfo.getHostname());
+      dom.setInner(RP_NAME_SELECTOR, rpInfo.getSiteName());
       dom.setInner(EMAIL_SELECTOR, lastEmail);
 
       currentHint = null;

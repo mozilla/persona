@@ -28,6 +28,21 @@
     equal(model.getOrigin(), "http://testuser.com:10002");
   });
 
+  test("getSiteName returns siteName if available, hostname if not", function() {
+    var model = Model.create({
+      origin: "http://testuser.com:10002",
+      siteName: "my awesome site"
+    });
+
+    equal(model.getSiteName(), "my awesome site");
+
+    var modelHostnameOnly = Model.create({
+      origin: "http://testuser.com:10002"
+    });
+
+    equal(modelHostnameOnly.getSiteName(), "testuser.com");
+  });
+
   test("getEmailableSiteLogo with dataURI siteLogo - siteLogo not emailable, no logo returned", function() {
     var model = Model.create({
       origin: "http://testuser.com",
