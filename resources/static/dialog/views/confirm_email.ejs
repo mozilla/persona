@@ -5,6 +5,6 @@
     <h2 id="confirm_address"><%= gettext('Check your email') %></h2>
 
     <p>
-      <%- format(gettext('Click the link in the confirmation email sent to %s to immediately be signed in to %s.'), ["<strong>" + escape(email) + "</strong>" , "<strong>" + siteName + "</strong>"]) %>
+      <%- format(gettext('Click the link in the confirmation email sent to %s to immediately be signed in to %s.'), ["<strong>" + escape(email) + "</strong>" , "<strong class='js-check-registration--site-name'>" + siteName + "</strong>"]) %>
     </p>
 

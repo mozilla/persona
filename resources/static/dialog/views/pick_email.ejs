@@ -8,7 +8,7 @@
       <h2 class="isMobile"><%= gettext('Sign in with Persona') %></h2>
 
       <h2 class="isDesktop">
-        <%- format(gettext('Sign in to %s as&hellip;'), [(siteName || hostname) ]) %>
+        <%- format(gettext('Sign in to %s as&hellip;'), [siteName]) %>
       </h2>
 
       <ul class="inputs" id="emailList">
@@ -45,7 +45,7 @@
                      {
                        terms: 'href="' + termsOfService + '" class="rp_tos" target="_blank" tabindex="10"',
                        privacy: 'href="' + privacyPolicy + '" class="rp_pp" target="_blank" tabindex="10"',
-                       site: siteName || hostname
+                       site: siteName
                      })
           %>
          </p>

@@ -7,14 +7,10 @@
 <% } %>
 
 
-<% if(siteName) { %>
-  <h2 id="rp_name"><%- siteName %></h2>
-<% } %>
+<h2 id="rp_name"><%- siteName %></h2>
 
-<% if(siteName) { %>
+<% if (hostname !== siteName) { %>
   <h3 id="rp_hostname"><%= hostname %></h3>
-<% } else { %>
-  <h2 id="rp_hostname"><%= hostname %></h2>
 <% } %>
 
 <% if(privacyPolicy && termsOfService) { %>

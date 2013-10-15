@@ -118,6 +118,22 @@
         start();
       }
     });
+  });
+
+  asyncTest("if siteName is not specified, show the hostname", function() {
+    xhr.useResult("primaryTransition");
+
+    createController({
+      origin: "http://testrp.com",
+      window: win,
+      add: false,
+      email: "registered@testuser.com",
+      ready: function ready() {
+        var description = $("#upgrade_to_primary").html();
+        notEqual(description.indexOf("testrp.com"), -1);
+        start();
+      }
+    });
 
   });
 
