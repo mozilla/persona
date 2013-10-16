@@ -11,7 +11,7 @@ path = require('path'),
 urlparse = require('urlparse'),
 postprocess = require('postprocess'),
 querystring = require('querystring'),
-sessions = require('connect-cookie-session'),
+sessions = require('client-sessions'),
 jwcrypto = require("jwcrypto");
 
 // alg
@@ -19,25 +19,23 @@ require("jwcrypto/lib/algs/rs");
 require("jwcrypto/lib/algs/ds");
 
 var exampleServer = express.createServer();
+const API_PREFIX = '/api';
+const SESSION_DURATION_MS = 1 * 60 * 60 * 1000;
 
 exampleServer.use(express.cookieParser());
 
-exampleServer.use(function(req, res, next) {
-  if (/^\/api/.test(req.url)) {
-    return sessions({
-      secret: "this secret, isn't very secret",
-      key: 'example_browserid_primary',
-      cookie: {
-        path: '/api',
-        httpOnly: true,
-        secure: false,
-        maxAge: 1 * 60 * 60 * 1000
-      }
-    })(req, res, next);
-  } else {
-    next();
+exampleServer.use(API_PREFIX, sessions({
+  secret: "this secret, isn't very secret",
+  requestKey: 'session',
+  cookieName: 'example_browserid_primary',
+  duration: SESSION_DURATION_MS,
+  cookie: {
+    path: '/api',
+    httpOnly: true,
+    secure: false,
+    maxAge: SESSION_DURATION_MS
   }
-});
+}));
 
 exampleServer.use(express.logger({ format: 'dev' }));
 
@@ -54,12 +52,8 @@ exampleServer.use(express.static(path.join(__dirname, "..", "example", "primary"
 
 exampleServer.use(express.bodyParser());
 
-const API_PREFIX = '/api/';
-
-exampleServer.use(function(req, resp, next) {
-  if (req.url.substr(0, API_PREFIX.length) === API_PREFIX) {
-    resp.setHeader('Cache-Control', 'no-store, max-age=0');
-  }
+exampleServer.use(API_PREFIX, function(req, resp, next) {
+  resp.setHeader('Cache-Control', 'no-store, max-age=0');
   next();
 });
 
@@ -69,12 +63,12 @@ exampleServer.get("/api/whoami", function (req, res) {
 });
 
 exampleServer.get("/api/login", function (req, res) {
-  req.session = {user: req.query.user};
+  req.session.user = req.query.user;
   return res.json(null);
 });
 
 exampleServer.get("/api/logout", function (req, res) {
-  req.session = {};
+  req.session.reset();
   return res.json(null);
 });
 
