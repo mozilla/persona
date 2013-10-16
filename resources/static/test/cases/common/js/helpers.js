@@ -195,6 +195,30 @@
     equal(helpers.isArray(arguments), false);
   });
 
+  test("isNull", function() {
+    var und;
+    equal(helpers.isNull([]), false);
+    equal(helpers.isNull(new Array()), false);
+    equal(helpers.isNull(""), false);
+    equal(helpers.isNull(0), false);
+    equal(helpers.isNull(und), false);
+    equal(helpers.isNull(false), false);
+
+    equal(helpers.isNull(null), true);
+  });
+
+  test("isUndefined", function() {
+    var und;
+    equal(helpers.isUndefined([]), false);
+    equal(helpers.isUndefined(new Array()), false);
+    equal(helpers.isUndefined(""), false);
+    equal(helpers.isUndefined(0), false);
+    equal(helpers.isUndefined(null), false);
+    equal(helpers.isUndefined(false), false);
+
+    equal(helpers.isUndefined(und), true);
+  });
+
   test("redirect", function() {
     var win = {};
     helpers.redirect(win, "http://example.com");

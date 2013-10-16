@@ -310,8 +310,27 @@
       // back compat support for loggedInEmail
       checkRenamed(options, "loggedInEmail", "loggedInUser");
       loggedInUser = options.loggedInUser;
+      if (!isNull(loggedInUser)  &&
+          !isUndefined(loggedInUser) &&
+          !isString(loggedInUser))
+      {
+        throw new Error("loggedInUser is not a valid type");
+      }
+
 
       _open_hidden_iframe();
+    }
+
+    function isNull(arg) {
+      return arg === null;
+    }
+
+    function isUndefined(arg) {
+      return (typeof arg === 'undefined');
+    }
+
+    function isString(arg) {
+      return Object.prototype.toString.apply(arg) === "[object String]";
     }
 
     var api_called;
@@ -368,7 +387,7 @@
           return REQUIRES_WATCH;
         }
       }
-      
+
       if (!isSupported()) {
         var reason = noSupportReason();
         var url = "unsupported_dialog";

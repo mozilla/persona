@@ -122,6 +122,14 @@
       return Object.prototype.toString.apply(arg) === "[object Array]";
     },
 
+    isNull: function(arg) {
+      return arg === null;
+    },
+
+    isUndefined: function(arg) {
+      return (typeof arg === 'undefined');
+    },
+
     /**
      * Get an email from a DOM element and validate it.
      * @method getAndValidateEmail
