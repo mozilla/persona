@@ -19,89 +19,75 @@ BrowserID.Modules.IdPAuthentication= (function() {
       XHRDisableForm = modules.XHRDisableForm,
       Development = modules.Development,
       ANIMATION_TIME = 500,
+      EMAIL_PRESENT_NEXT = 'button:visible',
       sc;
 
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
+      var self = this;
 
       window.resizeTo(700, 440); // Gross
 
       navigator.id.beginAuthentication(function(email) {
-	mediator.subscribe("authentication_success", function(msg, info) {
+        mediator.subscribe("authentication_success", function(msg, info) {
           // TODO: Are we sure that we authed as email?
           navigator.id.completeAuthentication();
-	});
+        });
 
-	mediator.subscribe("new_user", function(msg, info) {
+        mediator.subscribe("new_user", function(msg, info) {
           var email = info.email;
           // TODO: Are we sure that we authed as email?
           moduleManager.start("set_password", info);
           mediator.subscribe("password_set", function(msg, info) {
+            // TODO merge broke us - user.setRPInfo must now be called like in
+            // resources/static/dialog/js/modules/dialog.js line 130, 286
+            //      params.origin = user.getOrigin();
+            var rpInfo = bid.Models.RpInfo.create({origin: 'http://192.168.186.138:10001'});
+            user.setRpInfo(rpInfo);
+            dialogHelpers.createUser.call(self, email, info.password, function(info) {
+              if (info.success) {
+                // TODO Desktop code isn't passing through this information
+                info.siteName = 'TODO';
+                info.email = email;
+                info.verifier = "waitForUserValidation";
+                info.verificationMessage = "user_confirmed";
 
-	    // TODO merge broke us - user.setRPInfo must now be called like in 
-	    // resources/static/dialog/js/modules/dialog.js line 130, 286
-	    //      params.origin = user.getOrigin();
-	    var rpInfo = bid.Models.RpInfo.create({origin: 'http://192.168.186.138:10001'});
-	    user.setRpInfo(rpInfo);
-
-
-            dialogHelpers.createUser.call({
-              getErrorDialog: function(a, b, c) {
-		// TODO: Use or remove
-		//console.log('getErrorDialog called', a, b, c);
-              },
-              publish: function(msg, info) {
-		if ('user_staged') {
-
-                  info.siteName = 'TODO';
-                  info.verifier = "waitForUserValidation";
-                  info.verificationMessage = "user_confirmed";
-
-                  moduleManager.start("check_registration", info);
-                  user.waitForUserValidation(info.email, function(msg) {
-                    if ('complete' === msg &&
-			email === info.email) {
-                      navigator.id.completeAuthentication();
-                    } else {
-                      // TODO Handle error ?
+                moduleManager.start("check_registration", info);
+                user.waitForUserValidation(info.email, function(msg) {
+                  if ('complete' === msg &&
+                      email === info.email) {
+                    navigator.id.completeAuthentication();
+                  } else {
+                    self.renderError("error", {
+                      action: {
+                        title: "error in waitForUserValidation 2",
+                        message: "Expected 'complete', but got '" + msg + "'"
+                      }
+                    });
+                  }
+                },
+                function(err) {
+                  self.renderError("error", {
+                    action: {
+                      title: "error in waitForUserValidation",
+                      message: err
                     }
-                  },
-					     function(a, b, c) {
-					       // TODO: Handle
-					       //console.log('ERROR', a, b, c);
-					     });
-                  
-                  mediator.subscribe("user_confirmed", function(a, b, c) {
-                    // TODO: use or remove
-                    //console.log('user_confirmed', a, b, c);
                   });
-		}
+                });
               }
-            }, email, info.password, function(a, b, c) {
-              // TODO handle
-              //console.log(a, b, c);
             });
           });
-	});
-	moduleManager.start("authenticate", {
+        });
+        moduleManager.start("authenticate", {
           email: email
-	});
-	//$('#authentication_email').val(email);
-	$('button:visible').click();//Gross
-
+        });
+        $(EMAIL_PRESENT_NEXT).click();
       });
-      // end aok
     },
-
     stop: function() {
       sc.stop.call(this);
     }
-
-    // BEGIN TESTING API
-    ,
-
-    // END TESTING API
   });
 
   sc = Module.sc;
