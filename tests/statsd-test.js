@@ -62,8 +62,10 @@ var TimingMessagesToTest = {
   "query_time": "browserid.vows.query_time",
   "certification_time": "browserid.vows.certification_time",
   "assertion_verification_time": "browserid.vows.assertion_verification_time",
-  "elapsed_time.fetch_well_known": "browserid.vows.fetch_well_known",
-  "elapsed_time.deep_fetch_well_known": "browserid.vows.deep_fetch_well_known"
+  "elapsed_time.fetch_well_known.success": "browserid.vows.fetch_well_known.success",
+  "elapsed_time.fetch_well_known.error": "browserid.vows.fetch_well_known.error",
+  "elapsed_time.deep_fetch_well_known.success": "browserid.vows.deep_fetch_well_known.success",
+  "elapsed_time.deep_fetch_well_known.error": "browserid.vows.deep_fetch_well_known.error"
 };
 
 for (var logMessage in TimingMessagesToTest) {
