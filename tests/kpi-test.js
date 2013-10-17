@@ -65,8 +65,8 @@ suite.addBatch({
 suite.addBatch({
   "when kpi_backend_db_url is not set": {
     topic: function() {
-      this.originalKpiBankendDBUrl = config.get('kpi_backend_db_url');
-      config.set('kpi_backend_db_url', null);
+      this.originalKpiBankendDBUrl = config.get('kpi.backend_db_url');
+      config.set('kpi.backend_db_url', null);
 
       this.httpMock = new HttpMock({
         statusCode: 400
@@ -89,7 +89,7 @@ suite.addBatch({
 
     },
     "reset kpi_backend_db_url": function() {
-      config.set('kpi_backend_db_url', this.originalKpiBankendDBUrl);
+      config.set('kpi.backend_db_url', this.originalKpiBankendDBUrl);
     }
   }
 });
@@ -97,8 +97,8 @@ suite.addBatch({
 suite.addBatch({
   "metrics logs": {
     topic: function() {
-      this.origSendMetricsValue = config.get('kpi_send_metrics');
-      config.set('kpi_send_metrics', true);
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      config.set('kpi.send_metrics', true);
 
       this.httpMock = new HttpMock({
         statusCode: 201
@@ -109,7 +109,7 @@ suite.addBatch({
         https: this.httpMock
       });
 
-      var batchSize = config.get('kpi_metrics_batch_size');
+      var batchSize = config.get('kpi.metrics_batch_size');
       for (var i = 0; i < batchSize - 1; ++i) {
         logger.info('signin', {value: i});
       }
@@ -128,7 +128,7 @@ suite.addBatch({
       }
     },
     "reset kpi_send_metrics": function() {
-      config.set('kpi_send_metrics', this.origSendMetricsValue);
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
     }
   }
 });
@@ -138,7 +138,7 @@ function noOp() {}
 suite.addBatch({
   "staging and verification events": {
     topic: function() {
-      this.origSendMetricsValue = config.get('kpi_send_metrics');
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
       this.expectedEvents = [
         'stage_email.success',
         'stage_reset.success',
@@ -150,7 +150,7 @@ suite.addBatch({
         'complete_transition.success',
         'complete_user_creation.success'
       ];
-      config.set('kpi_send_metrics', true);
+      config.set('kpi.send_metrics', true);
 
       var kpiTransport = new KpiTransport();
 
@@ -174,7 +174,7 @@ suite.addBatch({
       assert.equal(expectedEvents.length, 0);
     },
     "reset kpi_send_metrics": function() {
-      config.set('kpi_send_metrics', this.origSendMetricsValue);
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
     }
   }
 });
