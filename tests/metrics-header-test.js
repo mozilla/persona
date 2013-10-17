@@ -115,8 +115,8 @@ function sendRequestToMetricsMiddleware(url, referer) {
 suite.addBatch({
   'request to /sign_in': {
     topic: function() {
-      this.origSendMetricsValue = config.get('kpi_send_metrics');
-      config.set('kpi_send_metrics', true);
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      config.set('kpi.send_metrics', true);
 
       sendRequestToMetricsMiddleware('/sign_in', 'https://123done.org');
       return kpiTransport.getItem('signin');
@@ -124,8 +124,8 @@ suite.addBatch({
     "sends metrics fields to logger": function (entry) {
       assert.equal(entry.rp, 'https://123done.org');
     },
-    "reset kpi_send_metrics": function() {
-      config.set('kpi_send_metrics', this.origSendMetricsValue);
+    "reset kpi.send_metrics": function() {
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
     }
   }
 });
@@ -133,8 +133,8 @@ suite.addBatch({
 suite.addBatch({
   'request to /sign_in?AUTH_RETURN': {
     topic: function() {
-      this.origSendMetricsValue = config.get('kpi_send_metrics');
-      config.set('kpi_send_metrics', true);
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      config.set('kpi.send_metrics', true);
 
       sendRequestToMetricsMiddleware('/sign_in?AUTH_RETURN');
       return kpiTransport.getItem('idp.auth_return');
@@ -142,8 +142,8 @@ suite.addBatch({
     "kpi transport logs metric": function(entry) {
       assert.equal(entry.idp, 'https://sendmypin.org');
     },
-    "reset kpi_send_metrics": function() {
-      config.set('kpi_send_metrics', this.origSendMetricsValue);
+    "reset kpi.send_metrics": function() {
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
     }
   }
 });
@@ -151,8 +151,8 @@ suite.addBatch({
 suite.addBatch({
   'request to /sign_in?AUTH_RETURN_CANCEL': {
     topic: function() {
-      this.origSendMetricsValue = config.get('kpi_send_metrics');
-      config.set('kpi_send_metrics', true);
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      config.set('kpi.send_metrics', true);
 
       sendRequestToMetricsMiddleware('/sign_in?AUTH_RETURN_CANCEL');
       return kpiTransport.getItem('idp.auth_cancel');
@@ -160,8 +160,8 @@ suite.addBatch({
     "kpi transport logs metric": function(entry) {
       assert.equal(entry.idp, 'https://sendmypin.org');
     },
-    "reset kpi_send_metrics": function() {
-      config.set('kpi_send_metrics', this.origSendMetricsValue);
+    "reset kpi.send_metrics": function() {
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
     }
   }
 });
