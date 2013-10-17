@@ -61,6 +61,37 @@
         </div>
       </section>
 
+      <section id="wait" class="message_screen">
+          <!-- because each section is an absolutely positioned element, we have to use the inner table container element to be able to vertically/horizontally center correctly.  Without the table element, the layout gets all messed up. -->
+          <div class="table">
+              <div class="vertical">
+                  <div class="contents">
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <section id="error" class="message_screen">
+          <div class="table">
+              <div class="vertical">
+                  <div class="contents">
+                  </div>
+              </div>
+          </div>
+          <p class="submit cf buttonrow isMobile">
+              <button class="cancelDialog"><%= gettext('OK') %></button>
+          </p>
+      </section>
+
+      <section id="delay" class="message_screen center">
+          <div class="table">
+              <div class="vertical">
+                  <div class="contents">
+                  </div>
+              </div>
+          </div>
+      </section>
+
       <% } %>
 
 

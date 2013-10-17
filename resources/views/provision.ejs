@@ -43,11 +43,7 @@ navigator.id.beginProvisioning(function(email, duration) {
                 navigator.id.registerCertificate(certificate);
               },
               error: function(xhr, status, err) {
-                // TODO: Handle errors
-                if (console && 'function' === typeof console.log) {
-                  console.error('Unable to certifiy key');
-                  console.error(err);
-                }
+                navigator.id.raiseProvisioningFailure('Unable to certify key');
               }
             });
           });      
