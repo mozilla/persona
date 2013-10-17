@@ -9,7 +9,7 @@ child_process = require('child_process');
 
 /*
  * A thin wrapper around awsbox that expects certain env
- * vars and invokes awsbox for ya to deploy a VM. 
+ * vars and invokes awsbox for ya to deploy a VM.
  */
 
 if (!process.env['AWS_ID'] || ! process.env['AWS_SECRET']) {
@@ -18,17 +18,10 @@ if (!process.env['AWS_ID'] || ! process.env['AWS_SECRET']) {
   process.exit(1);
 }
 
-if (!process.env['ZERIGO_DNS_KEY'] && process.env['PERSONA_DEPLOY_DNS_KEY']) { 
-  process.env['ZERIGO_DNS_KEY'] = process.env['PERSONA_DEPLOY_DNS_KEY'];
-}
-
 var cmd = path.join(__dirname, '..', 'node_modules', '.bin', 'awsbox');
 cmd = path.relative(process.env['PWD'], cmd);
 
-if (process.argv.length > 1 &&
-    process.argv[2] === 'create' || 
-    process.argv[2] === 'deploy')
-{
+if (['create', 'deploy'].indexOf(process.argv[2]) !== -1) {
   var options = {};
 
   if (process.argv.length > 3) options.n = process.argv[3];
@@ -38,21 +31,17 @@ if (process.argv.length > 1 &&
     options.s = process.env['PERSONA_SSL_PRIV'];
   }
 
-  if (process.env['ZERIGO_DNS_KEY']) {
-    options.d = true;
+  // DNS is done with Route53, so if you have AWS keys, you get DNS (assuming
+  // your Route53 is authoritative for the domain you choose).
+  options.d = true;
 
-    // when we have a DNS key, we can set a hostname!
-    var scheme = (options.p ? 'https' : 'http') + '://';
+  var scheme = (options.p ? 'https' : 'http') + '://';
 
-    if (process.env['PERSONA_DEPLOYMENT_HOSTNAME']) {
-      options.u = scheme + process.env['PERSONA_DEPLOYMENT_HOSTNAME'];
-    } else if (options.n) {
-      options.u = scheme + options.n + ".personatest.org";
-    }
-
-  } else {
-    console.log('WARNING: No DNS key defined in the environment!  ' +
-                'I cannot set up DNS for you.  We\'ll do this by IP.');
+  if (process.env['PERSONA_DEPLOYMENT_HOSTNAME']) {
+    options.u = scheme + process.env['PERSONA_DEPLOYMENT_HOSTNAME'];
+  } else if (options.n) {
+    var domain = process.env['PERSONA_DEPLOYMENT_DOMAIN'] || ".personatest.org";
+    options.u = scheme + options.n + domain;
   }
 
   // pass through/override with user provided vars
@@ -74,6 +63,7 @@ if (process.argv.length > 1 &&
     cmd += typeof options[opt] === 'string' ? " " + options[opt] : "";
   });
 } else {
+  // Otherwise, pass through args to awsbox
   cmd += " " + process.argv.slice(2).join(' ');
 }
 
