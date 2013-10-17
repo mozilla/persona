@@ -6,14 +6,18 @@
 
 require('./lib/test_env.js');
 
-const assert = require('assert'),
-fs = require('fs'),
-path = require('path'),
-http = require('http'),
-vows = require('vows'),
-start_stop = require('./lib/start-stop.js'),
-wsapi = require('./lib/wsapi.js'),
-urlparse = require('urlparse');
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const http = require('http');
+const vows = require('vows');
+const urlparse = require('urlparse');
+const logger = require('../lib/logging/logging').logger;
+const start_stop = require('./lib/start-stop');
+const wsapi = require('./lib/wsapi');
+const config = require('../lib/configuration');
+const metrics_middleware = require('../lib/logging/middleware/metrics');
+const KpiTransport = require('../lib/logging/transports/metrics-kpi');
 
 var suite = vows.describe('metrics header test');
 suite.options.error = false;
@@ -56,22 +60,25 @@ function doRequest(path, headers, cb) {
   req.end();
 }
 
+// check end to end for /sign_in
+
 suite.addBatch({
   '/sign_in': {
     topic: function() {
       doRequest('/sign_in', {'user-agent': 'Test Runner', 'x-real-ip': '123.0.0.1', 'referer': 'https://persona.org'}, this.callback);
     },
     "metrics log exists": {
-      topic: function (err, r) {
+      topic: function() {
         if (existsSync(process.env.METRICS_LOG_FILE)) {
           this.callback();
         } else {
           fs.watchFile(process.env.METRICS_LOG_FILE, null, this.callback);
         }
       },
-      "metric fields are logged properly": function (event, filename) {
+      "metric fields are logged properly": function () {
         var metrics = JSON.parse(fs.readFileSync(process.env.METRICS_LOG_FILE, "utf8").trim());
         var message = JSON.parse(metrics.message);
+        assert.equal(message.type, "signin");
         assert.equal(message.ip, "123.0.0.1");
         assert.equal(message.rp, "https://persona.org");
         assert.equal(message.browser, "Test Runner");
@@ -81,6 +88,83 @@ suite.addBatch({
   }
 });
 
+
+// Listen for actual messages that are sent to the KPI transport.
+// reset the transport queue between each test run to ensure we only get the
+// messages we care about.
+var kpiTransport = KpiTransport.getInstance();
+
+function noOp() {}
+
+function sendRequestToMetricsMiddleware(url, referer) {
+  kpiTransport.reset();
+
+  metrics_middleware({
+    connection: {
+      remoteAddress: '127.0.0.2'
+    },
+    url: url,
+    headers: {
+      'user-agent': 'Firefox',
+      'x-real-ip': '127.0.0.1',
+      'referer': referer || 'https://sendmypin.org/auth'
+    }
+  }, noOp, noOp);
+}
+
+suite.addBatch({
+  'request to /sign_in': {
+    topic: function() {
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      config.set('kpi.send_metrics', true);
+
+      sendRequestToMetricsMiddleware('/sign_in', 'https://123done.org');
+      return kpiTransport.getItem('signin');
+    },
+    "sends metrics fields to logger": function (entry) {
+      assert.equal(entry.rp, 'https://123done.org');
+    },
+    "reset kpi.send_metrics": function() {
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
+    }
+  }
+});
+
+suite.addBatch({
+  'request to /sign_in?AUTH_RETURN': {
+    topic: function() {
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      config.set('kpi.send_metrics', true);
+
+      sendRequestToMetricsMiddleware('/sign_in?AUTH_RETURN');
+      return kpiTransport.getItem('idp.auth_return');
+    },
+    "kpi transport logs metric": function(entry) {
+      assert.equal(entry.idp, 'https://sendmypin.org');
+    },
+    "reset kpi.send_metrics": function() {
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
+    }
+  }
+});
+
+suite.addBatch({
+  'request to /sign_in?AUTH_RETURN_CANCEL': {
+    topic: function() {
+      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      config.set('kpi.send_metrics', true);
+
+      sendRequestToMetricsMiddleware('/sign_in?AUTH_RETURN_CANCEL');
+      return kpiTransport.getItem('idp.auth_cancel');
+    },
+    "kpi transport logs metric": function(entry) {
+      assert.equal(entry.idp, 'https://sendmypin.org');
+    },
+    "reset kpi.send_metrics": function() {
+      config.set('kpi.send_metrics', this.origSendMetricsValue);
+    }
+  }
+});
 
 suite.addBatch({
   'clean up': function () {

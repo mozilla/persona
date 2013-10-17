@@ -41,7 +41,8 @@
       }
     };
     this.location = {
-      hash: "#1234"
+      hash: "#1234",
+      search: ""
     };
     this.navigator = {};
   }
@@ -233,9 +234,9 @@
     });
   }
 
-  asyncTest("initialization with #AUTH_RETURN_CANCEL - " +
+  asyncTest("initialization with ?AUTH_RETURN_CANCEL - " +
       " trigger start with cancelled=true", function() {
-    winMock.location.hash = "#AUTH_RETURN_CANCEL";
+    winMock.location.search = "?AUTH_RETURN_CANCEL";
     testReturnFromIdP({
       email: TESTEMAIL
     }, {
@@ -245,8 +246,8 @@
     });
   });
 
-  asyncTest("initialization with #AUTH_RETURN and add=false - trigger start with correct params", function() {
-    winMock.location.hash = "#AUTH_RETURN";
+  asyncTest("initialization with ?AUTH_RETURN and add=false - trigger start with correct params", function() {
+    winMock.location.search = "?AUTH_RETURN";
     testReturnFromIdP({
       add: false,
       email: TESTEMAIL
@@ -258,8 +259,8 @@
     });
   });
 
-  asyncTest("initialization with #AUTH_RETURN and add=true - trigger start with correct params", function() {
-    winMock.location.hash = "#AUTH_RETURN";
+  asyncTest("initialization with ?AUTH_RETURN and add=true - trigger start with correct params", function() {
+    winMock.location.search = "?AUTH_RETURN";
     testReturnFromIdP({
       add: true,
       email: TESTEMAIL
@@ -272,8 +273,8 @@
   });
 
 
-  asyncTest("#AUTH_RETURN while authenticated should call usedAddressAsPrimary", function() {
-    winMock.location.hash = "#AUTH_RETURN";
+  asyncTest("?AUTH_RETURN while authenticated should call usedAddressAsPrimary", function() {
+    winMock.location.search = "?AUTH_RETURN";
     storage.idpVerification.set({
       add: false,
       email: TESTEMAIL
@@ -300,8 +301,8 @@
     });
   });
 
-  asyncTest("#AUTH_RETURN with add=true should not call usedAddressAsPrimary", function() {
-    winMock.location.hash = "#AUTH_RETURN";
+  asyncTest("?AUTH_RETURN with add=true should not call usedAddressAsPrimary", function() {
+    winMock.location.search = "?AUTH_RETURN";
     storage.idpVerification.set({
       add: true,
       email: TESTEMAIL

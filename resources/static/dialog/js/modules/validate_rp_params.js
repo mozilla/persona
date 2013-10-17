@@ -28,7 +28,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
     },
     validate: function(paramsFromRP) {
       var self = this,
-          hash = self.window.location.hash;
+          getParams = self.window.location.search;
 
       var originURL = paramsFromRP.originURL;
 
@@ -135,7 +135,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
         }
       }
 
-      if (hash.indexOf("#AUTH_RETURN") === 0) {
+      if (getParams.indexOf("?AUTH_RETURN") === 0) {
         var primaryParams = storage.idpVerification.get();
         if (!primaryParams)
           throw new Error("Could not get IdP Verification Info");
@@ -146,7 +146,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
         params.cancelled = false;
       }
 
-      if (hash.indexOf("#AUTH_RETURN_CANCEL") === 0) {
+      if (getParams.indexOf("?AUTH_RETURN_CANCEL") === 0) {
         params.cancelled = true;
       }
 

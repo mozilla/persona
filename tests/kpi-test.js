@@ -148,7 +148,10 @@ suite.addBatch({
         'complete_email_confirmation.success',
         'complete_reset.success',
         'complete_transition.success',
-        'complete_user_creation.success'
+        'complete_user_creation.success',
+        'idp.auth_cancel',
+        'idp.auth_return',
+        'idp.create_new_user'
       ];
       config.set('kpi.send_metrics', true);
 
