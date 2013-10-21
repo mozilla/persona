@@ -16,7 +16,7 @@ path = require('path'),
 exec = require('child_process').exec;
 
 var suite = vows.describe('jshint');
-var jshint = require('../node_modules/jshint/lib/hint').hint;
+var jshint = require('jshint').JSHINT;
 
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
