@@ -108,6 +108,9 @@ BrowserID.Modules.Dialog = (function() {
         // added.  If there are no args, then do not do self.get.
         if (args) {
           self.get(origin, args.params, function(r) {
+            // assertion being passed through WinChan, so we have
+            // fulfilled the `one_time` assertion promise.
+            storage.site.remove(origin, "one_time");
             cb(r);
           }, function (e) {
             cb(null);

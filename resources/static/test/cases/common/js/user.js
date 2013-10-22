@@ -1196,6 +1196,19 @@
     }, testHelpers.unexpectedXHRFailure);
   });
 
+  asyncTest("getSilentAssertion with one_time API", function() {
+    var LOGGED_IN_EMAIL = TEST_EMAIL;
+
+    lib.syncEmailKeypair(LOGGED_IN_EMAIL, function() {
+      storage.site.set(lib.rpInfo.getOrigin(), "one_time", LOGGED_IN_EMAIL);
+      lib.getSilentAssertion(null, function(email, assertion) {
+        equal(email, LOGGED_IN_EMAIL, "correct email");
+        equal(storage.site.get(lib.rpInfo.getOrigin(), "one_time"), undefined, "one_time flag removed");
+        testAssertion(assertion, start);
+      }, testHelpers.unexpectedXHRFailure);
+    }, testHelpers.unexpectedXHRFailure);
+  });
+
   asyncTest("logoutUser", function(onSuccess) {
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
       lib.syncEmails(function() {

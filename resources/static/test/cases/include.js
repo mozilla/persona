@@ -58,10 +58,19 @@
     testWatchIsSad(1);
   });
 
+
+  test("stateless arguments options", function() {
+    ok(watch({ onlogin: noOp }), "no logout means stateless");
+
+    ok(!watch({ onlogin: noOp, loggedInUser: 'asdf' }), 'stateless cant use loggedInUser');
+    ok(!watch({ onlogin: noOp, onmatch: noOp }), 'stateless cant use onmatch');
+    ok(!watch({ onlogin: noOp, onready: noOp }), 'stateless cant use onready');
+  });
+
   function testWatchIsHappy(loggedInUser) {
     var err;
     try {
-      callWatch(undefined);
+      callWatch(loggedInUser);
     } catch(e) {
       err = e;
     }
@@ -76,6 +85,15 @@
       err = e;
     }
     ok(err);
+  }
+
+  function watch(obj) {
+    try {
+      navigator.id.watch(obj);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   function callWatch(loggedInUser) {

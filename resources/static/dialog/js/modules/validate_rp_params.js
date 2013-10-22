@@ -291,6 +291,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
     var VALID_RP_API_VALUES = [
       "watch_without_onready",
       "watch_with_onready",
+      "stateless",
       "get",
       "getVerifiedEmail",
       "internal"
