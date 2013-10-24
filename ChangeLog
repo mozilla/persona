@@ -1,4 +1,14 @@
-current train:
+train-2013.10.23:
+  * Add support for new 'goldilocks' API: #3961
+  * Allow applications to define additional claims inside assertions: #2910
+  * Massive overhaul of logging to enable unified metrics: #3529
+  * Add metrics to measure well-known lookup: #1704
+  * Add metrics to count email verification: #3528, #3920
+  * Fix double-count problem with sign_in roundtrip metrics: #3970
+  * Enforce loggedInUser type inside navigator.id.watch: #2647
+  * Update various npm dependencies: #3981, #3972, #3973, #3989
+  * Remove zerigo from deploy script: #3984
+  * Simplify app routing: #3980
 
 train-2013.10.09:
   * Get Persona working on IE11: #3593
