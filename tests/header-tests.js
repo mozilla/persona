@@ -4,6 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+process.env.MEASURE_DOM_LOADING = false;
+
 require('./lib/test_env.js');
 
 const assert = require('assert'),
@@ -13,7 +15,7 @@ start_stop = require('./lib/start-stop.js'),
 wsapi = require('./lib/wsapi.js'),
 urlparse = require('urlparse');
 
-var suite = vows.describe('cache header tests');
+var suite = vows.describe('header tests');
 suite.options.error = false;
 
 // allow this unit test to be targeted
@@ -74,6 +76,7 @@ function hasProperCacheHeaders(path) {
       assert.strictEqual(r.statusCode, 200);
       // check X-Frame-Option headers
       hasProperFramingHeaders(r, path);
+      assert.strictEqual(r.headers['content-security-policy'], "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self'; img-src *; frame-src *;");
       // ensure public, max-age=0, must-revalidate
       assert.strictEqual(r.headers['cache-control'], 'public, max-age=0, must-revalidate');
       // the behavior of combining a last-modified date and an etag is undefined by

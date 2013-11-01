@@ -6,29 +6,30 @@
 
 require('../lib/baseExceptions.js').addExceptionHandler();
 
-const
-fs = require('fs'),
-path = require('path'),
-url = require('url'),
-http = require('http'),
-urlparse = require('urlparse'),
-express = require('express');
+const fs = require('fs');
+const http = require('http');
+const path = require('path');
+const url = require('url');
 
-const
-i18n = require('i18n-abide'),
-i18n_check = require('../lib/i18n_client_check'),
-wsapi = require('../lib/wsapi.js'),
-httputils = require('../lib/httputils.js'),
-db = require('../lib/db.js'),
-config = require('../lib/configuration.js'),
-heartbeat = require('../lib/heartbeat.js'),
-logger = require('../lib/logging/logging.js').logger,
-shutdown = require('../lib/shutdown'),
-primary = require('../lib/primary'),
-addP3PHeader = require('../lib/p3p.js'),
-forward = require('../lib/http_forward.js'),
-toobusy = require('../lib/busy_middleware.js'),
-statsd = require('../lib/logging/middleware/statsd.js');
+const express = require('express');
+const hood = require('hood');
+const i18n = require('i18n-abide');
+const urlparse = require('urlparse');
+
+const addP3PHeader = require('../lib/p3p.js');
+const config = require('../lib/configuration.js');
+const db = require('../lib/db.js');
+const forward = require('../lib/http_forward.js');
+const heartbeat = require('../lib/heartbeat.js');
+const httputils = require('../lib/httputils.js');
+const i18n_check = require('../lib/i18n_client_check');
+const logger = require('../lib/logging/logging.js').logger;
+const primary = require('../lib/primary');
+const proxySecure = require('../lib/proxy-secure');
+const shutdown = require('../lib/shutdown');
+const statsd = require('../lib/logging/middleware/statsd.js');
+const toobusy = require('../lib/busy_middleware.js');
+const wsapi = require('../lib/wsapi.js');
 
 var app = express.createServer();
 
@@ -93,10 +94,14 @@ app.use(addP3PHeader);
 
 // #4 - prevent framing of everything.  content underneath that needs to be
 // framed must explicitly remove the x-frame-options
-app.use(function(req, resp, next) {
-  resp.setHeader('x-frame-options', config.get('x_frame_options'));
-  next();
-});
+// cover our head
+app.use(proxySecure());
+app.use(hood({
+  csp: config.get('csp'),
+  hsts: config.get('hsts'),
+  xframe: config.get('x_frame_options')
+}));
+
 
 // #6 - verify all JSON responses are objects - prevents regression on issue #217
 app.use(function(req, resp, next) {

@@ -34,6 +34,7 @@
     "etagify": "0.0.2",
     "express": "2.5.0",
     "gobbledygook": "0.0.3",
+    "hood": "0.1.1",
     "i18n-abide": "0.0.14",
     "lockdown": "0.0.5",
     "jwcrypto": "0.4.4",

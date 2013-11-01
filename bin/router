@@ -6,25 +6,26 @@
 
 require('../lib/baseExceptions').addExceptionHandler();
 
-const
-fs = require('fs'),
-path = require('path'),
-url = require('url'),
-http = require('http'),
-urlparse = require('urlparse'),
-express = require('express');
+const fs = require('fs');
+const http = require('http');
+const path = require('path');
+const url = require('url');
 
-const
-metrics = require('../lib/logging/middleware/metrics.js'),
-wsapi = require('../lib/wsapi.js'),
-config = require('../lib/configuration.js'),
-heartbeat = require('../lib/heartbeat.js'),
-logger = require('../lib/logging/logging.js').logger,
-forward = require('../lib/http_forward').forward,
-addP3PHeader = require('../lib/p3p.js'),
-shutdown = require('../lib/shutdown.js'),
-toobusy = require('../lib/busy_middleware.js'),
-statsd = require('../lib/logging/middleware/statsd.js');
+const hood = require('hood');
+const express = require('express');
+const urlparse = require('urlparse');
+
+const addP3PHeader = require('../lib/p3p.js');
+const config = require('../lib/configuration.js');
+const forward = require('../lib/http_forward').forward;
+const heartbeat = require('../lib/heartbeat.js');
+const logger = require('../lib/logging/logging.js').logger;
+const metrics = require('../lib/logging/middleware/metrics.js');
+const proxySecure = require('../lib/proxy-secure');
+const shutdown = require('../lib/shutdown.js');
+const statsd = require('../lib/logging/middleware/statsd.js');
+const toobusy = require('../lib/busy_middleware.js');
+const wsapi = require('../lib/wsapi.js');
 
 var app = express.createServer();
 
@@ -83,14 +84,13 @@ app.use(express.limit("10kb"));
 
 app.use(statsd());
 
-// Add Strict-Transport-Security headers if we're serving over SSL
-if (config.get('scheme') == 'https') {
-  app.use(function(req, res, next) {
-    // expires in 30 days, include subdomains like www
-    res.setHeader("Strict-Transport-Security", "max-age=10886400; includeSubdomains");
-    next();
-    });
-}
+// cover our head
+app.use(proxySecure());
+app.use(hood({
+  csp: config.get('csp'),
+  hsts: config.get('hsts'),
+  xframe: false // browserid and static will handle their own xframe headers
+}));
 
 // Add P3P headers to please IE8
 app.use(addP3PHeader);
