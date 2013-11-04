@@ -77,6 +77,20 @@ modules match a given name.  Specify this in your environment with
 WHAT_TESTS=front FRONTEND_TEST_FILTER=shared/user npm test
 ```
 
+## Manual testing
+
+If you want to do manual tests using an RP that points to your
+development copy of browserid, simply load `http://127.0.0.1:10002/include.js`
+instead of `https://login.persona.org/include.js`.
+
+Then make sure that mixed content blocking is **disabled**
+(`security.mixed_content.block_active_content = false` in Firefox)
+and use an email provider that won't trigger origin mismatch problems:
+
+* `mockmyid.com`
+* `eyedee.me`
+* any other one that is not bridged and lacks native support for Persona
+
 ## Adding Tests
 
 ### Front-end
