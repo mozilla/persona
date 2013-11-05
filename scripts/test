@@ -91,6 +91,8 @@ function run() {
   }
 
   console.log(">>> Now Running:", conf.what);
+  if (conf.script === 'test_frontend')
+    console.log('NOTE: Warnings PhantomJS throws pretaining to focusing on elements can be safely ignored');
   process.env['NODE_ENV'] = conf.node_env;
   var kid = spawn(path.join(__dirname, conf.script));
   kid.stdout.on('data', function(d) { process.stdout.write(d); });
