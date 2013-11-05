@@ -94,6 +94,7 @@ BrowserID.Modules.IdPAuthentication= (function() {
         moduleManager.start("authenticate", {
           email: email
         });
+        // TODO: Use emailhint instead of this hack
         $(EMAIL_PRESENT_NEXT).click();
       });
     },
