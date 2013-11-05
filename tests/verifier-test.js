@@ -49,6 +49,7 @@ const TEST_EMAIL = 'someuser@somedomain.com',
       TEST_DOMAIN = 'fakesite.com',
       TEST_ORIGIN = 'http://fakesite.com:8080';
 
+
 var token = undefined;
 
 function matchesAudience(expected) {
