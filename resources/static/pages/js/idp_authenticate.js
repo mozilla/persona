@@ -6,8 +6,6 @@
 $(function() {
   "use strict";
 
-  window.resizeTo(700, 440); // Gross
-
   /**
    * For the main page
    */

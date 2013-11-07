@@ -29,7 +29,6 @@ BrowserID.Modules.IdPAuthentication= (function() {
 
   function newUserComplete(self) {
     return function(msg, info) {
-      // TODO: Are we sure that we authed as email?
       moduleManager.start("set_password", info);
       mediator.subscribe("password_set", passwordSetComplete(self, info.email));
     };
@@ -37,18 +36,8 @@ BrowserID.Modules.IdPAuthentication= (function() {
 
   function passwordSetComplete(self, email) {
     return function(msg, info) {
-      // TODO merge broke us - user.setRPInfo must now be called like in
-      // resources/static/dialog/js/modules/dialog.js line 130, 286
-      //      params.origin = user.getOrigin();
       dialogHelpers.createUser.call(self, email, info.password, function(info) {
         if (info.success) {
-          // TODO Desktop code isn't passing through this information
-          info.rpInfo = user.rpInfo;
-          info.siteName = 'TODO';
-          info.email = email;
-          info.verifier = "waitForUserValidation";
-          info.verificationMessage = "user_confirmed";
-
           var checkRegistration = moduleManager.start("check_registration", info);
           mediator.subscribe('user_confirmed', function(msg, confirmationInfo) {
             if (confirmationInfo.mustAuth) {
