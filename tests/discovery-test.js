@@ -20,7 +20,8 @@ path = require('path');
 
 var suite = vows.describe('discovery');
 
-const TEST_DOMAIN = "example.domain",
+const TEST_DISABLED_DOMAIN = "disabled.domain";
+      TEST_DOMAIN = "example.domain",
       TEST_EMAIL = "test@" + TEST_DOMAIN,
       TEST_ORIGIN = 'http://127.0.0.1:10002';
 
@@ -57,6 +58,21 @@ suite.addBatch({
      domain: SECONDARY_TEST_DOMAIN
      }),
     "returns a well known": function(e, r) {
+      assert.isNull(e);
+      var res = JSON.parse(r.body);
+      assert.equal(res.authentication, "http://127.0.0.1:10002/auth#NATIVE");
+      assert.equal(res.provisioning, "http://127.0.0.1:10002/provision");
+      assert.isNotNull(res['public-key']);
+    }
+  }
+});
+
+suite.addBatch({
+  "discovery for a disabled IdP": {
+     topic: wsapi.get('/wsapi/discovery', {
+     domain: TEST_DISABLED_DOMAIN
+     }),
+    "returns the secondary well known": function(e, r) {
       assert.isNull(e);
       var res = JSON.parse(r.body);
       assert.equal(res.authentication, "http://127.0.0.1:10002/auth#NATIVE");

@@ -80,8 +80,8 @@ BrowserID.Modules.IdPAuthentication= (function() {
         mediator.subscribe("new_user", newUserComplete(self));
 
         var rpInfo = bid.Models.RpInfo.create({
-          origin: "http://127.0.0.1:10001",
-          siteName: "We are awesome"
+          origin: info.origin,
+          siteName: info.siteName
         });
         user.setRpInfo(rpInfo);
 
