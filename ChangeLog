@@ -1,4 +1,7 @@
-current train:
+train-2013.11.06:
+  * Fix nodemailer, using new API, and email.js cleanup: #4000
+  * Batch server-side KPI requests to kpiggybank: #3986
+  * Add message that PhantomJS warnings can be ignored: #3928
 
 train-2013.10.23:
   * Add support for new 'goldilocks' API: #3961
