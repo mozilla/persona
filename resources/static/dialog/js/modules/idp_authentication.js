@@ -40,26 +40,25 @@ BrowserID.Modules.IdPAuthentication= (function() {
       // TODO merge broke us - user.setRPInfo must now be called like in
       // resources/static/dialog/js/modules/dialog.js line 130, 286
       //      params.origin = user.getOrigin();
-      var rpInfo = bid.Models.RpInfo.create({origin: 'http://192.168.186.138:10001'});
-      user.setRpInfo(rpInfo);
       dialogHelpers.createUser.call(self, email, info.password, function(info) {
         if (info.success) {
           // TODO Desktop code isn't passing through this information
+          info.rpInfo = user.rpInfo;
           info.siteName = 'TODO';
           info.email = email;
           info.verifier = "waitForUserValidation";
           info.verificationMessage = "user_confirmed";
 
-          moduleManager.start("check_registration", info);
-          user.waitForUserValidation(info.email, function(msg) {
-            if ('complete' === msg &&
-                email === info.email) {
-              navigator.id.completeAuthentication();
-            } else {
+          var checkRegistration = moduleManager.start("check_registration", info);
+          mediator.subscribe('user_confirmed', function(msg, confirmationInfo) {
+            if (confirmationInfo.mustAuth) {
               var errFn = renderWaitForUserValidationError(self);
-              errFn("Expected 'complete', but got '" + msg + "'");
+              errFn("Expected 'false', but got '" + confirmationInfo.mustAuth + "'");
+            } else {
+              navigator.id.completeAuthentication();
             }
-          }, renderWaitForUserValidationError(self));
+          });
+          checkRegistration.startCheck();
         }
       });
     };
@@ -91,7 +90,14 @@ BrowserID.Modules.IdPAuthentication= (function() {
 
         mediator.subscribe("new_user", newUserComplete(self));
 
+        var rpInfo = bid.Models.RpInfo.create({
+          origin: "http://127.0.0.1:10001",
+          siteName: "We are awesome"
+        });
+        user.setRpInfo(rpInfo);
+
         moduleManager.start("authenticate", {
+          rpInfo: rpInfo,
           email: email
         });
         // TODO: Use emailhint instead of this hack
