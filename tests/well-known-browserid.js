@@ -32,7 +32,7 @@ function checkDefaultResponse(err, res) {
   assert.equal(res.code, 200);
   assert.equal(res.headers['content-type'].indexOf('application/json'), 0);
   var body = JSON.parse(res.body);
-  assert.equal(Object.keys(body).length, 1);
+  assert.equal(Object.keys(body).length, 3);
   assert.equal(Object.keys(body)[0], 'public-key');
 }
 

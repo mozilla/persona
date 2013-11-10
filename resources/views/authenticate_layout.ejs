@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<%- partial('partial/license_with_code_ver') %>
+<html LANG="<%= lang %>" dir="<%= lang_dir %>">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+  <% if (measureDomLoading) {
+    /* This has to be the very first item in the head to get the best
+    possible approximation as to when the DOM starts loading
+    */ %>
+    <script>
+      window.BrowserID = window.BrowserID || {};
+      try {
+        // default to the browser's performance timers if available.
+        BrowserID.DOM_LOADING = window.performance.timing.domLoading;
+      } catch(e) {
+        // use the current system date if performance timers are not available.
+        BrowserID.DOM_LOADING = new Date().getTime();
+      }
+    </script>
+  <% } %>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+  <meta name="format-detection" content="email=no" />
+
+  <!--[if lt IE 9]>
+    <%- cachify_js('/production/html5shim.js') %>
+  <![endif]-->
+  <%- cachify_css(util.format('/production/%s/dialog.css', locale)) %>
+  <!--[if lt IE 9]>
+    <%- cachify_css('/production/ie8_dialog.css') %>
+  <![endif]-->
+  <link rel="shortcut icon" href=<%- cachify('/favicon.ico') -%>>
+  <% /* the title comes from the server when the page is loaded.
+         It still needs translated, so wrap it in its own gettext
+     */ %>
+  <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
+</head>
+  <body <% if (showLoading) { %>class="loading"i<% } %>>
+      <% if (useJavascript !== false && enable_development_menu) { %>
+        <a href="#" id="showDevelopment">&nbsp;</a>
+      <% } %>
+
+      <div id="content">
+        <%- body %>
+      </div>
+
+      <% if (showLoading) { %>
+
+      <!-- the loading screen should take up the entire
+           screen and not just within the borders of the content
+           -->
+      <section id="load" class="message_screen">
+        <div class="table">
+            <div class="vertical">
+                <div class="contents">
+                    <div class="loadingSpinner"></div>
+                    <h2 class="center"><%= gettext('Connecting to Persona...') %></h2>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <section id="wait" class="message_screen">
+          <!-- because each section is an absolutely positioned element, we have to use the inner table container element to be able to vertically/horizontally center correctly.  Without the table element, the layout gets all messed up. -->
+          <div class="table">
+              <div class="vertical">
+                  <div class="contents">
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <section id="error" class="message_screen">
+          <div class="table">
+              <div class="vertical">
+                  <div class="contents">
+                  </div>
+              </div>
+          </div>
+          <p class="submit cf buttonrow isMobile">
+              <button class="cancelDialog"><%= gettext('OK') %></button>
+          </p>
+      </section>
+
+      <section id="delay" class="message_screen center">
+          <div class="table">
+              <div class="vertical">
+                  <div class="contents">
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <% } %>
+
+
+      <footer>
+<span id="footerText"><%- format(gettext('<strong>Mozilla Persona.</strong> Simplified sign-in by the non-profit behind Firefox. <a %s>Learn more&rarr;</a>'), [" href='/about' target='_blank'"]) %></span>
+      </footer>
+
+
+      <% if (useJavascript !== false) { %>
+        <%- cachify_js(util.format('/production/%s/idp_authenticate.js', locale)) %>
+      <% } %>
+	</body>
+</html>
+
+

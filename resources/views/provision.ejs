@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Persona Provisioning</title>
+<script src="/common/js/lib/micrajax.js"></script>
+<script>
+function getJSON(uri, success, failure) {
+  Micrajax.ajax({
+    url: uri,
+    success: success,
+    error: failure
+  });
+}
+
+function fail() {
+  var msg = "user is not authenticated as target user";
+  navigator.id.raiseProvisioningFailure(msg);
+}
+
+navigator.id.beginProvisioning(function(email, duration) {
+  getJSON('/wsapi/session_context', function(session, text, xhr) {
+    if (session.authenticated) {
+      getJSON('/wsapi/list_emails', function(data, text, xhr) {
+        if (data.emails.indexOf(email) === -1) {
+          fail();
+        } else {
+          navigator.id.genKeyPair(function(publicKey) {
+            var params = {
+              email: email,
+              pubkey: JSON.stringify(publicKey),
+              ephemeral: true,
+              allowUnverified: false,
+              csrf: session.csrf_token
+            };
+            Micrajax.ajax({
+              url: '/wsapi/cert_key',
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify(params),
+              dataType: 'text',
+              success: function(certificate, status, xhr) {
+                navigator.id.registerCertificate(certificate);
+              },
+              error: function(xhr, status, err) {
+                navigator.id.raiseProvisioningFailure('Unable to certify key');
+              }
+            });
+          });      
+        }
+      }, function(xhr, status, respText) {
+        fail();
+      }); // getJSON
+    } else {
+      fail();
+    }
+  }, fail);
+});
+</script>
+</head>
+</html>

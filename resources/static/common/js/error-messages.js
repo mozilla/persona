@@ -158,6 +158,10 @@ BrowserID.Errors = (function(){
 
     xhrError: {
       title: gettext("Communication Error")
+    },
+
+    waitForUserValidation: {
+      title: "Waiting for user validation"
     }
 
   };
