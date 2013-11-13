@@ -60,7 +60,7 @@ suite.addBatch({
     "returns a well known": function(e, r) {
       assert.isNull(e);
       var res = JSON.parse(r.body);
-      assert.equal(res.authentication, "http://127.0.0.1:10002/auth#NATIVE");
+      assert.equal(res.authentication, "http://127.0.0.1:10002/auth");
       assert.equal(res.provisioning, "http://127.0.0.1:10002/provision");
       assert.isNotNull(res['public-key']);
     }
@@ -75,7 +75,7 @@ suite.addBatch({
     "returns the secondary well known": function(e, r) {
       assert.isNull(e);
       var res = JSON.parse(r.body);
-      assert.equal(res.authentication, "http://127.0.0.1:10002/auth#NATIVE");
+      assert.equal(res.authentication, "http://127.0.0.1:10002/auth");
       assert.equal(res.provisioning, "http://127.0.0.1:10002/provision");
       assert.isNotNull(res['public-key']);
     }

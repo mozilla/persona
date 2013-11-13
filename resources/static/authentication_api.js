@@ -8,7 +8,9 @@
 (function() {
   "use strict";
 
-  if (!navigator.id) {
+  if (navigator.mozId) {
+    navigator.id = navigator.mozId;
+  } else if (!navigator.id) {
     navigator.id = {};
   }
 
