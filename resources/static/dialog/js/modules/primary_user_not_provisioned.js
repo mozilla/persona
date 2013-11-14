@@ -18,7 +18,10 @@ BrowserID.Modules.PrimaryUserNotProvisioned = (function() {
 
       self.renderError("primary_user_not_verified", {
         email: options.email,
-        idpName: options.idpName,
+        // idpHost first, because it could be a delegated domain.
+        // example: mozilla.com delegates to login.mozilla.org. The
+        // message shoulnd't say "mozilla.com".
+        idpName: options.idpHost || options.idpName,
         // This is for the KPIs, not the error screen.
         action: {
           title: "Could not verify with primary"
