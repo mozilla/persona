@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Persona Provisioning</title>
 <script src="/common/js/lib/micrajax.js"></script>
+<%- cachify_js(util.format('/provisioning_api.js')) %>
 <script>
 function getJSON(uri, success, failure) {
   Micrajax.ajax({
