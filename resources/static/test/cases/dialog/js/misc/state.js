@@ -469,14 +469,16 @@
 
   asyncTest("email_valid_and_ready, need to ask user whether it's their computer - redirect to is_this_your_computer", function() {
     setContextInfo("password");
-    storage.usersComputer.forceAsk(user.userid());
-    mediator.subscribe("is_this_your_computer", function() {
-      ok(true, "redirect to is_this_your_computer");
-      start();
-    });
+    user.userid(function(userid) {
+      storage.usersComputer.forceAsk(userid);
+      mediator.subscribe("is_this_your_computer", function() {
+        ok(true, "redirect to is_this_your_computer");
+        start();
+      });
 
-    mediator.publish("email_valid_and_ready", {
-      assertion: "assertion"
+      mediator.publish("email_valid_and_ready", {
+        assertion: "assertion"
+      });
     });
   });
 

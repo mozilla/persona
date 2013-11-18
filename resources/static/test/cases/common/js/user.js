@@ -34,6 +34,7 @@
       testHelpers.setup();
       xhr.setContextInfo("auth_level", "password");
       xhr.setContextInfo("userid", 1);
+      lib.clearContext();
     },
     teardown: function() {
       testHelpers.teardown();
@@ -61,7 +62,8 @@
     ok(typeof expires === "number" && !isNaN(expires), "expiration date is valid");
 
     // this should be based on server time, not local time.
-    network.serverTime(function(time) {
+    lib.withContext(function(userContext, networkContext) {
+      var time = networkContext.getServerTime();
       var nowPlus2Mins = time.getTime() + (2 * 60 * 1000);
 
       // expiration date must be within 5 seconds of 2 minutes from now - see
@@ -171,12 +173,14 @@
       equal(status, expectedResult, expectedResult + " response expected");
 
       if (authLevel || expectedResult === "complete") {
-        // after completion, the userid must be set. See issue #3172
-        ok(lib.userid());
+        lib.userid(function(userid) {
+          // after completion, the userid must be set. See issue #3172
+          ok(userid);
 
-        // synced_address should be added as a result of syncing email
-        // addresses when the verification poll completes. See issue #3178
-        testHelpers.testAddressesSyncedAfterUserRegistration();
+          // synced_address should be added as a result of syncing email
+          // addresses when the verification poll completes. See issue #3178
+          testHelpers.testAddressesSyncedAfterUserRegistration();
+        });
       }
 
       start();
@@ -672,8 +676,10 @@
       equal(_.size(emails) > 0, true, "emails have been synced to server");
       // user is not authenticating with a forever session, they should be
       // still be asked whether this is their computer.
-      equal(storage.usersComputer.confirmed(lib.userid()), false);
-      start();
+      lib.userid(function(userid) {
+        equal(storage.usersComputer.confirmed(userid), false);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
 
@@ -682,8 +688,10 @@
     lib.authenticate(TEST_EMAIL, "testuser", function(authenticated) {
       // user is authenticating with a forever session, they should be marked
       // as "confirmed"
-      equal(storage.usersComputer.confirmed(lib.userid()), true);
-      start();
+      lib.userid(function(userid) {
+        equal(storage.usersComputer.confirmed(userid), true);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
 
@@ -706,8 +714,10 @@
       equal(true, authenticated, "we are authenticated!");
       var emails = lib.getStoredEmailKeypairs();
       equal(_.size(emails) > 0, true, "emails have been synced to server");
-      equal(storage.usersComputer.confirmed(lib.userid()), false);
-      start();
+      lib.userid(function(userid) {
+        equal(storage.usersComputer.confirmed(userid), false);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
 
@@ -715,8 +725,10 @@
     xhr.useResult("foreverSession");
     lib.authenticateWithAssertion(TEST_EMAIL, "test_assertion", function(authenticated) {
       equal(true, authenticated, "we are authenticated!");
-      equal(storage.usersComputer.confirmed(lib.userid()), true);
-      start();
+      lib.userid(function(userid) {
+        equal(storage.usersComputer.confirmed(userid), true);
+        start();
+      }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
 
@@ -1380,11 +1392,13 @@
 
   asyncTest("setComputerOwnershipStatus with true, isUsersComputer - mark the computer as the users, prolongs the user's session", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.clear(lib.userid());
-      lib.setComputerOwnershipStatus(true, function() {
-        lib.isUsersComputer(function(usersComputer) {
-          equal(usersComputer, true, "user is marked as owner of computer");
-          start();
+      lib.userid(function(userid) {
+        storage.usersComputer.clear(userid);
+        lib.setComputerOwnershipStatus(true, function() {
+          lib.isUsersComputer(function(usersComputer) {
+            equal(usersComputer, true, "user is marked as owner of computer");
+            start();
+          }, testHelpers.unexpectedXHRFailure);
         }, testHelpers.unexpectedXHRFailure);
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
@@ -1392,18 +1406,20 @@
 
   asyncTest("setComputerOwnershipStatus with false, isUsersComputer - mark the computer as not the users", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.clear(lib.userid());
-      lib.setComputerOwnershipStatus(false, function() {
-        lib.isUsersComputer(function(usersComputer) {
-          equal(usersComputer, false, "user is marked as not an owner");
-          start();
+      lib.userid(function(userid) {
+        storage.usersComputer.clear(userid);
+        lib.setComputerOwnershipStatus(false, function() {
+          lib.isUsersComputer(function(usersComputer) {
+            equal(usersComputer, false, "user is marked as not an owner");
+            start();
+          }, testHelpers.unexpectedXHRFailure);
         }, testHelpers.unexpectedXHRFailure);
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("setComputerOwnershipStatus with unauthenticated user - call onFailure", function() {
-    xhr.setContextInfo("auth_status", false);
+    xhr.setContextInfo("auth_level", false);
     xhr.setContextInfo("userid", undefined);
     lib.setComputerOwnershipStatus(false,
       testHelpers.unexpectedSuccess,
@@ -1423,20 +1439,24 @@
 
   asyncTest("shouldAskIfUsersComputer with user who has been asked - call onSuccess with false", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.setConfirmed(lib.userid());
-      lib.shouldAskIfUsersComputer(function(shouldAsk) {
-        equal(shouldAsk, false, "user has been asked already, do not ask again");
-        start();
+      lib.userid(function(userid) {
+        storage.usersComputer.setConfirmed(userid);
+        lib.shouldAskIfUsersComputer(function(shouldAsk) {
+          equal(shouldAsk, false, "user has been asked already, do not ask again");
+          start();
+        }, testHelpers.expectedXHRFailure);
       }, testHelpers.expectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
 
   asyncTest("shouldAskIfUsersComputer with user who has not been asked and has not verified email this dialog session - call onSuccess with true", function() {
     lib.authenticate(TEST_EMAIL, "password", function() {
-      storage.usersComputer.forceAsk(lib.userid());
-      lib.shouldAskIfUsersComputer(function(shouldAsk) {
-        equal(shouldAsk, true, "user has not verified an email this dialog session and should be asked");
-        start();
+      lib.userid(function(userid) {
+        storage.usersComputer.forceAsk(userid);
+        lib.shouldAskIfUsersComputer(function(shouldAsk) {
+          equal(shouldAsk, true, "user has not verified an email this dialog session and should be asked");
+          start();
+        }, testHelpers.expectedXHRFailure);
       }, testHelpers.expectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);
   });
@@ -1447,10 +1467,12 @@
       xhr.useResult("complete");
 
       lib.waitForEmailValidation(TEST_EMAIL, function() {
-        storage.usersComputer.forceAsk(lib.userid());
-        lib.shouldAskIfUsersComputer(function(shouldAsk) {
-          equal(shouldAsk, false, "user has verified an email this dialog session and should be asked");
-          start();
+        lib.userid(function(userid) {
+          storage.usersComputer.forceAsk(userid);
+          lib.shouldAskIfUsersComputer(function(shouldAsk) {
+            equal(shouldAsk, false, "user has verified an email this dialog session and should be asked");
+            start();
+          }, testHelpers.expectedXHRFailure);
         }, testHelpers.expectedXHRFailure);
       }, testHelpers.unexpectedXHRFailure);
     }, testHelpers.unexpectedXHRFailure);

@@ -11,6 +11,7 @@ BrowserID.Network = (function() {
       context,
       mediator = bid.Mediator,
       XHR = bid.Modules.XHR,
+      NetworkContext = bid.Models.NetworkContext,
       xhr,
       // XXX get this out of here!
       storage = bid.Storage;
@@ -23,8 +24,7 @@ BrowserID.Network = (function() {
     }
 
     options.data = options.data || {};
-    options.data.csrf = context.csrf_token;
-
+    options.data.csrf = context.getCsrfToken();
     xhr.post(options);
   }
 
@@ -60,11 +60,9 @@ BrowserID.Network = (function() {
   }
 
   function setContext(newContext) {
-    context = _.extend({}, newContext, {
-      local_time: new Date().getTime()
-    });
+    context = NetworkContext.create(newContext);
 
-    mediator.publish("context_info", context);
+    mediator.publish("context_info", newContext);
   }
 
   function clearContext() {
@@ -593,65 +591,6 @@ BrowserID.Network = (function() {
     },
 
     /**
-     * Get the current time on the server in the form of a
-     * date object.
-     *
-     * Note: this function will perform a network request if
-     * during this session /wsapi/session_context has not
-     * been called.
-     *
-     * @method serverTime
-     */
-    serverTime: function(onComplete, onFailure) {
-      withContext(function(context) {
-        var server_time = context.server_time;
-        try {
-          if (!server_time) throw new Error("can't get server time!");
-          var offset = (new Date()).getTime() - context.local_time;
-          complete(onComplete, new Date(offset + server_time));
-        } catch(e) {
-          complete(onFailure, String(e));
-        }
-      }, onFailure);
-    },
-
-    /**
-     * Get the time at which the domain key was last updated.
-     *
-     * Note: this function will perform a network request if
-     * during this session /wsapi/session_context has not
-     * been called.
-     *
-     * @method domainKeyCreationTime
-     */
-    domainKeyCreationTime: function(onComplete, onFailure) {
-      withContext(function(context) {
-        var domain_key_creation_time = context.domain_key_creation_time;
-        try {
-          if (!domain_key_creation_time) throw new Error("can't get domain key creation time!");
-          complete(onComplete, new Date(domain_key_creation_time));
-        } catch(e) {
-          complete(onFailure, String(e));
-        }
-      }, onFailure);
-    },
-
-    /**
-     * Get the most recent code version
-     *
-     * Note: this function will perform a network request if
-     * during this session /wsapi/session_context has not
-     * been called.
-     *
-     * @method codeVersion
-     */
-    codeVersion: function(onComplete, onFailure) {
-      withContext(function(context) {
-        complete(onComplete, context.code_version);
-      }, onFailure);
-    },
-
-    /**
      * Check if the user's cookies are enabled
      * @method cookiesEnabled
      */
@@ -661,7 +600,7 @@ BrowserID.Network = (function() {
         // this allows our javascript code in the dialog and communication
         // iframe to determine whether cookies are (partially) disabled.
         // See #2999 for more context.
-        var enabled = context.cookies;
+        var enabled = context.areCookiesEnabled();
 
         // BEGIN TESTING API
         if (typeof Network.cookiesEnabledOverride === "boolean") {
