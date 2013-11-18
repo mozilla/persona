@@ -71,6 +71,20 @@
     });
   });
 
+  asyncTest("use idpHost over idpName", function() {
+    var delegatedHost = 'login.mozilla.org';
+    createController({
+      email: 'testuser@mozilla.com',
+      idpName: 'mozilla.com',
+      idpHost: delegatedHost,
+      ready: function() {
+        var text = jQuery('#primary_user_not_verified + p').text();
+        ok(text.indexOf(delegatedHost) > -1, 'delegated domain is in message');
+        start();
+      }
+    });
+  });
+
 
 }());
 

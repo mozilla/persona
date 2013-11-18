@@ -312,8 +312,13 @@ BrowserID.State = (function() {
         add: !!self.addPrimaryUser,
         email: self.email,
         rpInfo: self.rpInfo,
-        idpName: info.idpName || URLParse(info.auth_url).host
+        idpName: info.idpName,
+        idpHost: URLParse(info.auth_url).host
       });
+
+      if (!info.idpName) {
+        info.idpName = info.idpHost;
+      }
 
       // If .postIdPVerificationInfo is set, that means the user is
       // returning to the dialog after authentication with their IdP.
