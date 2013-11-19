@@ -221,6 +221,9 @@
   "hoek": {
     "0.7.6": "60fbd904557541cd2b8795abf308a1b3770e155a"
   },
+  "hood": {
+    "0.1.1": "5131adcce854f4ad2c6d9709d16dd9ace40ed726"
+  },
   "htmlparser": {
     "1.7.6": "6a263c7ee5930f3e5c56fa564011f99e49f80d34"
   },
