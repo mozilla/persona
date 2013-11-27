@@ -332,6 +332,14 @@ BrowserID.TestHelpers = (function() {
       ok(!$(selector).length, msg || ("element '" + selector + "' does not exist"));
     },
 
+    testElementDisabled: function(selector, msg) {
+      ok(!!$(selector).attr('disabled'), msg || ("element '" + selector + "' is disabled"));
+    },
+
+    testElementNotDisabled: function(selector, msg) {
+      ok(!$(selector).attr('disabled'), msg || ("element '" + selector + "' is enabled"));
+    },
+
     testRPTosPPShown: function(msg) {
       TestHelpers.testHasClass("body", "rptospp", msg || "RP TOS/PP shown");
     },
