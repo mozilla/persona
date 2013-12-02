@@ -358,7 +358,11 @@ BrowserID.Modules.Authenticate = (function() {
       dom.addClass(BODY_SELECTOR, AUTHENTICATION_CLASS);
       dom.addClass(BODY_SELECTOR, FORM_CLASS);
       dom.setInner(RP_NAME_SELECTOR, rpInfo.getSiteName());
+
       dom.setInner(EMAIL_SELECTOR, lastEmail);
+      if (lastEmail)
+        dom.removeAttr(CONTINUE_BUTTON_SELECTOR, DISABLED_ATTRIBUTE);
+
 
       currentHint = null;
       dom.setInner(CONTENTS_SELECTOR, "");
