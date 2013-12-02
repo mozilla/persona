@@ -20,6 +20,7 @@
       testElementNotHasClass = testHelpers.testNotHasClass,
       testElementFocused = testHelpers.testElementFocused,
       testElementTextEquals = testHelpers.testElementTextEquals,
+      testElementNotDisabled = testHelpers.testElementNotDisabled,
       register = testHelpers.register,
       provisioning = bid.Mocks.Provisioning,
       AUTH_FORM_SELECTOR = "#authentication_form",
@@ -58,6 +59,8 @@
     setup: function() {
       reset();
       $("input[type=password]").hide();
+      // the "continue" button is disabled when the dialog loads.
+      $(CONTINUE_BUTTON_SELECTOR).attr("disabled", "disabled");
       testHelpers.setup();
       createController();
     },
@@ -206,6 +209,9 @@
       ready: function() {
         equal($(EMAIL_SELECTOR).val(), "testuser@testuser.com", "email prefilled");
         testElementHasClass("body", "start");
+        // mobile's "continue" button is disabled when the dialog loads. If an
+        // email hint is specified, enable the button"
+        testElementNotDisabled(CONTINUE_BUTTON_SELECTOR);
         start();
       }
     });
