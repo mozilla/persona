@@ -11,7 +11,7 @@ urlp = require('url'),
 util = require('util'),
 fs = require('fs');
 
-const logging = require('../lib/logging.js');
+const logging = require('../lib/logging/logging.js');
 logging.enableConsoleLogging();
 
 const primary = require('../lib/primary');
