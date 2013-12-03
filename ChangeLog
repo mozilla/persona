@@ -8,6 +8,7 @@ train-2013.10.09:
   * Improve documentation: #3923, #3963
   * Fix a win32 paths-with-spaces bug: #3962
   * Fix an intermittent broken test on linux+ node > 0.10.16: #3912
+  * (hotfix 2013.12.02) : [mobile] "next" button not enabled if user not authed and experimental_emailHint specified: issue #4032, #4036
 
 train-2013.09.25:
   * RP Branded verification emails - if a site declares siteLogo and backgroundColor, verification emails will be styled with those instead of Persona branding: #3857
