@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /sign_in
+Disallow: /unsupported_dialog
+Disallow: /verify_email_address
+Disallow: /add_email_address
