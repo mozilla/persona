@@ -181,9 +181,9 @@
     var someFunc = function() {};
     equal(helpers.isFunction(someFunc), true);
     equal(helpers.isFunction(function named() {}), true);
-    equal(helpers.isFunction(new Function()), true);
     equal(helpers.isFunction({}), false);
     equal(helpers.isFunction([]), false);
+    // new Function() {} is blocked by CSP. Do not even test for it.
   });
 
   test("isArray", function() {
