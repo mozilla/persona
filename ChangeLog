@@ -9,6 +9,7 @@ train-2013.10.23:
   * Update various npm dependencies: #3981, #3972, #3973, #3989
   * Remove zerigo from deploy script: #3984
   * Simplify app routing: #3980
+  * (hotfix) Enable the "continue" button on mobile if experimental_emailHint is specified: #4032
 
 train-2013.10.09:
   * Get Persona working on IE11: #3593
