@@ -311,6 +311,9 @@
       // back compat support for loggedInEmail
       checkRenamed(options, "loggedInEmail", "loggedInUser");
       loggedInUser = options.loggedInUser;
+      if (loggedInUser === false) {
+        loggedInUser = null;
+      }
       if (!isNull(loggedInUser)  &&
           !isUndefined(loggedInUser) &&
           !isString(loggedInUser))

@@ -45,14 +45,15 @@
     });
   });
 
-  test("watch only accepts null, undefined, or a string for loggedInUser", function() {
-    // a string, null, and undefined are valid
+  test("watch only accepts null, undefined, false, or a string for loggedInUser", function() {
+    // a string, null, false, and undefined are valid
     testWatchIsHappy("strings@are.valid");
     testWatchIsHappy(null);
     testWatchIsHappy(undefined);
+    testWatchIsHappy(false);
 
-    // a boolean, an object, an array, or a number are not.
-    testWatchIsSad(false);
+    //an object, an array, true, or a number are not.
+    testWatchIsSad(true);
     testWatchIsSad({});
     testWatchIsSad([]);
     testWatchIsSad(1);
@@ -74,7 +75,7 @@
     } catch(e) {
       err = e;
     }
-    testHelpers.testUndefined(err);
+    testHelpers.testUndefined(err, (loggedInUser && loggedInUser.constructor.name) + " does not error");
   }
 
   function testWatchIsSad(loggedInUser) {
@@ -84,7 +85,7 @@
     } catch(e) {
       err = e;
     }
-    ok(err);
+    ok(err, (typeof loggedInUser === 'boolean' ? loggedInUser : loggedInUser.constructor.name) + " is an error");
   }
 
   function watch(obj) {
