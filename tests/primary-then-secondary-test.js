@@ -152,6 +152,7 @@ suite.addBatch({
           "which then": {
             topic: function() {
               wsapi.post('/wsapi/complete_email_confirmation', {
+                pass: TEST_PASS,
                 token: this._token
               }).call(this);
             },
