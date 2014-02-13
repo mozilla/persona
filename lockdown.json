@@ -66,7 +66,7 @@
     "0.0.2": "982867e16435325c66c208a1e71b95336ea3093b"
   },
   "client-sessions": {
-    "0.3.1": "91d2167a230f753110247bdd46a12bd9c6ed35ed"
+    "0.6.0": "b19bb5d09f0abc7d96c237982dcf12b7017e7b43"
   },
   "coffee-script": {
     "1.6.3": "6355d32cf1b04cdff6b484e5e711782b2f0c39be"
@@ -222,7 +222,7 @@
     "0.7.6": "60fbd904557541cd2b8795abf308a1b3770e155a"
   },
   "hood": {
-    "0.1.1": "5131adcce854f4ad2c6d9709d16dd9ace40ed726"
+    "0.2.1": "39dfa083e6ab1b2fc6513fe634d66d7cbb2ab231"
   },
   "htmlparser": {
     "1.7.6": "6a263c7ee5930f3e5c56fa564011f99e49f80d34"
@@ -309,9 +309,6 @@
   },
   "node-font-face-generator": {
     "0.1.1": "d29cf7d2074bafe314e4360be1bba7ec5c80f790"
-  },
-  "node-proxy": {
-    "0.6.0": "41e64712dbd947aa9d9f466b5c0b5ee020bbcbbb"
   },
   "node-statsd": {
     "0.0.7": "96d4bbd21dff2d798b3374a3e9329cfecce3afa8"
