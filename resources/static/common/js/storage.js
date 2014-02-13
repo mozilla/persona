@@ -178,7 +178,7 @@ BrowserID.Storage = (function() {
         var staged = JSON.parse(storage.returnTo);
 
         if (staged) {
-          if ((new Date() - new Date(staged.at)) > (5 * 60 * 1000)) throw new Error("stale");
+          if ((new Date() - new Date(staged.at)) > (2 * 60 * 60 * 1000)) throw new Error("stale");
           if (typeof(staged.url) !== 'string') throw new Error("malformed");
           returnToURL = staged.url;
         }
