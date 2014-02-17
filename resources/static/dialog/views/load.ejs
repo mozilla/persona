@@ -8,4 +8,25 @@
 
   <% if (typeof message !== "undefined") { %>
     <p><%= message %></p>
+
+    <% if(typeof network !== "undefined") { %>
+    <a href="#" class="openMoreInfo">
+      <%= gettext("See more info") %>
+    </a>
+
+    <ul class="moreInfo">
+        <li>
+
+          <strong id="network">Network Info:</strong> <%= network.type %>: <%= network.url %>
+
+          <% if (network.errorThrown) { %>
+            <p>
+              <strong>Error Type:</strong> <%= network.errorThrown %>
+            </p>
+          <% } %>
+        </li>
+
+    </ul>
+    <% } %>
+
   <% } %>

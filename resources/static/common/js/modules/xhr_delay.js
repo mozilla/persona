@@ -9,10 +9,23 @@ BrowserID.Modules.XHRDelay = (function() {
       delayed,
       sc;
 
-  function delayStart() {
+  function delayStart(event, request) {
     /*jshint validthis:true*/
     delayed = true;
-    this.renderDelay("load", wait.slowXHR);
+
+    var networkInfo; 
+    if (request) {
+      networkInfo = request.network;
+    }
+
+    var info = {
+      id: wait.slowXHR.id,
+      message: wait.slowXHR.message,
+      title: wait.slowXHR.title,
+      network: networkInfo
+    };
+    
+    this.renderDelay("load", info);
   }
 
   function delayStop() {
