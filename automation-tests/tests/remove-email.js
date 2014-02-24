@@ -140,6 +140,8 @@ runner.run(module, {
     browser.chain({onError: done})
       .wwin()
       .get(link)
+      .wtype(CSS['persona.org'].signInForm.password, secondaryPassword)
+      .wclick(CSS['persona.org'].signInForm.finishButton, secondaryPassword)
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondaryEmail));
       });

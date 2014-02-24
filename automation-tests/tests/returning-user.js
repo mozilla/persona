@@ -77,6 +77,8 @@ runner.run(module, {
     browser.chain({onError: done})
       .wwin()
       .get(link)
+      .wtype(CSS['persona.org'].signInForm.password, secondary.split('@')[0])
+      .wclick(CSS['persona.org'].signInForm.finishButton, secondary.split('@')[0])
       .wtext(CSS['123done.org'].currentlyLoggedInEmail, function(err, text) {
         done(err || assert.equal(text, secondary));
       });
