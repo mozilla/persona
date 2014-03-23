@@ -216,11 +216,18 @@ $(function() {
       $(".display_nonauth").fadeIn(ANIMATION_TIME);
       dom.bindEvent("a.signIn", "click", function(event) {
         event.preventDefault();
+        var opts = {
+          siteName: "Mozilla Persona",
+          backgroundColor: "#6A7B86"
+        };
+
+        if (location.protocol === "https:") {
+          opts.siteLogo = "/pages/i/persona-logo-100x100.png";
+        }
+
         navigator.id.get(function(assertion) {
           document.location.href = "/";
-        }, {
-          siteName: "Mozilla Persona"
-        });
+        }, opts);
       });
     }
   }
