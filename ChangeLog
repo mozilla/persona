@@ -1,4 +1,32 @@
-current-train:
+train-2014.04.16:
+  * Improvements unblocking Desktop Firefox integration:
+    * Refactor login.persona.org to a true IdP: #3982
+    * Correctly create rpInfo in native desktop auth flow: #4023
+  * RP-facing changes:
+    * Use correct hostname for 3rd party cookie error message: #4024
+    * Enable 'continue' button on mobile if experimental_emailHint is specified: #4033
+    * Allow loggedInUser to be false: #4071
+  * Test fixes:
+    * Disable funky include.js tests breaking on IE: #4115
+    * Fix automation-tests: #4101
+    * Fix CSP test error: #4051
+  * Devops/config changes:
+    * Add/tweak security headers: #4012
+    * Simplify robots.txt: (unticketed)
+    * Change timeout to 2 hours?: #4091
+    * Tweak some headers for IE: #4113
+    * Fix client sessions config for running behind an SSL proxy: #4100
+    * Bump versions for client-sessions, hood packages: #4063
+    * Fix for cookies missing from lockdown.json (related to 4063?): #4093
+    * Pull vows via https, not git (npm tweak): #4062
+  * Documentation updates:
+    * Add docs for setup on RHELly distros: #4061
+  * Other improvements:
+    * Use Persona RP branding in login popup: #4108
+    * Make xhr_delay error more specific about which wsapi is timing out: #4094
+    * Fix logging import in check_primary_support: #4034
+    * Refactoring: extract session context into its own object: #3997
+    * Fix blurry footer icon: #4017
 
 train-2013.11.06:
   * Fix nodemailer, using new API, and email.js cleanup: #4000
