@@ -11,8 +11,8 @@ URL:           https://github.com/mozilla/persona
 Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
-Requires:      openssl, nodejs >= 0.8.17
-BuildRequires: gcc-c++, git, jre, make, npm, openssl-devel, expat-devel, nodejs >= 0.8.17
+Requires:      nodejs-svcops >= 0.10.26, gmp
+BuildRequires: gcc-c++, git, subversion, make, gmp, gmp-devel, nodejs-svcops >= 0.10.26
 
 %description
 persona server & web home for persona.org

@@ -27,6 +27,8 @@ train-2014.04.16:
     * Fix logging import in check_primary_support: #4034
     * Refactoring: extract session context into its own object: #3997
     * Fix blurry footer icon: #4017
+  * Move to node 0.10.26: #4120
+
 
 train-2013.11.06:
   * Fix nodemailer, using new API, and email.js cleanup: #4000
