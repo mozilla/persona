@@ -342,7 +342,7 @@
       var rp_api = api_called;
       if (rp_api === "request") {
         if (observers.ready) rp_api = "watch_with_onready";
-        else if (observers.onlogout) rp_api = "watch_without_onready";
+        else if (observers.logout) rp_api = "watch_without_onready";
         else rp_api = "stateless";
       }
 
