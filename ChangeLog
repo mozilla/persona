@@ -1,5 +1,11 @@
 current train:
 
+train-2014.05.27:
+  * Fix typo that forced all RPs to Goldilocks (stateless) API: #4131
+  * Add "Do Not Track" policy statement: #4130
+  * Upgrade to Node.js 0.10
+  * Update Mountain View office address in ToS / PP
+
 train-2014.04.16:
   * Improvements unblocking Desktop Firefox integration:
     * Refactor login.persona.org to a true IdP: #3982
