@@ -299,8 +299,8 @@
       }
 
       if (!options.onlogin) throw new Error("'onlogin' is a required argument to navigator.id.watch()");
-      if (!options.onlogout && (options.onmatch || options.onready || ('loggedInUser' in options)))
-        throw new Error('stateless api only allows onlogin option');
+      if (!options.onlogout && (options.onmatch || ('loggedInUser' in options)))
+        throw new Error('stateless api only allows onlogin and onready options');
 
       observers.login = options.onlogin || null;
       observers.logout = options.onlogout || null;
@@ -341,9 +341,11 @@
     function getRPAPI() {
       var rp_api = api_called;
       if (rp_api === "request") {
-        if (observers.ready) rp_api = "watch_with_onready";
-        else if (observers.logout) rp_api = "watch_without_onready";
-        else rp_api = "stateless";
+        if (observers.logout) {
+          rp_api = observers.ready ? "watch_with_onready" : "watch_without_onready";
+        } else {
+          rp_api = "stateless";
+        }
       }
 
       return rp_api;
