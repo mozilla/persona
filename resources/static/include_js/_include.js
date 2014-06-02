@@ -353,6 +353,7 @@
       checkDeprecated(options, "requiredEmail");
       checkRenamed(options, "tosURL", "termsOfService");
       checkRenamed(options, "privacyURL", "privacyPolicy");
+      checkRenamed(options, "experimental_emailHint", "email");
 
       if (options.termsOfService && !options.privacyPolicy) {
         warn("termsOfService ignored unless privacyPolicy also defined");
@@ -536,6 +537,7 @@
         opts.siteLogo = passedOptions.siteLogo || undefined;
         opts.backgroundColor = passedOptions.backgroundColor || undefined;
         opts.experimental_emailHint = passedOptions.experimental_emailHint || undefined;
+        opts.email = passedOptions.email || undefined;
         // api_called could have been set to getVerifiedEmail already
         api_called = api_called || "get";
         if (checkDeprecated(passedOptions, "silent")) {

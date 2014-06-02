@@ -488,14 +488,13 @@
   });
 
   asyncTest("valid email address for experimental_emailHint - allowed", function() {
-    testExpectValidationSuccess({experimental_emailHint: "testuser@testuser.com"},
+    testExpectValidationSuccess({email: "testuser@testuser.com"},
                          {emailHint: "testuser@testuser.com"});
   });
 
   asyncTest("invalid email address for experimental_emailHint - not allowed", function() {
-    testExpectValidationFailure({
-      experimental_emailHint: "testuser.testuser.com"
-    }, "invalid email for experimental_emailHint: testuser.testuser.com");
+    testExpectValidationFailure({email: "testuser.testuser.com"},
+      "invalid email for email: testuser.testuser.com");
   });
 
   asyncTest("non-object userAssertedClaims - not allowed", function() {
