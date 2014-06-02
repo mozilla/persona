@@ -10,9 +10,9 @@
   "homepage": "https://login.persona.org",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mozilla/browserid.git"
+    "url": "https://github.com/mozilla/persona.git"
   },
-  "bugs": "https://github.com/mozilla/browserid/issues",
+  "bugs": "https://github.com/mozilla/persona/issues",
   "licenses" : [{
     "type": "MPL 2.0",
     "url": "https://mozilla.org/MPL/2.0/"
@@ -75,6 +75,6 @@
     "start": "node ./scripts/run_locally.js"
   },
   "engines": {
-    "node": ">= 0.8.11"
+    "node": ">= 0.10.26"
   }
 }
