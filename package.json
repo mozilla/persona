@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "vows": "https://github.com/cloudhead/vows/tarball/253ca34c",
-    "awsbox": "https://github.com/mozilla/awsbox/tarball/440c9c9",
+    "awsbox": "https://github.com/mozilla/awsbox/tarball/master",
     "irc": "0.3.6",
     "jshint": "2.1.11",
     "which": "1.0.5",
