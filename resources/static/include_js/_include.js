@@ -356,6 +356,16 @@
       checkRenamed(options, "tosURL", "termsOfService");
       checkRenamed(options, "privacyURL", "privacyPolicy");
 
+      options.rp_api = getRPAPI();
+
+      if (options.rp_api === "stateless") {
+        if (options.termsOfService || options.privacyPolicy) {
+          warn("stateless API does not support termsOfService or privacyPolicy, ignoring");
+          delete options.termsOfService;
+          delete options.privacyPolicy;
+        }
+      }
+
       if (options.termsOfService && !options.privacyPolicy) {
         warn("termsOfService ignored unless privacyPolicy also defined");
       }
@@ -364,7 +374,6 @@
         warn("privacyPolicy ignored unless termsOfService also defined");
       }
 
-      options.rp_api = getRPAPI();
       var couldDoRedirectIfNeeded = (!needsPopupFix || api_called === 'request' || api_called === 'auth');
 
       // reset the api_called in case the site implementor changes which api
