@@ -20,6 +20,8 @@
     "postcreate": "node scripts/awsbox_local/post_create.js"
   },
   "packages": [
-    "mysql-server"
+    "mysql-server",
+    "subversion",
+    "emacs-nox"
   ]
 }
