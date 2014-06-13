@@ -1,5 +1,10 @@
 current train:
 
+train-2014.06.13:
+  * Disable CSP due to breaking primaries on FxOS: #4144
+  * Allow the use of onready in Goldilocks (stateless) API: #4134
+  * Miscelanneous awsbox updates
+
 train-2014.05.27:
   * Fix typo that forced all RPs to Goldilocks (stateless) API: #4131
   * Add "Do Not Track" policy statement: #4130
