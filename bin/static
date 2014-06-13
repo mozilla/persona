@@ -54,7 +54,7 @@ app.use(toobusy);
 // cover our head
 app.use(proxySecure());
 app.use(hood({
-  csp: config.get('csp'),
+  csp: false, // CSP breaks FxOS, see bug #4144
   hsts: config.get('hsts'),
   xframe: config.get('x_frame_options')
 }));
