@@ -76,7 +76,11 @@ function hasProperCacheHeaders(path) {
       assert.strictEqual(r.statusCode, 200);
       // check X-Frame-Option headers
       hasProperFramingHeaders(r, path);
-      assert.strictEqual(r.headers['content-security-policy'], "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self'; img-src *; frame-src *;");
+
+      // CSP test disabled due to bug #4144
+      // assert.strictEqual(r.headers['content-security-policy'], "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self'; img-src *; frame-src *;");
+      assert.isUndefined(r.headers['content-security-policy']);
+
       // ensure public, max-age=0, must-revalidate
       assert.strictEqual(r.headers['cache-control'], 'public, max-age=0, must-revalidate');
       // the behavior of combining a last-modified date and an etag is undefined by
