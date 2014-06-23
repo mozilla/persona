@@ -101,7 +101,6 @@
 
 
       <% if (useJavascript !== false) { %>
-        <%- cachify_js(util.format('/authentication_api.js')) %>
         <%- cachify_js(util.format('/production/%s/idp_authenticate.js', locale)) %>
       <% } %>
 	</body>
