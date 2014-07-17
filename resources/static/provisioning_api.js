@@ -627,9 +627,7 @@
     };
   })();
 
-  if (navigator.mozId) {
-    navigator.id = navigator.mozId;
-  } else if (!navigator.id) {
+  if (!navigator.id) {
     navigator.id = {};
   }
 

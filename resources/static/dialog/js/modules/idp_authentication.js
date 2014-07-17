@@ -38,12 +38,6 @@ BrowserID.Modules.IdPAuthentication= (function() {
     return function(msg, info) {
       dialogHelpers.createUser.call(self, email, info.password, function(info) {
         if (info.success) {
-          info.rpInfo = user.rpInfo;
-          info.siteName = user.rpInfo.siteName;
-          info.email = email;
-          info.verifier = "waitForUserValidation";
-          info.verificationMessage = "user_confirmed";
-
           var checkRegistration = moduleManager.start("check_registration", info);
           mediator.subscribe('user_confirmed', function(msg, confirmationInfo) {
             if (confirmationInfo.mustAuth) {
@@ -70,32 +64,6 @@ BrowserID.Modules.IdPAuthentication= (function() {
     };
   }
 
-  function parseRPInfo() {
-    var offset = '?'.length;
-    var whitelist = [
-      'backgroundColor',
-      'origin',
-      'privacyPolicy',
-      'returnTo',
-      'siteLogo',
-      'siteName',
-      'termsOfService'
-    ];
-    var rawRPInfo = window.location.search.slice(offset);
-    if (! rawRPInfo) {
-      throw new Error('Missing RPInfo in URL');
-    }
-    var aRPInfo = {};
-    var parts = rawRPInfo.split('&');
-    for (var i=0; i < parts.length; i++) {
-      var pieces = parts[i].split('=');
-      if (whitelist.indexOf(pieces[0]) !== -1) {
-	aRPInfo[decodeURIComponent(pieces[0])] = decodeURIComponent(pieces[1]);
-      }
-    }
-    return aRPInfo;
-  }
-
   var Module = bid.Modules.PageModule.extend({
     start: function(options) {
       options = options || {};
@@ -104,18 +72,17 @@ BrowserID.Modules.IdPAuthentication= (function() {
       ensureSize(700, 440);
 
       navigator.id.beginAuthentication(function(email) {
-        mediator.subscribe("authenticated", function(msg, info) {
-          if (email === info.email) {
-            navigator.id.completeAuthentication();
-          } else {
-            // Should never happen
-            navigator.id.raiseProvisioningFailure(
-              'user is not authenticated as target user');
-          }
+        mediator.subscribe("authentication_success", function(msg, info) {
+          // TODO: Are we sure that we authed as email?
+          navigator.id.completeAuthentication();
         });
 
         mediator.subscribe("new_user", newUserComplete(self));
-        var rpInfo = bid.Models.RpInfo.create(parseRPInfo());
+
+        var rpInfo = bid.Models.RpInfo.create({
+          origin: info.origin,
+          siteName: info.siteName
+        });
         user.setRpInfo(rpInfo);
 
         moduleManager.start("authenticate", {
