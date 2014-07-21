@@ -1,13 +1,13 @@
 %define _rootdir /opt/browserid
 
 Name:          browserid-server
-Version:       0.2014.06.13
-Release:       2%{?dist}_%{svnrev}
+Version:       0.2014.07.19
+Release:       1%{?dist}_%{svnrev}
 Summary:       BrowserID server
-Packager:      Gene Wood <gene@mozilla.com>
+Packager:      Daniel Thornton <relud@mozilla.com>
 Group:         Development/Libraries
 License:       MPL 2.0
-URL:           https://github.com/mozilla/browserid
+URL:           https://github.com/mozilla/persona
 Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
