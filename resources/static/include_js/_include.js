@@ -375,10 +375,11 @@
       if (options.siteName) warn("Please pass siteName to .watch() instead of .request()");
       if (options.backgroundColor) warn("Please pass backgroundColor to .watch() instead of .request()");
 
-      // Allow request to override display opts passed to watch, for UI testing.
-      options.siteLogo = options.siteLogo || displayOpts.siteLogo;
-      options.siteName = options.siteName || displayOpts.siteName;
-      options.backgroundColor = options.backgroundColor || displayOpts.backgroundColor;
+      // Options passed to .watch() always win. 
+      // Necessary for backwards compatibility between Goldilocks and Observer
+      options.siteLogo = displayOpts.siteLogo || options.siteLogo;
+      options.siteName = displayOpts.siteName || options.siteName;
+      options.backgroundColor = displayOpts.backgroundColor || options.backgroundColor;
 
       options.rp_api = getRPAPI();
       var couldDoRedirectIfNeeded = (!needsPopupFix || api_called === 'request' || api_called === 'auth');
