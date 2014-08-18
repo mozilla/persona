@@ -360,9 +360,7 @@
 
       if (options.rp_api === "stateless") {
         if (options.termsOfService || options.privacyPolicy) {
-          warn("stateless API does not support termsOfService or privacyPolicy, ignoring");
-          delete options.termsOfService;
-          delete options.privacyPolicy;
+          warn("Deprecation notice: termsOfService and privacyPolicy options are deprecated in the stateless (\"Goldilocks\") Persona API, and will eventually be removed. More info: https://github.com/mozilla/persona/issues/4134#issuecomment-44859342");
         }
       }
 
