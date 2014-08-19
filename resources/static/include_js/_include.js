@@ -149,6 +149,9 @@
       ready: null
     };
 
+    // dialog appearance options (siteLogo, siteName, backgroundColor)
+    var displayOpts = {};
+
     var loggedInUser;
 
     var compatMode = undefined;
@@ -321,6 +324,10 @@
         throw new Error("loggedInUser is not a valid type");
       }
 
+      // Save dialog appearance options
+      if (options.siteName) displayOpts.siteName = options.siteName;
+      if (options.siteLogo) displayOpts.siteLogo = options.siteLogo;
+      if (options.backgroundColor) displayOpts.backgroundColor = options.backgroundColor;
 
       _open_hidden_iframe();
     }
@@ -373,6 +380,17 @@
         warn("privacyPolicy ignored unless termsOfService also defined");
       }
 
+      if (options.siteLogo) warn("Please pass siteLogo to .watch() instead of .request()");
+      if (options.siteName) warn("Please pass siteName to .watch() instead of .request()");
+      if (options.backgroundColor) warn("Please pass backgroundColor to .watch() instead of .request()");
+
+      // Options passed to .watch() always win. 
+      // Necessary for backwards compatibility between Goldilocks and Observer
+      options.siteLogo = displayOpts.siteLogo || options.siteLogo;
+      options.siteName = displayOpts.siteName || options.siteName;
+      options.backgroundColor = displayOpts.backgroundColor || options.backgroundColor;
+
+      options.rp_api = getRPAPI();
       var couldDoRedirectIfNeeded = (!needsPopupFix || api_called === 'request' || api_called === 'auth');
 
       // reset the api_called in case the site implementor changes which api
@@ -542,9 +560,6 @@
         opts.termsOfService = passedOptions.termsOfService || undefined;
         opts.privacyURL = passedOptions.privacyURL || undefined;
         opts.tosURL = passedOptions.tosURL || undefined;
-        opts.siteName = passedOptions.siteName || undefined;
-        opts.siteLogo = passedOptions.siteLogo || undefined;
-        opts.backgroundColor = passedOptions.backgroundColor || undefined;
         opts.experimental_emailHint = passedOptions.experimental_emailHint || undefined;
         opts.email = passedOptions.email || undefined;
         // api_called could have been set to getVerifiedEmail already
@@ -565,7 +580,10 @@
               callback = null;
             }
           },
-          onlogout: function() {}
+          onlogout: function() {},
+          siteName: passedOptions.siteName,
+          siteLogo: passedOptions.siteLogo,
+          backgroundColor: passedOptions.backgroundColor
         });
         opts.oncancel = function() {
           if (callback) {
