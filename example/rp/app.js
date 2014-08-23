@@ -225,6 +225,14 @@
     navigator.id.request(options);
   };
 
+  var logoutBtn = document.getElementById('logout');
+  logoutBtn.onclick = function() {
+    log("Invoking navigator.id.logout();");
+    console && console.log("Invoking navigator.id.logout();");
+
+    navigator.id.logout();
+  };
+
   var getBtn = document.getElementById('get');
   getBtn.onclick = function() {
     var options = readOpts({
