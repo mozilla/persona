@@ -245,6 +245,17 @@
     testExpectValidationFailure({siteLogo: URL});
   });
 
+  asyncTest("get with data:image/svg+xml;... siteLogo - allowed", function() {
+    testExpectValidationSuccess({
+        siteLogo: "data:image/svg+xml;base64,FAKEDATA"
+      },
+      {
+        siteLogo: "data:image/svg+xml;base64,FAKEDATA"
+      }
+    );
+  });
+
+
   asyncTest("get with data:image/<whitelist>;... siteLogo - allowed", function() {
     testExpectValidationSuccess({
         siteLogo: "data:image/png;base64,FAKEDATA"
@@ -253,6 +264,11 @@
         siteLogo: "data:image/png;base64,FAKEDATA"
       }
     );
+  });
+
+  asyncTest("get with data:image/svg;... siteLogo - not allowed", function() {
+    var URL = "data:image/svg;base64,FAKEDATA";
+    testExpectValidationFailure({siteLogo: URL});
   });
 
   asyncTest("get with data:<not image>... siteLogo - not allowed", function() {
