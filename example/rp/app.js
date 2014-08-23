@@ -198,6 +198,8 @@
     }
 
     log("Invoking navigator.id.watch(...);");
+    console && console.log("Invoking navigator.id.watch(...);");
+    console && console.log(options);
 
     navigator.id.watch(options);
   };
@@ -217,6 +219,8 @@
     });
 
     log("Invoking navigator.id.request(...);");
+    console && console.log("Invoking navigator.id.request(...);");
+    console && console.log(options);
 
     navigator.id.request(options);
   };
@@ -232,6 +236,8 @@
     });
 
     log("Invoking navigator.id.get(callback, ...);");
+    console && console.log("Invoking navigator.id.get(callback, ...);");
+    console && console.log(options);
 
     navigator.id.get(getCallback, options);
   };
