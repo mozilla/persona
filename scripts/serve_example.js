@@ -21,7 +21,7 @@ if (process.env['PUBLIC_URL']) {
   console.log('using browserid server at ' + burl);
 
   exampleServer.use(postprocess(function(req, buffer) {
-    return buffer.toString().replace(new RegExp('https://login.persona.org', 'g'), burl);
+    return buffer.toString().replace(new RegExp('{{ PUBLIC_URL }}', 'g'), burl);
   }));
 }
 
