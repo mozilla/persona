@@ -5,199 +5,205 @@
 
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="initial-scale=1.0; width=device-width;">
-<title>
-Persona Relying Party
-</title>
-<style type="text/css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0; width=device-width;">
+  <title>Persona Test Relying Party</title>
 
-body { margin: auto; font: 13px/1.5 Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; }
-a:link, a:visited { font-style: italic; text-decoration: none; color: #008; }
-a:hover { border-bottom: 2px solid black ; }
-.title { font-weight: bold; text-align: center; margin: 1.5em auto 1.5em auto; }
-.title h1 { font-size: 2em; }
-.title h2 { font-size: 1.5em; }
-.intro { font-size: 1.2em;  }
-.specify, .session { font-size: 1.1em; padding-top: 2em; }
-body div { width: 600px; margin: auto; }
+  <style>
+    ul { list-style: none; padding: 0; }
+    ul li { line-height: 1.75; }
+    ul label { display: inline-block; width: 8em; text-align: right; }
 
-pre {
-  font-family: 'lucida console', monaco, 'andale mono', 'bitstream vera sans mono', consolas, monospace;
-  border: 3px solid #666;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  border-radius: 4px;
-  padding: .5em;
-  margin: .5em;
-  color: #ccc;
-  background-color: #333;
-/*  white-space: pre;*/
-  font-size: .9em;
-  word-wrap: break-word;
-}
-
-.specify ul { padding-left: 0px; }
-.specify li { list-style: none; }
-
-@media screen and (max-width: 640px) {
-  .intro, .output, .step {
-    width: 90%;
-  }
-}
-
-</style>
+    ol textarea { vertical-align: top; height: 3em; width: 30em; }
+  </style>
 </head>
+
 <body>
-<div class="title">
   <h1>Persona Test Relying Party</h1>
-  <h2>Stateless "Goldilocks"</h2>
-</div>
 
-<div class="intro">
-  This is a RP for testing, it allows you to drive the
-  <tt>Stateless "Goldilocks"</tt> calls manually to locally test Persona.  Looking to test <a href="/watch.html">navigator.id.watch</a> or <a href="/get.html">navigator.id.get</a>?
-</div>
-
-<div class="specify">
-  <p><b>What flavor of assertion would you like?</b></p>
-  <ul>
-    <li>
-      <input type="checkbox" id="privacyPolicy">
-      <label for="privacyPolicy">Supply a privacy policy</label>
-    </li><li>
-      <input type="checkbox" id="termsOfService">
-      <label for="termsOfService">Supply a ToS</label>
-    </li><li>
-      <input type="checkbox" id="supplySiteName">
-      <label for="siteName">Supply Site Name:</label>
-      <input type="text" id="siteName" value="Persona Test Relying Party" />
-    </li><li>
-      <input type="checkbox" id="siteLogo">
-      <label for="siteLogo">Supply Site Logo</label>
-    </li><li>
-      <input type="checkbox" id="supplyBackgroundColor">
-      <label for="backgroundColor">Supply Background Color:</label>
-      <input type="text" id="backgroundColor" value="#008" />
-    </li><li>
-      <input type="checkbox" id="supplyEmailHint">
-      <label for="emailHint">Email Hint:</label>
-      <input type="text" id="emailHint" value="" />
-    </li><li>
-      <input type="checkbox" id="returnTo">
-      <label for="returnTo">Supply returnTo</label>
-    </li><li>
-      <input type="checkbox" id="forceAuthentication">
-      <label for="forceAuthentication">Force Authentication</label>
-    </li><li>
-      <input type="checkbox" id="forceIssuer">
-      <label for="forceIssuer">Force Issuer to issuer.domain</label>
-    </li><li>
-      <input type="checkbox" id="allowUnverified">
-      <label for="allowUnverified">Allow Unverified</label>
-    </li>
-  </ul>
-    <button class="assertion">Get an assertion</button>
-</div>
-
-<div class="session">
-  <p><b>Care to simulate a session?</b></p>
-  <p>If you enter an email address or 'null' here, upon reload this value will
-     be passed to .watch() as the first parameter.  This lets you test things like
-     assertion generation suppression when the site and browser agree on who is logged in.
+  <p>
+    Load shim from:
+    <a href="/">Local (Default)</a>
+    <a href="/?dev">Dev</a>
+    <a href="/?stage">Stage</a>
+    <a href="/?prod">Prod</a>
+    <a href="/?fxos">FxOS</a>
   </p>
-  <input type="text" id="loggedInUser" width="80">
-  <button class="update_session">Update "session"</button>
-</div>
 
-<div class="loginEvents">
-  <h2>logins</h2>
-  <pre> ... </pre>
-</div>
+  <div class=config>
+    <fieldset>
+      <legend>navigator.id.watch()</legend>
+      <ul>
+        <li>
+          <label for=watchOnlogin>onlogin</label>
+          <input type=checkbox checked id=watchOnlogin />
+          <em>(Required)</em>
+        </li>
+        <li>
+          <label for=watchOnready>onready</label>
+          <input type=checkbox checked id=watchOnready />
+        </li>
+        <li>
+          <label for=watchOnlogout>onlogout</label>
+          <input type=checkbox id=watchOnlogout />
+          <em>(Deprecated, Observer API Only)</em>
+        </li>
+        <li>
+          <label for=watchOnmatch>onmatch</label>
+          <input type=checkbox id=watchOnmatch />
+          <em>(Deprecated, Observer API Only)</em>
+        </li>
+        <li>
+          <label for=watchLoggedInUser>loggedInUser</label>
+          <input type=email placeholder="user@example.com" id=watchLoggedInUser />
+          <em>(Deprecated, Observer API Only)</em>
+        </li>
+        <li>
+          <label for=watchSiteName>siteName</label>
+          <input type=text placeholder="String" id=watchSiteName />
+        </li>
+        <li>
+          <label for=watchSiteLogo>siteLogo</label>
+          <input type=text placeholder="HTTPS URL or data: URI" id=watchSiteLogo />
+          <button class="preset" data-for=watchSiteLogo data-value="https://login.persona.org/pages/i/persona-logo-100x100.png">URL</button>
+          <button class="preset" data-for=watchSiteLogo data-value="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iDQogICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KDQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyINCiB3aWR0aD0iNDY3IiBoZWlnaHQ9IjQ2MiI+DQogIDxyZWN0IHg9IjgwIiB5PSI2MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIyNTAiIHJ4PSIyMCINCiAgICAgIHN0eWxlPSJmaWxsOiNmZjAwMDA7IHN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoycHg7IiAvPg0KICANCiAgPHJlY3QgeD0iMTQwIiB5PSIxMjAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMjUwIiByeD0iNDAiDQogICAgICBzdHlsZT0iZmlsbDojMDAwMGZmOyBzdHJva2U6IzAwMDAwMDsgc3Ryb2tlLXdpZHRoOjJweDsNCiAgICAgIGZpbGwtb3BhY2l0eTowLjc7IiAvPg0KPC9zdmc+">data:</button>
+        </li>
+        <li>
+          <label for=watchBackgroundColor>backgroundColor</label>
+          <input type=text placeholder="Hex #rgb or #rrggbb" id=watchBackgroundColor />
+          <button class="preset" data-for=watchBackgroundColor data-value="#223">Dark</button>
+          <button class="preset" data-for=watchBackgroundColor data-value="#fafaf0">Light</button>
+        </li>
+      </ul>
 
+      <button id="watch">navigator.id.watch(<em>options</em>);</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>navigator.id.request()</legend>
+      <ul>
+        <li>
+          <label for=requestOncancel>oncancel</label>
+          <input type=checkbox checked id=requestOncancel />
+        </li>
+        <li>
+          <label for=requestEmail>email</label>
+          <input type=email placeholder="user@example.com" id=requestEmail />
+          <em>(Has bugs)</em>
+        </li>
+        <li>
+          <label for=requestTermsOfService>termsOfService</label>
+          <input type=text placeholder="Absolute path or URL" id=requestTermsOfService />
+          <button class="preset" data-for=requestTermsOfService data-value="https://login.persona.org/en/embedded_tos">URL</button>
+          <button class="preset" data-for=requestTermsOfService data-value="/terms.html">Path</button>
+          <em>(Deprecated)</em>
+        </li>
+        <li>
+          <label for=requestPrivacyPolicy>privacyPolicy</label>
+          <input type=text placeholder="Absolute path or URL" id=requestPrivacyPolicy />
+          <button class="preset" data-for=requestPrivacyPolicy data-value="https://login.persona.org/en/embedded_privacy">URL</button>
+          <button class="preset" data-for=requestPrivacyPolicy data-value="/privacy.html">Path</button>
+          <em>(Deprecated)</em>
+        </li>
+        <li>
+          <label for=requestReturnTo>returnTo</label>
+          <input type=text placeholder="Absolute path" id=requestReturnTo />
+          <em>(Deprecated)</em>
+        </li>
+        <li>
+          <label for=requestAllowUnverified>allowUnverified</label>
+          <input type=checkbox id=requestAllowUnverified />
+          <em>(Experimental)</em>
+        </li>
+        <li>
+          <label for=requestForceAuthentication>forceAuthentication</label>
+          <input type=checkbox id=requestForceAuthentication />
+          <em>(Experimental)</em>
+        </li>
+        <li>
+          <label for=requestForceIssuer>forceIssuer</label>
+          <input type=text placeholder="Domain" id=requestForceIssuer />
+          <button class="preset" data-for=requestForceIssuer data-value="firefoxos.persona.org">FxOS</button>
+          <em>(Experimental)</em>
+        </li>
+      </ul>
+
+      <p>
+        <button id="request">navigator.id.request(<em>options</em>);</button>
+      </p>
+
+      <p>
+        <button id="logout">navigator.id.logout();</button>
+        <em>(Deprecated, Observer API Only)</em>
+      </p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Verifier</legend>
+      <ul>
+        <li>
+          <label for=verifierAllowUnverified>allowUnverified</label>
+          <input type=checkbox id=verifierAllowUnverified />
+        </li>
+        <li>
+          <label for=verifierForceIssuer>forceIssuer</label>
+          <input type=text placeholder="Domain" id=verifierForceIssuer />
+          <button class="preset" data-for=verifierForceIssuer data-value="firefoxos.persona.org">FxOS</button>
+        </li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <legend>navigator.id.get()</legend>
+
+      <ul>
+        <li>
+          <label for=getSiteName>siteName</label>
+          <input type=text placeholder="String" id=getSiteName />
+        </li>
+        <li>
+          <label for=getSiteLogo>siteLogo</label>
+          <input type=text placeholder="HTTPS URL or data: URI" id=getSiteLogo />
+          <button class="preset" data-for=getSiteLogo data-value="https://login.persona.org/pages/i/persona-logo-100x100.png">URL</button>
+          <button class="preset" data-for=getSiteLogo data-value="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iDQogICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KDQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyINCiB3aWR0aD0iNDY3IiBoZWlnaHQ9IjQ2MiI+DQogIDxyZWN0IHg9IjgwIiB5PSI2MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIyNTAiIHJ4PSIyMCINCiAgICAgIHN0eWxlPSJmaWxsOiNmZjAwMDA7IHN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoycHg7IiAvPg0KICANCiAgPHJlY3QgeD0iMTQwIiB5PSIxMjAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMjUwIiByeD0iNDAiDQogICAgICBzdHlsZT0iZmlsbDojMDAwMGZmOyBzdHJva2U6IzAwMDAwMDsgc3Ryb2tlLXdpZHRoOjJweDsNCiAgICAgIGZpbGwtb3BhY2l0eTowLjc7IiAvPg0KPC9zdmc+">data:</button>
+        </li>
+        <li>
+          <label for=getBackgroundColor>backgroundColor</label>
+          <input type=text placeholder="Hex #rgb or #rrggbb" id=getBackgroundColor />
+          <button class="preset" data-for=getBackgroundColor data-value="#223">Dark</button>
+          <button class="preset" data-for=getBackgroundColor data-value="#fafaf0">Light</button>
+        </li>
+        <li>
+          <label for=getTermsOfService>termsOfService</label>
+          <input type=text placeholder="Absolute path or URL" id=getTermsOfService />
+          <button class="preset" data-for=getTermsOfService data-value="https://login.persona.org/en/embedded_tos">URL</button>
+          <button class="preset" data-for=getTermsOfService data-value="/terms.html">Path</button>
+          <em>(Deprecated)</em>
+        </li>
+        <li>
+          <label for=getPrivacyPolicy>privacyPolicy</label>
+          <input type=text placeholder="Absolute path or URL" id=getPrivacyPolicy />
+          <button class="preset" data-for=getPrivacyPolicy data-value="https://login.persona.org/en/embedded_privacy">URL</button>
+          <button class="preset" data-for=getPrivacyPolicy data-value="/privacy.html">Path</button>
+          <em>(Deprecated)</em>
+        </li>
+      </ul>
+
+      <button id="get">navigator.id.get(callback, <em>options</em>);</button>
+    </fieldset>
+
+  </div>
+
+  <div class=logging>
+    <h2>Event Log</h2>
+
+    <ol id="eventLog"></ol>
+
+    <h2>Assertions</h2>
+
+    <ol id="assertionLog"></li>
+  </div>
+
+  <script src="/app.js"></script>
 </body>
-
-<script src="jquery-min.js"></script>
-<script src="https://login.persona.org/include.js"></script>
-<script>
-
-try {
-  var storage = localStorage;
-}
-catch(e) {
-  // Fx with cookies disabled with blow up when trying to access localStorage.
-  storage = {};
-}
-
-
-function loggit() {
-  try {
-    console.log.apply(console, arguments);
-  } catch(e) {}
-}
-
-var serial = 1;
-
-// a function to check an assertion against the server
-function checkAssertion(assertion) {
-  $.ajax({
-    url: "/process_assertion",
-    type: "post",
-    dataType: "json",
-    data: {
-      assertion: assertion,
-      audience: window.location.protocol + "//" + window.location.host,
-      forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
-      allowUnverified: $('#allowUnverified').attr('checked') ? true : false
-    },
-    success: function(data, textStatus, jqXHR) {
-      var old = $(".loginEvents > pre").text() + "\n";
-      $(".loginEvents > pre").text(old + JSON.stringify(data, null, 4));
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      var resp = jqXHR.responseText ? JSON.parse(jqXHR.responseText) : errorThrown;
-      $(".loginEvents > pre").text(resp);
-    }
-  });
-};
-
-navigator.id.watch({
-  onlogin: function (assertion) {
-    loggit("onlogin");
-    var txt = serial++ + ' got assertion at ' + (new Date).toString();
-    $(".loginEvents > pre").text(txt);
-
-    checkAssertion(assertion);
-
-    $(".specify button.assertion").removeAttr('disabled');
-  }
-});
-
-$(document).ready(function() {
-  $(".specify button.assertion").click(function() {
-    $(".specify button.assertion").attr('disabled', 'true');
-
-    navigator.id.request({
-      privacyPolicy: $('#privacyPolicy').attr('checked') ? "/privacy.html" : undefined,
-      termsOfService: $('#termsOfService').attr('checked') ? "/TOS.html" : undefined,
-      siteName: $('#supplySiteName').attr('checked')
-          ? $('#siteName').val() : undefined,
-      siteLogo: $('#siteLogo').attr('checked') ? "/i/logo.png" : undefined,
-      backgroundColor: $('#supplyBackgroundColor').attr('checked')
-          ? $('#backgroundColor').val() : undefined,
-      returnTo: $('#returnTo').attr('checked') ? "/postVerificationReturn.html" : undefined,
-      experimental_emailHint: $('#supplyEmailHint').attr('checked') ? $('#emailHint').val() : undefined,
-      experimental_forceAuthentication: $('#forceAuthentication').attr('checked') ? true : false,
-      experimental_forceIssuer: $('#forceIssuer').attr('checked') ? "issuer.domain" : undefined,
-      experimental_allowUnverified: $('#allowUnverified').attr('checked') ? true : false,
-      oncancel: function() {
-        loggit("oncancel");
-        $(".specify button.assertion").removeAttr('disabled');
-      }
-    });
-  });
-});
-
-</script>
-
 </html>
