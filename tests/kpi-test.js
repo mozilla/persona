@@ -8,11 +8,7 @@ const assert = require('assert');
 const vows = require('vows');
 const start_stop = require('./lib/start-stop');
 const wsapi = require('./lib/wsapi');
-const config = require('../lib/configuration');
-const kpi_data = require('../lib/kpi_data');
-const HttpMock = require('./lib/http-mock');
-const logger = require('../lib/logging/logging').logger;
-const KpiTransport = require('../lib/logging/transports/metrics-kpi');
+const HekaTransport = require('../lib/logging/transports/heka-console');
 
 require('./lib/test_env');
 
@@ -33,112 +29,18 @@ suite.addBatch({
   }
 });
 
-suite.addBatch({
-  "storing KPI data": {
-    topic: function() {
-      this.httpMock = new HttpMock({
-        statusCode: 201
-      });
-
-      kpi_data.init({
-        http: this.httpMock,
-        https: this.httpMock
-      });
-
-      kpi_data.store([ {} ], this.callback);
-    },
-    "succeeds": function(err, success) {
-      assert.isNull(err);
-      assert.equal(true, success);
-    },
-    "and reports to kpiggybank": function() {
-      var request = this.httpMock.getRequest();
-      assert.ok(request.data.indexOf("data=%5B%7B%22timestamp") > -1);
-      assert.ok(
-          request.requestOptions.host || request.requestOptions.hostname);
-      assert.ok(request.requestOptions.path);
-      assert.equal("POST", request.requestOptions.method);
-    }
-  }
-});
-
-suite.addBatch({
-  "when kpi_backend_db_url is not set": {
-    topic: function() {
-      this.originalKpiBankendDBUrl = config.get('kpi.backend_db_url');
-      config.set('kpi.backend_db_url', null);
-
-      this.httpMock = new HttpMock({
-        statusCode: 400
-      });
-
-      kpi_data.init({
-        http: this.httpMock,
-        https: this.httpMock
-      });
-
-      kpi_data.store([ {} ], this.callback);
-    },
-    "finishes with success=`false`": function(err, success) {
-      assert.isNull(err);
-      assert.equal(false, success);
-    },
-    "no reports are made to kpiggybank": function() {
-      var request = this.httpMock.getRequest();
-      assert.equal("undefined", typeof request);
-
-    },
-    "reset kpi_backend_db_url": function() {
-      config.set('kpi.backend_db_url', this.originalKpiBankendDBUrl);
-    }
-  }
-});
-
-suite.addBatch({
-  "metrics logs": {
-    topic: function() {
-      this.origSendMetricsValue = config.get('kpi.send_metrics');
-      config.set('kpi.send_metrics', true);
-
-      this.httpMock = new HttpMock({
-        statusCode: 201
-      });
-
-      kpi_data.init({
-        http: this.httpMock,
-        https: this.httpMock
-      });
-
-      var batchSize = config.get('kpi.metrics_batch_size');
-      for (var i = 0; i < batchSize - 1; ++i) {
-        logger.info('signin', {value: i});
-      }
-      return this.httpMock.getRequest() || "no_request_made";
-    },
-    "are not sent if the batch limit has not been reached": function(request) {
-      assert.equal(request, "no_request_made");
-    },
-    "are sent": {
-      topic: function() {
-        logger.info('verify', { value: 'causes user to verify' });
-        return this.httpMock.getRequest() || "no_request_made";
-      },
-      "when the batch is full": function(request) {
-        assert.ok(request.data);
-      }
-    },
-    "reset kpi_send_metrics": function() {
-      config.set('kpi.send_metrics', this.origSendMetricsValue);
-    }
-  }
-});
-
 function noOp() {}
 
 suite.addBatch({
-  "staging and verification events": {
+  "staging, verification, and kpi events": {
     topic: function() {
-      this.origSendMetricsValue = config.get('kpi.send_metrics');
+      this.consoleMock = {
+        entries: [],
+        log: function (entry) {
+          this.entries.push(entry);
+        }
+      };
+
       this.expectedEvents = [
         'stage_email.success',
         'stage_reset.success',
@@ -151,33 +53,35 @@ suite.addBatch({
         'complete_user_creation.success',
         'idp.auth_cancel',
         'idp.auth_return',
-        'idp.create_new_user'
+        'idp.create_new_user',
+        'kpi'
       ];
-      config.set('kpi.send_metrics', true);
 
-      var kpiTransport = new KpiTransport();
+      var kpiTransport = new HekaTransport({
+        console: this.consoleMock
+      });
 
       this.expectedEvents.forEach(function(event) {
         kpiTransport.log('info', event, null, noOp);
       });
 
-      return kpiTransport.getQueue();
+      return this.consoleMock.entries;
     },
-    "are added to the KPI queue": function(queue) {
+
+    "are logged to the console for Heka": function (entries) {
       var expectedEvents = this.expectedEvents;
 
       // The test here is a bit backwards. Take the original set of events to
       // test and remove the events that have been added to the queue. Hope
       // that none remain.
-      queue.forEach(function(kpi) {
-        var eventName = kpi.event_name;
+      entries.forEach(function(entry) {
+        var kpi = JSON.parse(entry);
+        var eventName = kpi.Type;
         var index = expectedEvents.indexOf(eventName);
         expectedEvents.splice(index, 1);
       });
+
       assert.equal(expectedEvents.length, 0);
-    },
-    "reset kpi_send_metrics": function() {
-      config.set('kpi.send_metrics', this.origSendMetricsValue);
     }
   }
 });
