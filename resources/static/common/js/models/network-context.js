@@ -33,6 +33,7 @@ BrowserID.Models.NetworkContext = (function() {
       this.importFrom(context,
         'csrf_token',
         'server_time',
+        'data_sample_rate',
         'domain_key_creation_time',
         'code_version',
         'cookies',
@@ -54,6 +55,12 @@ BrowserID.Models.NetworkContext = (function() {
       if (!this.local_time) throw new Error("can't get local time!");
 
       return this.local_time;
+    },
+
+    getDataSampleRate: function () {
+      if (!this.data_sample_rate) throw new Error("can't get data sample rate!");
+
+      return this.data_sample_rate;
     },
 
     getServerTime: function() {

@@ -162,8 +162,8 @@ BrowserID.Modules.InteractionData = (function() {
   function beginSampling(networkContext) {
     /*jshint validthis: true */
     var self = this,
-        dataSampleRate = networkContext.data_sample_rate,
-        serverTime = networkContext.server_time;
+        dataSampleRate = networkContext.getDataSampleRate(),
+        serverTime = networkContext.getServerTime();
 
     // set the sample rate as defined by the server.  It's a value
     // between 0..1, integer or float, and it specifies the percentage
