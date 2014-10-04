@@ -5,7 +5,7 @@ span.note { border-bottom: 1px dotted black; }
   margin: 0 auto;
 }
 
-.pure-form { 
+.pure-form {
   -webkit-box-sizing: border-box; /* Still needed for Android 2.x */
   box-sizing: border-box;
   padding: 1em 0.5em;
@@ -51,3 +51,29 @@ span.note { border-bottom: 1px dotted black; }
   border-left: none;
   padding-left: 0; padding-right: 0;
 }
+
+#event-logs {
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+#event-logs .log-entry {
+  margin: 0.5em 0;
+  color: #999;
+
+  /* Force long strings to wrap */
+  overflow-x: scroll;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+#event-logs .label {
+  text-transform: uppercase;
+  font-weight: bold;
+  display: inline-block;
+  min-width: 7em;
+}
+
+#event-logs .function { color: #666; }
+#event-logs .callback { color: #000; }
+#event-logs .error    { color: #b21; }

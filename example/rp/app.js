@@ -19,6 +19,48 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 
+  function stringify(obj) {
+    function replacer(k, v) {
+      return typeof v === 'function' ? '[callback]' : v;
+    }
+
+    var s = JSON.stringify(obj, replacer, 2);
+    s = s.replace(/\r?\n/g, ''); // Strip newlines
+    s = s.replace(/^\{\s+/, '{'); // Strip leading space after first '{'
+
+    return s;
+  }
+
+
+  function log(type, text) {
+    // log("hello, world") -> log("info", "hello, world");
+    if (text === undefined) {
+      text = type;
+      type = "info";
+    }
+
+    var ol = document.getElementById('event-logs');
+
+    var li = document.createElement('li');
+    li.className = "log-entry" + " " + type.toLowerCase();
+
+    var label = document.createElement('span');
+    label.className = 'label';
+    // IE8 doesn't have textContent
+    label[label.textContent === undefined ? 'innerText' : 'textContent'] = type;
+
+    var message = document.createElement('span');
+    message.className = 'message';
+    // IE8 doesn't have textContent
+    message[message.textContent === undefined ? 'innerText' : 'textContent'] = text;
+
+    li.appendChild(label);
+    li.appendChild(document.createTextNode(' '));
+    li.appendChild(message);
+
+    ol.appendChild(li);
+  }
+
   /* Load the shim from designated origin */
   (function () {
     var shims = {
@@ -38,14 +80,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var script = document.createElement('script');
     script.src = (shims[query] || shims.local) + "/include.js";
     document.body.appendChild(script);
-    console.log("Loading shim from " + script.src);
+    log("Loading shim from " + script.src);
   }());
 
   /* Handle clicks on preset buttons */
   (function () {
     function handler(e) {
       // HACK: IE8 doesn't support event.currentTarget
-      var el = e.srcElement ? e.srcElement : e.currentTarget;
+      var el = e.srcElement || e.currentTarget;
       var id = el.getAttribute('data-for');
       var field = document.getElementById(id);
 
@@ -102,40 +144,40 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     /* Helper to check / parse assertions */
     function checkAssertion(assertion) {
-      console.log("FIXME: Checking assertion: " + assertion); // FIXME
+      log("assertion", assertion);
     }
 
     /* Various Persona callbacks */
     var callbacks = {
       onlogin: function (assertion) {
-        console.log("onlogin fired");
+        log("callback", "onlogin(assertion);");
         checkAssertion(assertion);
       },
 
       onready: function () {
-        console.log("onready fired");
+        log("callback", "onready();");
       },
 
       onlogout: function () {
-        console.log("onlogout fired");
+        log("callback", "onlogout();");
       },
 
       onmatch: function () {
-        console.log("onmatch fired");
+        log("callback", "onmatch();");
       },
 
       oncancel: function () {
-        console.log("oncancel fired");
+        log("callback", "oncancel();");
       },
 
       get: function (assertion) {
         if (assertion) {
-          console.log("get's callback returned an assertion");
+          log("callback", "(With assertion)");
           checkAssertion(assertion);
         } else if (assertion === null) {
-          console.log("get's callback returned received a null assertion; user cancelled the popup");
+          log("callback", "(Null assertion; user cancelled popup)");
         } else {
-          console.error("get's callback returned an unexpected false-y assertion: " + assertion);
+          log("error", "Unexpected falsey assertion: " + assertion);
         }
       }
     };
@@ -168,6 +210,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
           options.loggedInUser = specialCases[options.loggedInUser];
         }
 
+        log('function', 'navigator.id.watch(' + stringify(options) + ');');
         navigator.id.watch(options);
       });
     }
@@ -190,6 +233,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
           experimental_forceIssuer:         { type: String }
         });
 
+        log('function', 'navigator.id.request(' + stringify(options) + ');');
         navigator.id.request(options);
       });
     }
@@ -198,6 +242,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var logoutBtn = document.getElementById('logout--button');
     if (logoutBtn) {
       listen(logoutBtn, 'click', function () {
+
+        log('function', 'navigator.id.logout();');
         navigator.id.logout();
       });
     }
@@ -214,6 +260,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
           privacyPolicy:   { type: String }
         });
 
+        log('function', 'navigator.id.get(callback, ' + stringify(options) + ');');
         navigator.id.get(callbacks.get, options);
       });
     }
