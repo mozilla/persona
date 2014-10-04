@@ -79,8 +79,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var query = window.location.search.substring(1);
     var script = document.createElement('script');
     script.src = (shims[query] || shims.local) + "/include.js";
-    document.body.appendChild(script);
+
+    listen(script, 'load', function () { log("Shim loaded"); });
     log("Loading shim from " + script.src);
+
+    document.body.appendChild(script);
   }());
 
   /* Handle clicks on preset buttons */
@@ -92,12 +95,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
       var field = document.getElementById(id);
 
       if (!(el.hasAttribute('data-for') && el.hasAttribute('data-value'))) {
-        console.error("Preset missing data-for or data-value attributes");
+        log('error', 'Unable to use preset, missing data-for or data-value attributes');
         return;
       }
 
       if (!(field && field instanceof HTMLInputElement)) {
-        console.error("Unable to find element #" + id);
+        log('error', 'Unable to use preset, element not found: #' + id);
         return;
       }
 
@@ -124,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
           meta = options[option];
           el = document.getElementById(prefix + '-' + option);
           if (!el) {
-            console.warn("Expected to find element #" + prefix + "-" + option);
+            log('error', "Skipping option " + option + ", element not found: #" + prefix + "-" + option);
             continue;
           }
 
