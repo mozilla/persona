@@ -64,21 +64,26 @@ document.addEventListener("DOMContentLoaded", function (event) {
   /* Load the shim from designated origin */
   (function () {
     var shims = {
-      dev: "https://login.dev.anosrep.org",
-      stage: "https://login.anosrep.org",
-      prod: "https://login.persona.org",
-      fxos: "https://firefoxos.persona.org",
+      dev: "login.dev.anosrep.org",
+      stage: "login.anosrep.org",
+      prod: "login.persona.org",
+      fxos: "firefoxos.persona.org",
       local: "{{ PUBLIC_URL }}" // Replaced by Express during post-processing
     };
 
-    // Not running under Express? Use production Persona by default.
-    if (shims.local === "{{ " + "PUBLIC_URL" + " }}") {
-      shims.local = shims.prod;
+    var target = window.location.search.substring(1) || 'local';
+
+    if (shims.local === "{{" + " PUBLIC_URL " + "}}" && target === 'local') {
+      // Oops! The magic string wasn't replaced by Express.
+      log('error', 'No local Persona instance detected, using production instead');
+      target = 'prod';
     }
 
-    var query = window.location.search.substring(1);
     var script = document.createElement('script');
-    script.src = (shims[query] || shims.local) + "/include.js";
+
+    var src = (shims[target] || target) + "/include.js";
+    // Default to https if no protocol specified
+    script.src = /^https?:\/\//i.test(src) ? src : 'https://' + src;
 
     listen(script, 'load', function () { log("Shim loaded"); });
     log("Loading shim from " + script.src);
