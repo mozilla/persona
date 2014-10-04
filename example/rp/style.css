@@ -1,15 +1,16 @@
 span.note { border-bottom: 1px dotted black; }
 
 .constrained {
-  max-width: 48em;
+  max-width: 64em;
   margin: 0 auto;
+
+  font-size: 75%;
 }
 
 .pure-form {
   -webkit-box-sizing: border-box; /* Still needed for Android 2.x */
   box-sizing: border-box;
   padding: 1em 0.5em;
-  font-size: 0.75em;
 }
 
 .pure-form legend {
