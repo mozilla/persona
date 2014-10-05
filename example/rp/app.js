@@ -153,6 +153,46 @@ document.addEventListener("DOMContentLoaded", function (event) {
     /* Helper to check / parse assertions */
     function checkAssertion(assertion) {
       log("assertion", assertion);
+
+      function getXHR() {
+        if (window.XMLHttpRequest) {
+          return new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+          try {
+            return new ActiveXObject("Msxml2.XMLHTTP");
+          } catch (e1) {
+            try {
+              return new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e2) {}
+          }
+        }
+      }
+
+      var xhr = getXHR();
+
+      xhr.onreadystatechange = function () {
+        var body;
+        if (xhr.readyState === 4) {
+          body = xhr.responseText && JSON.parse(xhr.responseText);
+          if (body) {
+            log('Verifier Response: ' + body.status + ' for ' + body.email);
+          } else {
+            log('error', 'Verifier failed to respond.');
+          }
+        }
+      };
+
+      var forceIssuer = document.getElementById('verifier-forceIssuer').value;
+      var allowUnverified = document.getElementById('verifier-allowUnverified').checked;
+
+      xhr.open('POST', '/process_assertion', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({
+        assertion: assertion,
+        audience: window.location.protocol + "//" + window.location.host,
+        forceIssuer: forceIssuer || undefined,
+        allowUnverified: allowUnverified ? "true" : "false"
+      }));
     }
 
     /* Various Persona callbacks */
