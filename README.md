@@ -2,6 +2,8 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
+[![Build Status](https://travis-ci.org/mozilla/persona.svg?branch=future)](https://travis-ci.org/mozilla/persona)
+
 This repository contains the core [Mozilla Persona][] services.
 Persona is a login system based on the [BrowserID protocol][].
 
