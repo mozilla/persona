@@ -1,0 +1,80 @@
+span.note { border-bottom: 1px dotted black; }
+
+.constrained {
+  max-width: 64em;
+  margin: 0 auto;
+
+  font-size: 75%;
+}
+
+.pure-form {
+  -webkit-box-sizing: border-box; /* Still needed for Android 2.x */
+  box-sizing: border-box;
+  padding: 1em 0.5em;
+}
+
+.pure-form legend {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.action { margin-top: 1em; border-radius: 1em; }
+
+.deprecated, .experimental, .supported {
+  padding: 1em;
+}
+
+.supported { background-color: #66cc99; }
+.deprecated { background-color: #f9bf3b; }
+.experimental { background-color: #e26a6a; }
+
+.pure-form-stacked label {
+  margin: 1em 0 0 0;
+}
+
+.pure-form input[type="text"], .pure-form input[type="email"], .pure-form button.preset {
+  border: 1px solid #666;
+  border-radius: 4px;
+}
+
+.pure-form-stacked input.has-presets {
+  display: inline-block;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.pure-form button.preset.middle {
+  border-radius: 0;
+}
+
+.pure-form button.preset {
+  border-radius: 0 4px 4px 0;
+  border-left: none;
+  padding-left: 0; padding-right: 0;
+}
+
+#event-logs {
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+#event-logs .log-entry {
+  margin: 0.5em 0;
+  color: #999;
+
+  /* Force long strings to wrap */
+  overflow-x: scroll;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+#event-logs .label {
+  text-transform: uppercase;
+  font-weight: bold;
+  display: inline-block;
+  min-width: 7em;
+}
+
+#event-logs .function { color: #666; }
+#event-logs .callback { color: #000; }
+#event-logs .error    { color: #b21; }

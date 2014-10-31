@@ -1,283 +1,316 @@
-(function() {
-  /* Triggered Callbacks */
+/* Android 2.x doesn't support deferred scripts, so we use DOMContentLoaded.
+   IE8 doesn't support DOMContentLoaded, but we have a polyfill, so it's OK.
+   IE8/9 can act poorly with multiple deferred scripts, but we only use one.
 
-  function getCallback(assertion) {
-    if (assertion) {
-      log("Triggered .get()'s callback with assertion", assertion);
-      checkAssertion(assertion);
+   Other platforms respect the "defer" attribute and execute upon DOM ready.
+
+   After we drop Android 2.x, we can trust defer and ditch DOMContentLoaded.
+*/
+
+document.addEventListener("DOMContentLoaded", function (event) {
+  'use strict';
+
+  /* HACK: IE8 doesn't support object.addEventListener */
+  function listen(obj, evtName, handler) {
+    if (obj.attachEvent) {
+      obj.attachEvent('on' + evtName,  handler);
     } else {
-      log("User cancelled popup; assertion is " + assertion);
+      obj.addEventListener(evtName, handler);
     }
   }
 
-  function onlogin(assertion) {
-    log("Triggered onlogin(...); with assertion", assertion);
-    checkAssertion(assertion);
+  function stringify(obj) {
+    function replacer(k, v) {
+      return typeof v === 'function' ? '[callback]' : v;
+    }
+
+    var s = JSON.stringify(obj, replacer, 2);
+    s = s.replace(/\r?\n/g, ''); // Strip newlines
+    s = s.replace(/^\{\s+/, '{'); // Strip leading space after first '{'
+
+    return s;
   }
 
-  function onready() {
-    log("Triggered onready();");
-  }
 
-  function oncancel() {
-    log("Triggered oncancel();");
-  }
+  function log(type, text) {
+    // log("hello, world") -> log("info", "hello, world");
+    if (text === undefined) {
+      text = type;
+      type = "info";
+    }
 
-  function onlogout() {
-    log("Triggered onlogout();");
-  }
+    var ol = document.getElementById('event-logs');
 
-  function onmatch() {
-    log("Triggered onmatch();");
-  }
-
-  /* Utilities */
-
-  function prettyPrint(json) {
-    return JSON.stringify(json, undefined, 2);
-  }
-
-  function appendText(node, text) {
-    node.appendChild(document.createTextNode(text));
-  }
-
-  var eventLog = document.getElementById('eventLog');
-  function log(msg, assertion) {
     var li = document.createElement('li');
-    appendText(li, msg);
-    eventLog.appendChild(li);
+    li.className = "log-entry" + " " + type.toLowerCase();
 
-    if (assertion) {
-      var assertionLog = document.getElementById('assertionLog').appendChild(document.createElement('li'));
+    var label = document.createElement('span');
+    label.className = 'label';
+    // IE8 doesn't have textContent
+    label[label.textContent === undefined ? 'innerText' : 'textContent'] = type;
 
-      // Log raw assertion
-      var textarea = document.createElement('textarea');
-      appendText(textarea, assertion);
-      assertionLog.appendChild(textarea);
+    var message = document.createElement('span');
+    message.className = 'message';
+    // IE8 doesn't have textContent
+    message[message.textContent === undefined ? 'innerText' : 'textContent'] = text;
 
-      // Log parsed assertion
-      var code = document.createElement('code');
-      var pre = document.createElement('pre');
-      code.appendChild(pre);
+    li.appendChild(label);
+    li.appendChild(document.createTextNode(' '));
+    li.appendChild(message);
 
-      var parsed = parseAssertion(assertion);
-
-      appendText(pre, "// ASSERTION\n");
-      appendText(pre, JSON.stringify(parsed.assertion.header));
-      appendText(pre, "\n\n");
-      appendText(pre, prettyPrint(parsed.assertion.payload));
-
-      appendText(pre, "\n\n");
-
-      appendText(pre, "// CERTIFICATE\n");
-      appendText(pre, JSON.stringify(parsed.certificate.header));
-      appendText(pre, "\n\n");
-      appendText(pre, prettyPrint(parsed.certificate.payload));
-
-      assertionLog.appendChild(code);
-    }
-  }
-
-  function readOpts(options) {
-    var args = {};
-    var el, meta;
-
-    for (var opt in options) {
-      if (options.hasOwnProperty(opt)) {
-        meta = options[opt];
-        el = document.getElementById(meta.id);
-
-        // If checkbox, use value above.
-        // Otherwise, use value of field itself.
-        if ('value' in meta) {
-          if (el.checked) { args[opt] = meta.value; }
-        } else {
-          if (el.value) { args[opt] = el.value; }
-        }
-      }
-    }
-
-    return args;
-  }
-
-  function decode(s) {
-    // Convert back to normal Base64 from URLSafe Base64
-    var b64 = s.replace(/-/g, '+').replace(/_/g, '/');
-
-    // Restore padding
-    var padding = { 0: '', 2: '==', 3: '=' };
-    s += padding[s.length % 4];
-
-    // Base64 decode
-    return JSON.parse(atob(s));
-  }
-
-  function parseAssertion(assertion) {
-    var parts = assertion.split('~');
-    var certificate = parts[0];
-    var assertion = parts[1];
-
-    return {
-      assertion: {
-        header: decode(assertion.split('.')[0]),
-        payload: decode(assertion.split('.')[1]),
-      },
-      certificate: {
-        header: decode(certificate.split('.')[0]),
-        payload: decode(certificate.split('.')[1]),
-      },
-    };
-  }
-
-  function getXHR() {
-    if (window.XMLHttpRequest) {
-      return new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-      try {
-        return new ActiveXObject("Msxml2.XMLHTTP");
-      }
-      catch (e) {
-        try {
-          return new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        catch (e) {}
-      }
-    }
-  }
-
-  function checkAssertion(assertion) {
-    var xhr = getXHR();
-
-    xhr.onreadystatechange = function () {
-      var body;
-      if (xhr.readyState === 4) {
-        body = xhr.responseText && JSON.parse(xhr.responseText);
-        if (body) {
-          log("Verifier Response: " + body.status + " for " + body.email);
-        } else {
-          log("Verifier failed to respond.");
-        }
-      }
-    }
-
-    var forceIssuer = document.getElementById('verifierForceIssuer').value;
-    var allowUnverified = document.getElementById('verifierAllowUnverified').checked;
-
-    xhr.open('POST', '/process_assertion', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({
-      assertion: assertion,
-      audience: window.location.protocol + "//" + window.location.host,
-      forceIssuer: forceIssuer ? forceIssuer : undefined,
-      allowUnverified: allowUnverified ? "true" : "false",
-    }));
-  }
-
-  /* Button Clicks */
-
-  var watchBtn = document.getElementById('watch');
-  watchBtn.onclick = function() {
-    var options = readOpts({
-      // Checkboxes
-      onlogin: { id: 'watchOnlogin', value: onlogin },
-      onready: { id: 'watchOnready', value: onready },
-      onlogout: { id: 'watchOnlogout', value: onlogout },
-      onmatch: { id: 'watchOnmatch', value: onmatch },
-
-      // Freeform text
-      loggedInUser:    { id: 'watchLoggedInUser' },
-      siteName:        { id: 'watchSiteName' },
-      siteLogo:        { id: 'watchSiteLogo' },
-      backgroundColor: { id: 'watchBackgroundColor' },
-    });
-
-    // Special processing for loggedInUser
-    var specialUsers = { 'undefined': undefined, 'null': null, 'false': false };
-    if (options.loggedInUser && options.loggedInUser in specialUsers) {
-      options.loggedInUser = specialUsers[options.loggedInUser];
-    }
-
-    log("Invoking navigator.id.watch(...);");
-    console && console.log("Invoking navigator.id.watch(...);");
-    console && console.log(options);
-
-    navigator.id.watch(options);
-  };
-
-  var requestBtn = document.getElementById('request');
-  requestBtn.onclick = function() {
-    var options = readOpts({
-      oncancel: { id: 'requestOncancel', value: oncancel },
-      experimental_allowUnverified: { id: 'requestAllowUnverified', value: 'true' },
-      experimental_forceAuthentication: { id: 'requestForceAuthentication', value: 'true' },
-
-      email: { id: 'requestEmail' },
-      termsOfService:  { id: 'requestTermsOfService' },
-      privacyPolicy:   { id: 'requestPrivacyPolicy' },
-      returnTo:   { id: 'requestReturnTo' },
-      experimental_forceIssuer: { id: 'requestForceIssuer' },
-    });
-
-    log("Invoking navigator.id.request(...);");
-    console && console.log("Invoking navigator.id.request(...);");
-    console && console.log(options);
-
-    navigator.id.request(options);
-  };
-
-  var logoutBtn = document.getElementById('logout');
-  logoutBtn.onclick = function() {
-    log("Invoking navigator.id.logout();");
-    console && console.log("Invoking navigator.id.logout();");
-
-    navigator.id.logout();
-  };
-
-  var getBtn = document.getElementById('get');
-  getBtn.onclick = function() {
-    var options = readOpts({
-      siteName:        { id: 'getSiteName' },
-      siteLogo:        { id: 'getSiteLogo' },
-      backgroundColor: { id: 'getBackgroundColor' },
-      termsOfService:  { id: 'getTermsOfService' },
-      privacyPolicy:   { id: 'getPrivacyPolicy' },
-    });
-
-    log("Invoking navigator.id.get(callback, ...);");
-    console && console.log("Invoking navigator.id.get(callback, ...);");
-    console && console.log(options);
-
-    navigator.id.get(getCallback, options);
-  };
-
-  var presets = document.getElementsByClassName('preset');
-  var preset, target, data;
-  for (var i = 0; i < presets.length; i++) {
-    preset = presets[i];
-    preset.addEventListener('click', function(e) {
-      var el = e.target;
-      var field = document.getElementById(el.getAttribute('data-for'));
-      field.value = el.getAttribute('data-value');
-    });
+    ol.appendChild(li);
   }
 
   /* Load the shim from designated origin */
-  (function() {
+  (function () {
     var shims = {
-      dev: "https://login.dev.anosrep.org",
-      stage: "https://login.anosrep.org",
-      prod: "https://login.persona.org",
-      fxos: "https://firefoxos.persona.org",
-      local: "{{ PUBLIC_URL }}", // Replaced by Express during post-processing
+      dev: "login.dev.anosrep.org",
+      stage: "login.anosrep.org",
+      prod: "login.persona.org",
+      fxos: "firefoxos.persona.org",
+      local: "{{ PUBLIC_URL }}" // Replaced by Express during post-processing
+    };
+
+    var target = window.location.search.substring(1) || 'local';
+
+    if (shims.local === "{{" + " PUBLIC_URL " + "}}" && target === 'local') {
+      // Oops! The magic string wasn't replaced by Express.
+      log('error', 'No local Persona instance detected, using production instead');
+      target = 'prod';
     }
 
-    var query = window.location.search.substring(1);
-
     var script = document.createElement('script');
-    script.src = (shims[query] || shims.local) + "/include.js";
 
+    var src = (shims[target] || target) + "/include.js";
+    // Default to https if no protocol specified
+    script.src = /^https?:\/\//i.test(src) ? src : 'https://' + src;
+
+    listen(script, 'load', function () { log("Shim loaded"); });
     log("Loading shim from " + script.src);
 
     document.body.appendChild(script);
-  })();
-})();
+  }());
+
+  /* Handle clicks on preset buttons */
+  (function () {
+    function handler(e) {
+      // HACK: IE8 doesn't support event.currentTarget
+      var el = e.srcElement || e.currentTarget;
+      var id = el.getAttribute('data-for');
+      var field = document.getElementById(id);
+
+      if (!(el.hasAttribute('data-for') && el.hasAttribute('data-value'))) {
+        log('error', 'Unable to use preset, missing data-for or data-value attributes');
+        return;
+      }
+
+      if (!(field && field instanceof HTMLInputElement)) {
+        log('error', 'Unable to use preset, element not found: #' + id);
+        return;
+      }
+
+      field.value = el.getAttribute('data-value');
+    }
+
+    // Apply the handler to all preset buttons.
+    var presets = document.querySelectorAll('button.preset');
+    var i;
+    for (i = 0; i < presets.length; i++) {
+      listen(presets[i], 'click', handler);
+    }
+  }());
+
+  /* Handle clicks on action buttons */
+  (function () {
+    /* Helper to pull option values out of the page */
+    function parseOpts(prefix, options) {
+      var result = {};
+
+      var option, meta, el;
+      for (option in options) {
+        if (options.hasOwnProperty(option)) {
+          meta = options[option];
+          el = document.getElementById(prefix + '-' + option);
+          if (!el) {
+            log('error', "Skipping option " + option + ", element not found: #" + prefix + "-" + option);
+            continue;
+          }
+
+          switch (meta.type) {
+          case String:
+            if (el.value) { result[option] = el.value; }
+            break;
+          case Boolean:
+            if (el.checked) { result[option] = meta.value; }
+            break;
+          }
+        }
+      }
+
+      return result;
+    }
+
+    /* Helper to check / parse assertions */
+    function checkAssertion(assertion) {
+      log("assertion", assertion);
+
+      function getXHR() {
+        if (window.XMLHttpRequest) {
+          return new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+          try {
+            return new ActiveXObject("Msxml2.XMLHTTP");
+          } catch (e1) {
+            try {
+              return new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e2) {}
+          }
+        }
+      }
+
+      var xhr = getXHR();
+
+      xhr.onreadystatechange = function () {
+        var body;
+        if (xhr.readyState === 4) {
+          body = xhr.responseText && JSON.parse(xhr.responseText);
+          if (body) {
+            log('Verifier Response: ' + body.status + ' for ' + body.email);
+          } else {
+            log('error', 'Verifier failed to respond.');
+          }
+        }
+      };
+
+      var forceIssuer = document.getElementById('verifier-forceIssuer').value;
+      var allowUnverified = document.getElementById('verifier-allowUnverified').checked;
+
+      xhr.open('POST', '/process_assertion', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({
+        assertion: assertion,
+        audience: window.location.protocol + "//" + window.location.host,
+        forceIssuer: forceIssuer || undefined,
+        allowUnverified: allowUnverified ? "true" : "false"
+      }));
+    }
+
+    /* Various Persona callbacks */
+    var callbacks = {
+      onlogin: function (assertion) {
+        log("callback", "onlogin(assertion);");
+        checkAssertion(assertion);
+      },
+
+      onready: function () {
+        log("callback", "onready();");
+      },
+
+      onlogout: function () {
+        log("callback", "onlogout();");
+      },
+
+      onmatch: function () {
+        log("callback", "onmatch();");
+      },
+
+      oncancel: function () {
+        log("callback", "oncancel();");
+      },
+
+      get: function (assertion) {
+        if (assertion) {
+          log("callback", "(With assertion)");
+          checkAssertion(assertion);
+        } else if (assertion === null) {
+          log("callback", "(Null assertion; user cancelled popup)");
+        } else {
+          log("error", "Unexpected falsey assertion: " + assertion);
+        }
+      }
+    };
+
+    /* navigator.id.watch(); */
+    var watchBtn = document.getElementById('watch--button');
+    if (watchBtn) {
+      listen(watchBtn, 'click', function () {
+        var options = parseOpts('watch', {
+          // Supported
+          onlogin:         { type: Boolean, value: callbacks.onlogin },
+          onready:         { type: Boolean, value: callbacks.onready },
+          siteName:        { type: String },
+          siteLogo:        { type: String },
+          backgroundColor: { type: String },
+          // Deprecated
+          onlogout:        { type: Boolean, value: callbacks.onlogout },
+          onmatch:         { type: Boolean, value: callbacks.onmatch },
+          loggedInUser:    { type: String }
+        });
+
+        // Hack in special values for loggedInUser
+        var specialCases = {
+          'undefined': undefined,
+          'null': null,
+          'false': false
+        };
+
+        if (options.loggedInUser && specialCases.hasOwnProperty(options.loggedInUser)) {
+          options.loggedInUser = specialCases[options.loggedInUser];
+        }
+
+        log('function', 'navigator.id.watch(' + stringify(options) + ');');
+        navigator.id.watch(options);
+      });
+    }
+
+    /* navigator.id.request(); */
+    var requestBtn = document.getElementById('request--button');
+    if (requestBtn) {
+      listen(requestBtn, 'click', function () {
+        var options = parseOpts('request', {
+          // Supported
+          oncancel:       { type: Boolean, value: callbacks.oncancel },
+          email:          { type: String },
+          // Deprecated
+          termsOfService: { type: String },
+          privacyPolicy:  { type: String },
+          returnTo:       { type: String },
+          // Experimental
+          experimental_forceAuthentication: { type: Boolean, value: 'true' },
+          experimental_allowUnverified:     { type: Boolean, value: 'true' },
+          experimental_forceIssuer:         { type: String }
+        });
+
+        log('function', 'navigator.id.request(' + stringify(options) + ');');
+        navigator.id.request(options);
+      });
+    }
+
+    /* navigator.id.logout(); */
+    var logoutBtn = document.getElementById('logout--button');
+    if (logoutBtn) {
+      listen(logoutBtn, 'click', function () {
+
+        log('function', 'navigator.id.logout();');
+        navigator.id.logout();
+      });
+    }
+
+    /* navigator.id.get(); */
+    var getBtn = document.getElementById('get--button');
+    if (getBtn) {
+      listen(getBtn, 'click', function () {
+        var options = parseOpts('get', {
+          siteName:        { type: String },
+          siteLogo:        { type: String },
+          backgroundColor: { type: String },
+          termsOfService:  { type: String },
+          privacyPolicy:   { type: String }
+        });
+
+        log('function', 'navigator.id.get(callback, ' + stringify(options) + ');');
+        navigator.id.get(callbacks.get, options);
+      });
+    }
+  }());
+});

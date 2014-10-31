@@ -1,209 +1,170 @@
-<!DOCTYPE html>
-<!-- This Source Code Form is subject to the terms of the Mozilla Public
-   - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-
+<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="initial-scale=1.0; width=device-width;">
-  <title>Persona Test Relying Party</title>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Persona Test Relying Party</title>
 
-  <style>
-    ul { list-style: none; padding: 0; }
-    ul li { line-height: 1.75; }
-    ul label { display: inline-block; width: 8em; text-align: right; }
+    <!-- Yahoo Pure CSS: http://purecss.io -->
+    <link rel="stylesheet" href="pure-0.5.0/pure.css">
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="pure-0.5.0/grids-responsive-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+      <link rel="stylesheet" href="pure-0.5.0/grids-responsive.css">
+    <!--<![endif]-->
 
-    ol textarea { vertical-align: top; height: 3em; width: 30em; }
-  </style>
-</head>
+    <link rel="stylesheet" href="style.css">
 
-<body>
-  <h1>Persona Test Relying Party</h1>
+    <!-- IE 8 polyfill: document.addEventListener and DOMContentLoaded -->
+    <!--[if IE 8]> <script src="EventListener.js"></script> <![endif]-->
 
-  <p>
-    Load shim from:
-    <a href="/">Local (Default)</a>
-    <a href="/?dev">Dev</a>
-    <a href="/?stage">Stage</a>
-    <a href="/?prod">Prod</a>
-    <a href="/?fxos">FxOS</a>
-  </p>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <div class="pure-g constrained">
+      <form class="pure-form pure-form-stacked pure-u-1-2 pure-u-sm-1-3">
+        <fieldset>
+          <legend>Watch</legend>
 
-  <div class=config>
-    <fieldset>
-      <legend>navigator.id.watch()</legend>
-      <ul>
-        <li>
-          <label for=watchOnlogin>onlogin</label>
-          <input type=checkbox checked id=watchOnlogin />
-          <em>(Required)</em>
-        </li>
-        <li>
-          <label for=watchOnready>onready</label>
-          <input type=checkbox checked id=watchOnready />
-        </li>
-        <li>
-          <label for=watchOnlogout>onlogout</label>
-          <input type=checkbox id=watchOnlogout />
-          <em>(Deprecated, Observer API Only)</em>
-        </li>
-        <li>
-          <label for=watchOnmatch>onmatch</label>
-          <input type=checkbox id=watchOnmatch />
-          <em>(Deprecated, Observer API Only)</em>
-        </li>
-        <li>
-          <label for=watchLoggedInUser>loggedInUser</label>
-          <input type=email placeholder="user@example.com" id=watchLoggedInUser />
-          <em>(Deprecated, Observer API Only)</em>
-        </li>
-        <li>
-          <label for=watchSiteName>siteName</label>
-          <input type=text placeholder="String" id=watchSiteName />
-        </li>
-        <li>
-          <label for=watchSiteLogo>siteLogo</label>
-          <input type=text placeholder="HTTPS URL or data: URI" id=watchSiteLogo />
-          <button class="preset" data-for=watchSiteLogo data-value="https://login.persona.org/pages/i/persona-logo-100x100.png">URL</button>
-          <button class="preset" data-for=watchSiteLogo data-value="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iDQogICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KDQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyINCiB3aWR0aD0iNDY3IiBoZWlnaHQ9IjQ2MiI+DQogIDxyZWN0IHg9IjgwIiB5PSI2MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIyNTAiIHJ4PSIyMCINCiAgICAgIHN0eWxlPSJmaWxsOiNmZjAwMDA7IHN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoycHg7IiAvPg0KICANCiAgPHJlY3QgeD0iMTQwIiB5PSIxMjAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMjUwIiByeD0iNDAiDQogICAgICBzdHlsZT0iZmlsbDojMDAwMGZmOyBzdHJva2U6IzAwMDAwMDsgc3Ryb2tlLXdpZHRoOjJweDsNCiAgICAgIGZpbGwtb3BhY2l0eTowLjc7IiAvPg0KPC9zdmc+">data:</button>
-        </li>
-        <li>
-          <label for=watchBackgroundColor>backgroundColor</label>
-          <input type=text placeholder="Hex #rgb or #rrggbb" id=watchBackgroundColor />
-          <button class="preset" data-for=watchBackgroundColor data-value="#223">Dark</button>
-          <button class="preset" data-for=watchBackgroundColor data-value="#fafaf0">Light</button>
-        </li>
-      </ul>
+          <div class="supported">
+            <label for="watch-onlogin" class="pure-checkbox"><input id="watch-onlogin" type="checkbox" checked> onlogin</label>
 
-      <button id="watch">navigator.id.watch(<em>options</em>);</button>
-    </fieldset>
+            <label for="watch-onready" class="pure-checkbox"><input id="watch-onready" type="checkbox" checked> onready</label>
 
-    <fieldset>
-      <legend>navigator.id.request()</legend>
-      <ul>
-        <li>
-          <label for=requestOncancel>oncancel</label>
-          <input type=checkbox checked id=requestOncancel />
-        </li>
-        <li>
-          <label for=requestEmail>email</label>
-          <input type=email placeholder="user@example.com" id=requestEmail />
-          <em>(Has bugs)</em>
-        </li>
-        <li>
-          <label for=requestTermsOfService>termsOfService</label>
-          <input type=text placeholder="Absolute path or URL" id=requestTermsOfService />
-          <button class="preset" data-for=requestTermsOfService data-value="https://login.persona.org/en/embedded_tos">URL</button>
-          <button class="preset" data-for=requestTermsOfService data-value="/terms.html">Path</button>
-          <em>(Deprecated)</em>
-        </li>
-        <li>
-          <label for=requestPrivacyPolicy>privacyPolicy</label>
-          <input type=text placeholder="Absolute path or URL" id=requestPrivacyPolicy />
-          <button class="preset" data-for=requestPrivacyPolicy data-value="https://login.persona.org/en/embedded_privacy">URL</button>
-          <button class="preset" data-for=requestPrivacyPolicy data-value="/privacy.html">Path</button>
-          <em>(Deprecated)</em>
-        </li>
-        <li>
-          <label for=requestReturnTo>returnTo</label>
-          <input type=text placeholder="Absolute path" id=requestReturnTo />
-          <em>(Deprecated)</em>
-        </li>
-        <li>
-          <label for=requestAllowUnverified>allowUnverified</label>
-          <input type=checkbox id=requestAllowUnverified />
-          <em>(Experimental)</em>
-        </li>
-        <li>
-          <label for=requestForceAuthentication>forceAuthentication</label>
-          <input type=checkbox id=requestForceAuthentication />
-          <em>(Experimental)</em>
-        </li>
-        <li>
-          <label for=requestForceIssuer>forceIssuer</label>
-          <input type=text placeholder="Domain" id=requestForceIssuer />
-          <button class="preset" data-for=requestForceIssuer data-value="firefoxos.persona.org">FxOS</button>
-          <em>(Experimental)</em>
-        </li>
-      </ul>
+            <label for="watch-siteName">siteName</label>
+            <input id="watch-siteName" type="text" placeholder="String" class="pure-input-1">
 
-      <p>
-        <button id="request">navigator.id.request(<em>options</em>);</button>
-      </p>
+            <label for="watch-siteLogo">siteLogo</label>
+            <input id="watch-siteLogo" type="text" placeholder="https://... or data:" class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="watch-siteLogo" data-value="https://login.persona.org/pages/i/persona-logo-100x100.png">https://</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="watch-siteLogo" data-value="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iDQogICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KDQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyINCiB3aWR0aD0iNDY3IiBoZWlnaHQ9IjQ2MiI+DQogIDxyZWN0IHg9IjgwIiB5PSI2MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIyNTAiIHJ4PSIyMCINCiAgICAgIHN0eWxlPSJmaWxsOiNmZjAwMDA7IHN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoycHg7IiAvPg0KICANCiAgPHJlY3QgeD0iMTQwIiB5PSIxMjAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMjUwIiByeD0iNDAiDQogICAgICBzdHlsZT0iZmlsbDojMDAwMGZmOyBzdHJva2U6IzAwMDAwMDsgc3Ryb2tlLXdpZHRoOjJweDsNCiAgICAgIGZpbGwtb3BhY2l0eTowLjc7IiAvPg0KPC9zdmc+">data:</button>
 
-      <p>
-        <button id="logout">navigator.id.logout();</button>
-        <em>(Deprecated, Observer API Only)</em>
-      </p>
-    </fieldset>
+            <label for="watch-backgroundColor">backgroundColor</label>
+            <input id="watch-backgroundColor" type="text" placeholder="#rgb or #rrggbb" class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="watch-backgroundColor" data-value="#fafaf0">Light</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="watch-backgroundColor" data-value="#223">Dark</button>
+          </div>
 
-    <fieldset>
-      <legend>Verifier</legend>
-      <ul>
-        <li>
-          <label for=verifierAllowUnverified>allowUnverified</label>
-          <input type=checkbox id=verifierAllowUnverified />
-        </li>
-        <li>
-          <label for=verifierForceIssuer>forceIssuer</label>
-          <input type=text placeholder="Domain" id=verifierForceIssuer />
-          <button class="preset" data-for=verifierForceIssuer data-value="firefoxos.persona.org">FxOS</button>
-        </li>
-      </ul>
-    </fieldset>
+          <div class="deprecated">
+            <label for="watch-onlogout" class="pure-checkbox"><input id="watch-onlogout" type="checkbox"> <span class="note" title="Enables Observer API">onlogout</span></label>
 
-    <fieldset>
-      <legend>navigator.id.get()</legend>
+            <label for="watch-onmatch" class="pure-checkbox"><input id="watch-onmatch" type="checkbox"> onmatch</label>
 
-      <ul>
-        <li>
-          <label for=getSiteName>siteName</label>
-          <input type=text placeholder="String" id=getSiteName />
-        </li>
-        <li>
-          <label for=getSiteLogo>siteLogo</label>
-          <input type=text placeholder="HTTPS URL or data: URI" id=getSiteLogo />
-          <button class="preset" data-for=getSiteLogo data-value="https://login.persona.org/pages/i/persona-logo-100x100.png">URL</button>
-          <button class="preset" data-for=getSiteLogo data-value="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iDQogICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KDQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyINCiB3aWR0aD0iNDY3IiBoZWlnaHQ9IjQ2MiI+DQogIDxyZWN0IHg9IjgwIiB5PSI2MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIyNTAiIHJ4PSIyMCINCiAgICAgIHN0eWxlPSJmaWxsOiNmZjAwMDA7IHN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoycHg7IiAvPg0KICANCiAgPHJlY3QgeD0iMTQwIiB5PSIxMjAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMjUwIiByeD0iNDAiDQogICAgICBzdHlsZT0iZmlsbDojMDAwMGZmOyBzdHJva2U6IzAwMDAwMDsgc3Ryb2tlLXdpZHRoOjJweDsNCiAgICAgIGZpbGwtb3BhY2l0eTowLjc7IiAvPg0KPC9zdmc+">data:</button>
-        </li>
-        <li>
-          <label for=getBackgroundColor>backgroundColor</label>
-          <input type=text placeholder="Hex #rgb or #rrggbb" id=getBackgroundColor />
-          <button class="preset" data-for=getBackgroundColor data-value="#223">Dark</button>
-          <button class="preset" data-for=getBackgroundColor data-value="#fafaf0">Light</button>
-        </li>
-        <li>
-          <label for=getTermsOfService>termsOfService</label>
-          <input type=text placeholder="Absolute path or URL" id=getTermsOfService />
-          <button class="preset" data-for=getTermsOfService data-value="https://login.persona.org/en/embedded_tos">URL</button>
-          <button class="preset" data-for=getTermsOfService data-value="/terms.html">Path</button>
-          <em>(Deprecated)</em>
-        </li>
-        <li>
-          <label for=getPrivacyPolicy>privacyPolicy</label>
-          <input type=text placeholder="Absolute path or URL" id=getPrivacyPolicy />
-          <button class="preset" data-for=getPrivacyPolicy data-value="https://login.persona.org/en/embedded_privacy">URL</button>
-          <button class="preset" data-for=getPrivacyPolicy data-value="/privacy.html">Path</button>
-          <em>(Deprecated)</em>
-        </li>
-      </ul>
+            <label for="watch-loggedInUser">loggedInUser</label>
+            <input id="watch-loggedInUser" type="email" placeholder="user@example.com" class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="watch-loggedInUser" data-value="null"><span class="note" title="Null means the user is not logged in">null</span></button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="watch-loggedInUser" data-value="undefined"><span class="note" title="Undefined means you don't know the user's state">undef.</span></button>
+          </div>
 
-      <button id="get">navigator.id.get(callback, <em>options</em>);</button>
-    </fieldset>
+          <button id="watch--button" type="button" class="pure-button pure-button-primary pure-input-1 action">watch();</button>
+        </fieldset>
+      </form>
+      <form class="pure-form pure-form-stacked pure-u-1-2 pure-u-sm-1-3">
+        <fieldset>
+          <legend>Request</legend>
 
-  </div>
+          <div class="supported">
+            <label for="request-oncancel" class="pure-checkbox"><input id="request-oncancel" type="checkbox" checked> oncancel</label>
 
-  <div class=logging>
-    <h2>Event Log</h2>
+            <label for="request-email">email</label>
+            <input id="request-email" type="email" placeholder="user@example.com" class="pure-input-1">
+          </div>
 
-    <ol id="eventLog"></ol>
+          <div class="deprecated">
+            <label for="request-termsOfService">termsOfService</label>
+            <input id="request-termsOfService" type="text" placeholder="https://... or /..." class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="request-termsOfService" data-value="https://login.persona.org/en/embedded_tos">URL</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="request-termsOfService" data-value="/terms.html">Path</button>
 
-    <h2>Assertions</h2>
+            <label for="request-privacyPolicy">privacyPolicy</label>
+            <input id="request-privacyPolicy" type="text" placeholder="https://... or /..." class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="request-privacyPolicy" data-value="https://login.persona.org/en/embedded_privacy">URL</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="request-privacyPolicy" data-value="/privacy.html">Path</button>
 
-    <ol id="assertionLog"></ol>
-  </div>
+            <label for="request-returnTo">returnTo</label>
+            <input id="request-returnTo" type="text" placeholder="Absolute path" class="pure-input-1">
+          </div>
 
-  <script src="/app.js"></script>
-</body>
+          <div class="experimental">
+            <label for="request-experimental_forceAuthentication" class="pure-checkbox"><input id="request-experimental_forceAuthentication" type="checkbox"> forceAuthentication</label>
+
+            <label for="request-experimental_allowUnverified" class="pure-checkbox"><input id="request-experimental_allowUnverified" type="checkbox"> allowUnverified</label>
+
+            <label for="request-experimental_forceIssuer">forceIssuer</label>
+            <input id="request-experimental_forceIssuer" type="text" placeholder="example.com" class="pure-input-2-3 has-presets"
+            ><button type="button" class="pure-button pure-input-1-3 preset" data-for="request-experimental_forceIssuer" data-value="firefoxos.persona.org">FxOS</button>
+          </div>
+
+          <button id="logout--button" type="button" class="pure-button pure-input-1 action">logout();</button>
+
+          <button id="request--button" type="button" class="pure-button pure-button-primary pure-input-1 action">request();</button>
+        </fieldset>
+      </form>
+      <form class="pure-form pure-form-stacked pure-u-1 pure-u-sm-1-3">
+        <fieldset>
+          <legend>Verifier</legend>
+
+          <div class="experimental">
+            <label for="verifier-allowUnverified" class="pure-checkbox"><input id="verifier-allowUnverified" type="checkbox"> allowUnverified</label>
+
+            <label for="verifier-forceIssuer">forceIssuer</label>
+            <input id="verifier-forceIssuer" type="text" placeholder="example.com" class="pure-input-2-3 has-presets"
+            ><button type="button" class="pure-button pure-input-1-3 preset" data-for="verifier-forceIssuer" data-value="firefoxos.persona.org">FxOS</button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Get</legend>
+
+          <div class="deprecated">
+            <label for="get-siteName">siteName</label>
+            <input id="get-siteName" type="text" placeholder="String" class="pure-input-1">
+
+            <label for="get-siteLogo">siteLogo</label>
+            <input id="get-siteLogo" type="text" placeholder="https://... or /..." class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="get-siteLogo" data-value="https://login.persona.org/pages/i/persona-logo-100x100.png">https://</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="get-siteLogo" data-value="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iDQogICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPg0KDQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyINCiB3aWR0aD0iNDY3IiBoZWlnaHQ9IjQ2MiI+DQogIDxyZWN0IHg9IjgwIiB5PSI2MCIgd2lkdGg9IjI1MCIgaGVpZ2h0PSIyNTAiIHJ4PSIyMCINCiAgICAgIHN0eWxlPSJmaWxsOiNmZjAwMDA7IHN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoycHg7IiAvPg0KICANCiAgPHJlY3QgeD0iMTQwIiB5PSIxMjAiIHdpZHRoPSIyNTAiIGhlaWdodD0iMjUwIiByeD0iNDAiDQogICAgICBzdHlsZT0iZmlsbDojMDAwMGZmOyBzdHJva2U6IzAwMDAwMDsgc3Ryb2tlLXdpZHRoOjJweDsNCiAgICAgIGZpbGwtb3BhY2l0eTowLjc7IiAvPg0KPC9zdmc+">data:</button>
+
+            <label for="get-backgroundColor">backgroundColor</label>
+            <input id="get-backgroundColor" type="text" placeholder="#rgb or #rrggbb" class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="get-backgroundColor" data-value="#fafaf0">Light</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="get-backgroundColor" data-value="#223">Dark</button>
+
+            <label for="get-termsOfService">termsOfService</label>
+            <input id="get-termsOfService" type="text" placeholder="https://... or /..." class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="get-termsOfService" data-value="https://login.persona.org/en/embedded_tos">URL</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="get-termsOfService" data-value="/terms.html">Path</button>
+
+            <label for="get-privacyPolicy">privacyPolicy</label>
+            <input id="get-privacyPolicy" type="text" placeholder="https://... or /..." class="pure-input-1-2 has-presets"
+            ><button type="button" class="pure-button pure-input-1-4 preset middle" data-for="get-privacyPolicy" data-value="https://login.persona.org/en/embedded_privacy">URL</button
+            ><button type="button" class="pure-button pure-input-1-4 preset" data-for="get-privacyPolicy" data-value="/privacy.html">Path</button>
+          </div>
+
+          <button id="get--button" type="button" class="pure-button pure-input-1 action">get();</button>
+        </fieldset>
+      </form>
+      <div class="pure-u-1 pure-form">
+        <fieldset>
+          <legend>Logs</legend>
+          <ol id="event-logs">
+          </ol>
+        </fieldset>
+      </div>
+      <div class="pure-u-1 pure-form">
+        <fieldset>
+          <legend>Persona Shim Location</legend>
+          <ul style="display: inline; padding-left: 0;">
+            <li style="display: inline;"><a href="/?local">Local</a></li>
+            <li style="display: inline;"><a href="/?dev">Dev</a></li>
+            <li style="display: inline;"><a href="/?stage">Stage</a></li>
+            <li style="display: inline;"><a href="/?prod">Prod</a></li>
+            <li style="display: inline;"><a href="/?fxos">FxOS</a></li>
+          </ul>
+        </fieldset>
+      </div>
+    </div>
+  </body>
 </html>
