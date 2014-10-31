@@ -27,6 +27,13 @@
   body {
     height: 100%;
     background: #eff0f2 none;
+  }
+
+  /**
+   * Elements like buttons, selects and inputs don't inherit font styles from body
+   * so we have to set the font styles for each type of this elements.
+   */
+  body, button, input {
     font-family: 'Fira Sans', 'Feura Sans', 'Open Sans', 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
   }
 
