@@ -252,7 +252,7 @@ BrowserID.Modules.ValidateRpParams = (function() {
     var dataMatches = null; // is this a valid data URI?
     var outputLogoUri;
     // Ideally we'd be loading this from a canonical constants library.
-    var imageMimeTypes = ['png', 'gif', 'jpg', 'jpeg', 'svg'];
+    var imageMimeTypes = ['png', 'gif', 'jpg', 'jpeg', 'svg+xml'];
     // This regex converts valid input of the form:
     //   'data:image/png;base64,iV...'
     // into an array that looks like:
