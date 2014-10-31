@@ -417,7 +417,8 @@ h1 {
 
 h2 {
   font-size: 32px;
-  letter-spacing: -1px;
+  /* WTF: tight letter spacing looks bad on h2's, but good elsewhere */
+  /* letter-spacing: -1px; */
   line-height: 100%;
 }
 
