@@ -49,7 +49,7 @@
     "postprocess": "0.2.4",
     "rimraf": "2.2.2",
     "semver": "2.1.0",
-    "temp": "0.6.0",
+    "temp": "0.8.1",
     "toobusy": "0.2.4",
     "uglify-js": "1.0.6",
     "uglifycss": "0.0.5",
