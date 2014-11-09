@@ -389,8 +389,8 @@
     "0.0.0": "da4b17cc7684c98c962beb4d95f668c8dcad09d5"
   },
   "rimraf": {
-    "2.1.4": "5a6eb62eeda068f51ede50f29b3e5cd22f3d9bb2",
-    "2.2.2": "d99ec41dc646e55bf7a7a44a255c28bef33a8abf"
+    "2.2.2": "d99ec41dc646e55bf7a7a44a255c28bef33a8abf",
+    "2.2.8": "e439be2aaee327321952730f99a8929e4fc50582"
   },
   "sax": {
     "0.5.5": "b1ec13d77397248d059bcc18bb9530d8210bb5d3"
@@ -422,7 +422,7 @@
   },
   "temp": {
     "0.4.0": "671ad63d57be0fe9d7294664b3fc400636678a60",
-    "0.6.0": "6b13df5cddf370f2e3a606ca40f202c419173f07"
+    "0.8.1": "4b7b4ffde85bb09f2dd6ba6cc43b44213c94fd3a"
   },
   "through": {
     "0.1.4": "8059576d833089b3c18eccd37580bf9cc5b59130"
