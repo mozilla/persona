@@ -5,6 +5,7 @@ before_script:
 language: node_js
 
 before_install:
+ - "mkdir -pv ~/tmp" 
  - "uname -a"
  - "[ -e /etc/lsb-release ] && cat /etc/lsb-release"
  - "phantomjs --version"
