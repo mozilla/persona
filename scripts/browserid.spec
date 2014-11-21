@@ -2,7 +2,7 @@
 
 Name:          browserid-server
 Version:       0.2014.07.19
-Release:       1%{?dist}_%{svnrev}
+Release:       2%{?dist}_%{svnrev}
 Summary:       BrowserID server
 Packager:      Daniel Thornton <relud@mozilla.com>
 Group:         Development/Libraries
