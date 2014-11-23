@@ -1,5 +1,6 @@
 train-2014.07.19:
   * Revert native Desktop-related commit that broke primaries on FxOS: #4144
+  * (fix 2014.11.21) Make send-from address for verification configurable (to use AWS SES)
 
 train-2014.06.13:
   * Disable CSP due to breaking primaries on FxOS: #4144
