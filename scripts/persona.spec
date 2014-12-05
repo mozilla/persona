@@ -1,9 +1,9 @@
-%define _rootdir /opt/browserid
+%define _rootdir /opt/persona
 
-Name:          browserid-server
+Name:          persona-server
 Version:       0.2014.07.19
 Release:       2%{?dist}_%{svnrev}
-Summary:       BrowserID server
+Summary:       Persona server
 Packager:      Daniel Thornton <relud@mozilla.com>
 Group:         Development/Libraries
 License:       MPL 2.0
@@ -11,14 +11,14 @@ URL:           https://github.com/mozilla/persona
 Source0:       %{name}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv:   no
-Requires:      nodejs-svcops >= 0.10.26, gmp
-BuildRequires: gcc-c++, git, subversion, make, gmp, gmp-devel, nodejs-svcops >= 0.10.26
+Requires:      nodejs >= 0.10.32, gmp
+BuildRequires: gcc-c++, git, subversion, make, gmp, gmp-devel, npm, nodejs >= 0.10.32
 
 %description
 persona server & web home for persona.org
 
 %prep
-%setup -q -c -n browserid
+%setup -q -c -n persona
 
 %build
 npm install
@@ -28,7 +28,7 @@ mkdir -p resources/static/i18n/
 echo "$GIT_REVISION" > resources/static/ver.txt
 echo "locale svn r$SVN_REVISION" >> resources/static/ver.txt
 env CONFIG_FILES=$PWD/config/l10n-all.json scripts/compress
-cp resources/static/build/include.js %{_builddir}/browserid/resources/static/production/include.orig.js
+cp resources/static/build/include.js %{_builddir}/persona/resources/static/production/include.orig.js
 rm -r resources/static/build resources/static/test
 
 %install
@@ -52,5 +52,8 @@ rm -rf %{buildroot}
 %{_rootdir}
 
 %changelog
+* Mon Oct 24 2014 Daniel Thornton <relud@mozilla.com>
+- rename things to persona
+
 * Tue Oct 18 2011 Pete Fritchman <petef@mozilla.com>
 - Initial version
