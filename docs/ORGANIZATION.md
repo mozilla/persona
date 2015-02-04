@@ -6,7 +6,7 @@ Several node.js servers are implemented in this repostiory, each is
 implemented on top of the [express](http://expressjs.com) framework
 and they share the following directory structure:
 
-* `bin/` - Contains the BrowserID servers (browserid,  dbwriter, keysgner, and verifier) and CLI tools.
+* `bin/` - Contains the BrowserID servers (browserid,  dbwriter, keysigner, and verifier) and CLI tools.
 
  * Each node.js application is the "entry point" for that app and is a typical express app.
 
