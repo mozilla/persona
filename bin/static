@@ -134,7 +134,7 @@ app.use(function(req, res, next) {
   }
 });
 
-app.use(express.static(static_root));
+app.use(express.static(static_root, { redirect: false }));
 
 var bindTo = config.get('bind_to');
 app.listen(bindTo.port, bindTo.host, function() {
