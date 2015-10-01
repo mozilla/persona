@@ -13,7 +13,7 @@ var exampleServer = express.createServer();
 
 exampleServer.use(express.logger({ format: 'dev' }));
 
-exampleServer.use(express.static(path.join(__dirname, "..", "example", "delegated_primary")));
+exampleServer.use(express.static(path.join(__dirname, "..", "example", "delegated_primary"), { redirect: false }));
 
 exampleServer.listen(
   process.env.PORT || 10011,
