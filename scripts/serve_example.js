@@ -25,7 +25,7 @@ if (process.env['PUBLIC_URL']) {
   }));
 }
 
-exampleServer.use(express.static(path.join(__dirname, "..", "example", "rp")));
+exampleServer.use(express.static(path.join(__dirname, "..", "example", "rp"),  { redirect: false }));
 
 exampleServer.use(express.bodyParser());
 
