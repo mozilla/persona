@@ -19,7 +19,7 @@
     "0.2.0": "c55013856c8194ec854a0cbec90aab5a04ce3ac5"
   },
   "awsbox": {
-    "0.6.2": "4d35b870f8b3dfc80611df0c7d5431aed595204f"
+    "0.7.1": "496a646eac1b9008a6d25284c979e0a55afbbc15"
   },
   "awssum": {
     "1.1.0": "e010144aa516af78eca01352aab9203b816611bb"
@@ -305,7 +305,7 @@
     "0.2.8": "adfd207a3875c4d37095729c2e7c283c5ba2ee72"
   },
   "nice-route53": {
-    "0.3.4": "43c15d65c772a25b25edee4d5a091ed0bc711df4"
+    "0.3.5": "e997e5a8a3b338394057da4d086ebdcaf9709d26"
   },
   "node-font-face-generator": {
     "0.1.1": "d29cf7d2074bafe314e4360be1bba7ec5c80f790"
