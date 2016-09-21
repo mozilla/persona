@@ -13,6 +13,7 @@ wsapi = require('./lib/wsapi.js'),
 email = require('../lib/email.js'),
 jwcrypto = require('jwcrypto'),
 secondary = require('./lib/secondary.js');
+primary = require('./lib/primary.js');
 
 var suite = vows.describe('forgotten-email');
 
@@ -28,6 +29,14 @@ var token = undefined;
 
 // stores wsapi client context
 var oldContext;
+
+// a primary user that we'll add to the account
+var primaryUser = new primary({
+  email: 'third@example.domain',
+  domain: 'example.domain'
+});
+
+const TEST_ORIGIN = 'http://127.0.0.1:10002';
 
 // create a new secondary account
 suite.addBatch({
@@ -174,6 +183,111 @@ suite.addBatch({
   }
 });
 
+
+// add a new primary-backed email address to the account (third address)
+suite.addBatch({
+  "set up the primary user": {
+    topic: function() {
+      primaryUser.setup(this.callback);
+    },
+    "works": function() {
+      // nothing to do here
+    },
+    "generating an assertion from the primary": {
+      topic: function () {
+        primaryUser.getAssertion(TEST_ORIGIN, this.callback);
+      },
+      "succeeds": function (err, assertion) {
+        assert.isNull(err);
+        assert.isString(assertion);
+      },
+      "add the primary-backed email to the account": {
+        topic: function (err, assertion)  {
+          wsapi.post('/wsapi/add_email_with_assertion', {
+            assertion: assertion,
+          }).call(this);
+        },
+        "works": function (err, r) {
+          var resp = JSON.parse(r.body);
+          assert.isObject(resp);
+          assert.isTrue(resp.success);
+        }
+      }
+    }
+  }
+});
+
+// verify now all three email addresses are known
+suite.addBatch({
+  "first email exists": {
+    topic: wsapi.get('/wsapi/have_email', { email: 'first@fakeemail.com' }),
+    "should exist": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).email_known, true);
+    }
+  },
+  "second email exists": {
+    topic: wsapi.get('/wsapi/have_email', { email: 'second@fakeemail.com' }),
+    "should exist": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).email_known, true);
+    }
+  },
+  "third email exists": {
+    topic: wsapi.get('/wsapi/have_email', { email: 'third@example.domain' }),
+    "should exist": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).email_known, true);
+    }
+  },
+  "a random email doesn't exist": {
+    topic: wsapi.get('/wsapi/have_email', { email: 'third@fakeemail.com' }),
+    "shouldn't exist": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).email_known, false);
+    }
+  }
+});
+
+// test verification status of emails
+suite.addBatch({
+  "address_info for first": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: 'first@fakeemail.com'
+    }),
+    "succeeds with HTTP 200" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "reports the email is known (which implies it's also verified)": function(err, r) {
+      r = JSON.parse(r.body);
+      assert.strictEqual(r.type, 'secondary');
+      assert.strictEqual(r.state, 'known');
+    }
+  },
+  "address_info for second": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: 'second@fakeemail.com'
+    }),
+    "succeeds with HTTP 200" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "reports verified secondary": function(err, r) {
+      r = JSON.parse(r.body);
+      assert.strictEqual(r.type, 'secondary');
+      assert.strictEqual(r.state, 'known');
+    }
+  },
+  "address_info for third": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: 'third@example.domain'
+    }),
+    "succeeds with HTTP 200" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "reports a known primary": function(err, r) {
+      r = JSON.parse(r.body);
+      assert.strictEqual(r.type, 'primary');
+      assert.strictEqual(r.state, 'known');
+    }
+  }
+});
+
 // Run the "forgot_email" flow with first address.
 suite.addBatch({
   "reset password on first account": {
@@ -231,6 +345,16 @@ suite.addBatch({
   "second email works": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: 'second@fakeemail.com',
+      pass: 'firstfakepass',
+      ephemeral: false
+    }),
+    "should work": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    }
+  },
+  "third email works": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'third@example.domain',
       pass: 'firstfakepass',
       ephemeral: false
     }),
@@ -301,20 +425,40 @@ suite.addBatch({
       pass: 'firstfakepass',
       ephemeral: false
     }),
-    "should work": function(err, r) {
+    "shouldn't work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, false);
     }
   },
-  "second email, second pass bad": {
+  "second email, second pass good": {
     topic: wsapi.post('/wsapi/authenticate_user', {
       email: 'second@fakeemail.com',
       pass: 'secondfakepass',
       ephemeral: false
     }),
-    "shouldn' work": function(err, r) {
+    "should work": function(err, r) {
       assert.strictEqual(JSON.parse(r.body).success, true);
     }
   },
+  "third email, first pass bad": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'third@example.domain',
+      pass: 'firstfakepass',
+      ephemeral: false
+    }),
+    "shouldn't work": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, false);
+    }
+  },
+  "third email, second pass good": {
+    topic: wsapi.post('/wsapi/authenticate_user', {
+      email: 'third@example.domain',
+      pass: 'secondfakepass',
+      ephemeral: false
+    }),
+    "should work": function(err, r) {
+      assert.strictEqual(JSON.parse(r.body).success, true);
+    }
+  }
 });
 
 // Test issue #2104: when using a second browser to initiate password reset, first
@@ -389,6 +533,7 @@ suite.addBatch({
     },
     "reports the email is known (which implies it's also verified)": function(err, r) {
       r = JSON.parse(r.body);
+      assert.strictEqual(r.type, 'secondary');
       assert.strictEqual(r.state, 'known');
     }
   },
@@ -399,9 +544,23 @@ suite.addBatch({
     "succeeds with HTTP 200" : function(err, r) {
       assert.strictEqual(r.code, 200);
     },
-    "reports unverified": function(err, r) {
+    "reports unverified secondary": function(err, r) {
       r = JSON.parse(r.body);
+      assert.strictEqual(r.type, 'secondary');
       assert.strictEqual(r.state, 'unverified');
+    }
+  },
+  "address_info for third": {
+    topic: wsapi.get('/wsapi/address_info', {
+      email: 'third@example.domain'
+    }),
+    "succeeds with HTTP 200" : function(err, r) {
+      assert.strictEqual(r.code, 200);
+    },
+    "reports a known primary": function(err, r) {
+      r = JSON.parse(r.body);
+      assert.strictEqual(r.type, 'primary');
+      assert.strictEqual(r.state, 'known');
     }
   }
 });
@@ -438,6 +597,22 @@ suite.addBatch({
       topic: function() {
         wsapi.post('/wsapi/cert_key', {
           email: 'second@fakeemail.com',
+          pubkey: kp.publicKey.serialize(),
+          ephemeral: false
+        }).call(this);
+      },
+      "is forbidden" : function(err, r) {
+        assert.strictEqual(r.code, 403);
+      }
+    },
+    // Under normal circumstances, the fallback will happily issue certificates
+    // for primary-backed addresses.  But after a password reset, it cannot
+    // assume that you still own them.
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1303937
+    "and cert a key for a primary email address after the reset": {
+      topic: function() {
+        wsapi.post('/wsapi/cert_key', {
+          email: 'third@example.domain',
           pubkey: kp.publicKey.serialize(),
           ephemeral: false
         }).call(this);
