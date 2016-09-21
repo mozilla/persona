@@ -30,6 +30,8 @@ start_stop.addStartupBatches(suite);
 
 const TEST_DOMAIN = 'example.domain',
       TEST_EMAIL = 'testuser@' + TEST_DOMAIN,
+      SECOND_TEST_EMAIL = 'testusertoo@' + TEST_DOMAIN,
+      TEST_PASSWORD = 'TestingMcTestTest',
       TEST_ORIGIN = 'http://127.0.0.1:10002',
       OTHER_EMAIL = 'otheruser@' + TEST_DOMAIN;
 
@@ -42,12 +44,25 @@ var primaryUser = new primary({
   domain: TEST_DOMAIN
 });
 
+var primaryUser2 = new primary({
+  email: SECOND_TEST_EMAIL,
+  domain: TEST_DOMAIN
+});
+
 suite.addBatch({
-  "set things up": {
-    topic: function() {
+  "set up the first primary user": {
+    topic: function () {
       primaryUser.setup(this.callback);
     },
-    "works": function() {
+    "works": function () {
+      // nothing to do here
+    }
+  },
+  "set up the second primary user": {
+    topic: function () {
+      primaryUser2.setup(this.callback);
+    },
+    "works": function () {
       // nothing to do here
     }
   }
@@ -213,6 +228,164 @@ suite.addBatch({
           var resp = JSON.parse(r.body);
           assert.isObject(resp);
           assert.isTrue(resp.success);
+        }
+      }
+    }
+  }
+});
+
+suite.addBatch({
+  "creating an unverified user account for this email": {
+    topic: function () {
+      // We first have to delete the email
+      // so we can re-create as a fresh account.
+      var cb = this.callback.bind(this);
+      db.emailToUID(TEST_EMAIL, function (err, uid) {
+        if (err) { return this.callback(err); }
+        db.cancelAccount(uid, function (err) {
+          if (err) { return this.callback(err); }
+          wsapi.post('/wsapi/stage_user', {
+            email: TEST_EMAIL,
+            pass: TEST_PASSWORD,
+            site: TEST_ORIGIN,
+            allowUnverified: true
+          }, null, function (err, r) {
+            db.emailToUID(TEST_EMAIL, function (err, uid) {
+              cb(err, r, uid);
+            });
+          }).call(this);
+        });
+      });
+    },
+    "works": function (err, r, unverifiedUid) {
+      assert.isNull(err);
+      var resp = JSON.parse(r.body);
+      assert.isObject(resp);
+      assert.isTrue(resp.success);
+      assert.ok(unverifiedUid);
+    },
+    "then logging in with the password": {
+      topic: function () {
+        wsapi.post('/wsapi/authenticate_user', {
+          email: TEST_EMAIL,
+          pass: TEST_PASSWORD,
+          ephemeral: true,
+          allowUnverified: true
+        }).call(this);
+      },
+      "works": function (err, r) {
+        assert.isNull(err);
+        var resp = JSON.parse(r.body);
+        assert.isObject(resp);
+        assert.isTrue(resp.success);
+      }
+    },
+    "then generating an assertion": {
+      topic: function (err, r, unverifiedUid) {
+        var cb = this.callback.bind(this);
+        primaryUser.getAssertion(TEST_ORIGIN, function (err, assertion) {
+          cb(err, unverifiedUid, assertion);
+        });
+      },
+      "succeeds": function (err, unverifiedUid, assertion) {
+        assert.isNull(err);
+        assert.isString(assertion);
+      },
+      "and logging in with that assertion": {
+        topic: function (err, unverifiedUid, assertion)  {
+          var cb = this.callback.bind(this);
+          wsapi.post('/wsapi/auth_with_assertion', {
+            assertion: assertion,
+            ephemeral: true
+          }, null, function (err, r) {
+            cb(err, unverifiedUid, r);
+          }).call(this);
+        },
+        "works": function (err, unverifiedUid, r) {
+          var resp = JSON.parse(r.body);
+          assert.isObject(resp);
+          assert.isTrue(resp.success);
+          assert.ok(resp.userid);
+        },
+        "logs the user in with a fresh uid": function (err, unverifiedUid, r) {
+          var resp = JSON.parse(r.body);
+          assert.notEqual(unverifiedUid, resp.userid);
+        },
+        "then trying to login with the original password": {
+          topic: function () {
+            wsapi.post('/wsapi/authenticate_user', {
+              email: TEST_EMAIL,
+              pass: TEST_PASSWORD,
+              ephemeral: true,
+              allowUnverified: true
+            }).call(this);
+          },
+          "fails with a password error": function (err, r) {
+            assert.isNull(err);
+            var resp = JSON.parse(r.body);
+            assert.isObject(resp);
+            assert.isFalse(resp.success);
+            assert.equal(resp.reason, 'no password set for user');
+          }
+        },
+        "then generating an assertion for a second primary email": {
+          topic: function () {
+            var cb = this.callback.bind(this);
+            primaryUser2.getAssertion(TEST_ORIGIN, function (err, assertion) {
+              cb(err, assertion);
+            });
+          },
+          "succeeds": function (err, assertion) {
+            assert.isNull(err);
+            assert.isString(assertion);
+          },
+          "and using it to add another primary email to the account": {
+            topic: function (err, assertion)  {
+              wsapi.post('/wsapi/add_email_with_assertion', {
+                assertion: assertion,
+              }).call(this);
+            },
+            "works": function (err, r) {
+              var resp = JSON.parse(r.body);
+              assert.isObject(resp);
+              assert.isTrue(resp.success);
+            },
+            "then listing all emails on the account": {
+              topic: function (err, assertion)  {
+                wsapi.get('/wsapi/list_emails').call(this);
+              },
+              "works": function (err, r) {
+                assert.isNull(err);
+                var resp = JSON.parse(r.body);
+                assert.isObject(resp);
+                assert.isTrue(resp.success);
+                assert.ok(resp.emails);
+              },
+              "shows both of the emails on the account": function (err, r) {
+                var emails = JSON.parse(r.body).emails;
+                assert.equal(emails.length, 2);
+                assert.ok(emails.indexOf(TEST_EMAIL) >= 0);
+                assert.ok(emails.indexOf(SECOND_TEST_EMAIL) >= 0);
+              }
+            },
+            "then loging in to the second email with the original password": {
+              topic: function () {
+                wsapi.post('/wsapi/authenticate_user', {
+                  email: SECOND_TEST_EMAIL,
+                  pass: TEST_PASSWORD,
+                  ephemeral: true,
+                  allowUnverified: true
+                }).call(this);
+              },
+              "fails with a password error": function (err, r) {
+                assert.isNull(err);
+                var resp = JSON.parse(r.body);
+                assert.isObject(resp);
+                assert.isFalse(resp.success);
+                assert.equal(resp.reason, 'no password set for user');
+              }
+            }
+          }
         }
       }
     }
