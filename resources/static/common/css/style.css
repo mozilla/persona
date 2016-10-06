@@ -594,3 +594,23 @@ footer .help {
 #development input[type=text] {
   padding: 3px 5px;
 }
+
+.notice {
+  text-align: center;
+  background: #8A241B;
+  border: 1px solid #710B02;
+  padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.notice p {
+  padding: 0.4em;
+}
+
+.notice a {
+  color: #fff;
+  border-bottom: 1px dotted #fff;
+  font-weight: normal;
+}
+
