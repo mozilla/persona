@@ -343,8 +343,7 @@ button.delete:active {
 
 #hAlign {
   width: 700px;
-  /* -90 pulls hAlign up towards the notice. */
-  margin: -90px auto 0 auto;
+  margin: 0 auto;
   position: relative;
 }
 
@@ -784,7 +783,7 @@ article.flexible .info {
 }
 
 .notice {
-    margin: 100px 0 0 0;
+  margin: 100px 0 0 0;
 }
 
 .about {
