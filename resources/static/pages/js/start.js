@@ -85,7 +85,8 @@ $(function() {
               // have.  If the margins are not included, the center content
               // will be too tall and a scroll bar appears.
               - elementHeightWithMargins("header")
-              - elementHeightWithMargins("footer");
+              - elementHeightWithMargins("footer")
+              - elementHeightWithMargins(".notice");
 
     $("#vAlign").css({ "height": height });
 

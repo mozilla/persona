@@ -782,22 +782,10 @@ article.flexible .info {
   margin-bottom: 30px;
 }
 
-#content .notice {
-    text-align: center;
-    background: #8A241B;
-    border: 1px solid #710B02;
-    padding: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-    margin-bottom: 30px;
+.notice {
+  margin: 100px 0 0 0;
 }
 
-#content .notice p {
-    padding: 0.4em;
-}
-
-#content .notice a {
-    color: #fff;
-    border-bottom: 1px dotted #fff;
-    font-weight: normal;
+.about {
+  margin-top: 50px;
 }

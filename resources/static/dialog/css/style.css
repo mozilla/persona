@@ -64,26 +64,7 @@ footer {
     z-index: 2;
     bottom: 0;
     border-top: 1px solid #dfe1e2;
-    /* The *padding is a fix for IE6 and IE7 showing scroll bars in the
-     * unsupported dialog.  Since IE6 and IE7 do not support box-sizing:
-     * border-box, the left and right padding cause these versions of IE to
-     * overflow the dialog box.
-     */
-    padding: 20px;
-    *padding: 20px 0;
     text-align: center;
-}
-
-/* prevent the footer text from wrapping so that its non-wrapped width can be
- * calculated and used to dynamically size the text to fit on one line in the
- * footer. See issue #3144.
- */
-#footerText {
-  white-space: nowrap;
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAkCAYAAADPRbkKAAABo0lEQVR42u3ZzUoCURiA4emf6I9aJUKLNkHYol3QJuoCah1oC9tHFGXUBbSqRQRBkVcR5S4JWkiF7SI3SkGBIBWElNjpvYBJB79vZgw98Cw9zIvzc86MFYlENvAF45MztFm1DsHBazqSBJg6EZMH+G/xvwd8Y0YW4L83jHsdkMceoljHFYxADgGvAhIYsJl3CSXBvHfodTvgET0V5t6EEThHu5sB4Spzd+IVRuDErYAy+h38w3EYoR03AnIOr7E1GAVh7YADhwFjis+IWc2AfYcBozBK3hHSCigg6CDgBEbRE4LyAGC3ysGPoAyjLI1+jYAPDFcIOIVxSQIdsgAgiW6bgw/DuOxUHgDM2wRkPQiIawR8YtomIAlTr6dQAcdYQN8f538LJrGF23q5iIuIoqOGjVMIKb9vo8uWYPD7QbwIH2QTtT7IHtBqMYQRq4KlxJxkKbFtMRQChlDyYzE3ZTGUIlJeL6dL6FIMOPR6Q5OxGIoBKzAOXGhuKX+QRxb3uMGlA9dII4NnFNU39XUoh0DzxVbz1WKDvdyNNeQHjn//iekX39Yl7H++PgYAAAAASUVORK5CYII='); /* source: dialog/i/persona_watermark_footer_sm.png */
-  background-size: 24px 18px;
-  background-repeat: no-repeat;
-  padding-left: 32px;
 }
 
 label {
@@ -589,5 +570,9 @@ a.emphasize:active {
   text-transform: uppercase;
   text-shadow: none;
   color: #ccc;
+}
+
+.notice {
+  color: #fff;
 }
 
