@@ -17,15 +17,15 @@ var daemons = exports.daemons = {};
 const HOST = process.env['IP_ADDRESS'] || process.env['HOST'] || "127.0.0.1";
 
 var daemonsToRun = {
-  verifier: { },
-  keysigner: { },
-  dbwriter: { },
+//  verifier: { },
+ // keysigner: { },
+//  dbwriter: { },
   example: {
     path: path.join(__dirname, "..", "scripts", "serve_example.js"),
     PORT: 10001,
     HOST: HOST
   },
-  example_primary: {
+/*  example_primary: {
     SHIMMED_DOMAIN: "example.domain",
     path: path.join(__dirname, "..", "scripts", "serve_example_primary.js"),
     PORT: 10005,
@@ -39,6 +39,7 @@ var daemonsToRun = {
   },
   proxy: { },
   browserid: { },
+  */
   static: { },
   router: { }
 };

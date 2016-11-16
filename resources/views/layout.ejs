@@ -13,61 +13,30 @@
   <!--[if lt IE 9]>
     <%- cachify_css('/production/ie8_main.css') %>
   <![endif]-->
-  <%- cachify_js(util.format('/production/%s/browserid.js', locale)) %>
   <link rel="shortcut icon" href=<%- cachify('/favicon.ico') -%>>
   <% /* the title comes from the server when the page is loaded.
          It still needs translated, so wrap it in its own gettext
      */ %>
   <title><%= format(gettext("Mozilla Persona: %s"), [gettext(title)]) %></title>
 </head>
-<body class="loading <%- typeof embedded !== "undefined" && embedded === true ? "embedded" : "" %>" <%- typeof start_blank !== "undefined" ? 'style="display: none;"' : "" %>>
-<% if (enable_development_menu) { %>
-  <a href="#" id="showDevelopment">&nbsp;</a>
-<% } %>
-<div id="errorBackground"></div>
+<body>
+<header id="header" class="cf">
+    <a class="home" href="/"><%= gettext("Persona Home") %></a>
+</header>
 
 <div id="wrapper">
-<% if (typeof embedded === "undefined" || embedded !== true) { %>
-    <header id="header" class="cf">
-        <a class="home" href="/"><%= gettext("Persona Home") %></a>
-
-        <ul class="nav cf">
-            <li><a href="/about"><%= gettext("How it works") %></a></li>
-            <li class="ifAuthenticated"><a href="/"><%= gettext("Account") %></a></li>
-
-            <li class="ifNotAuthenticated"><a class="signIn" href="/signin"><%= gettext("Sign In") %></a></li>
-            <li class="ifAuthenticated"><a class="signOut" href="/"><%= gettext("Sign Out") %></a></li>
-
-        </ul>
-    </header>
-<% } %>
-
     <div class="notice">
-          <p>As of November 30th 2016, the persona.org service is no longer supported.  It will be shut down in December 2016.&nbsp;&nbsp;<a href="https://wiki.mozilla.org/Identity/Persona_Shutdown_Guidelines_for_Reliers">More Info...</a></p>
+      <p>The persona.org service has shut down. <br>
+      <a href="https://wiki.mozilla.org/Identity/Persona_Shutdown_Guidelines_for_Reliers">More Info...</a>
+      </p>
     </div>
-
-    <div id="wait" class="message_screen"><div class="contents"></div></div>
-    <div id="error" class="message_screen"><div class="contents"></div></div>
-    <div id="delay" class="message_screen"><div class="contents"></div></div>
-
-    <%- body %>
-
 </div>
 
-<% if (typeof embedded === "undefined" || embedded !== true) { %>
-<footer style="position: absolute; bottom: 0;">
+<footer>
     <ul class="cf">
         <li><%- format(gettext('By the <a %s>Identity Team</a> @ <a %s>Mozilla</a>'),
                        [" href='http://identity.mozilla.com' target='_blank'", " href='https://mozilla.org' target='_blank'"]) %></li>
-        <li><a href="/<%= lang %>/privacy"><%= gettext('Privacy &rarr;') %></a></li>
-        <li><a href="/<%= lang %>/tos"><%= gettext('TOS &rarr;') %></a></li>
-        <li><a href="https://developer.mozilla.org/docs/persona" target="_blank"><%= gettext("Developers &rarr;") %></a></li>
-        <li class="help"><a
-        href="https://support.mozilla.com/kb/what-is-persona-and-how-does-it-work" target="_blank"><%= gettext('Need Help? &rarr;') %></a></li>
     </ul>
 </footer>
-<% } %>
-<script src="https://login.persona.org/include.js"></script>
-
 </body>
 </html>

@@ -35,8 +35,6 @@ module.exports = function(done) {
     output += '\tif (navigator.mozId) { navigator.id = navigator.mozId; }\n';
     output += '\telse { (function() {\n';
     output += '\tvar undefined;\n';
-    output += fs.readFileSync(path.join(dir, '_jschannel.js'));
-    output += fs.readFileSync(path.join(winchan_dir, 'winchan.js'));
     output += fs.readFileSync(path.join(dir, '_include.js'));
     output += '\t}());\n'; // end inner function
     output += '\t}\n'; // end else

@@ -17,9 +17,8 @@ fi
 # vows hates absolute paths.  sheesh.
 cd $BASEDIR
 
-$SCRIPT_DIR/test_db_connectivity.js
 if [ $? = 0 ] ; then
-    for file in tests/*.js ; do
+    for file in eol-tests/*.js ; do
         echo $file
         vows $file
         if [ $? != 0 ] ; then
